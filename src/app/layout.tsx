@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="ko">
       <body className={inter.className}>
         <Header />
-        {children}
+        <main className="min-h-[calc(100dvh-136px)]">{children}</main>
         <Footer />
       </body>
     </html>

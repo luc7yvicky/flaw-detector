@@ -35,7 +35,7 @@ const config: Config = {
         red: {
           light: "#FFEFEF",
         },
-        gray: {
+        bggray: {
           light: "#F1F1F1",
           dark: "#C2C2C2",
         },
