@@ -35,6 +35,10 @@ const config: Config = {
         red: {
           light: "#FFEFEF",
         },
+        gray: {
+          default: "#969696",
+          dark: "#3F3F3F",
+        },
         bggray: {
           light: "#F1F1F1",
           dark: "#C2C2C2",
@@ -51,10 +55,6 @@ const config: Config = {
           20: "#CCCCCC",
           10: "#E6E6E6",
           5: "#F3F3F3",
-        },
-        text: {
-          "gray-default": "#969696",
-          "gray-dark": "#3F3F3F",
         },
       },
     },
