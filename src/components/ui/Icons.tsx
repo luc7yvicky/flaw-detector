@@ -1,6 +1,9 @@
 import { cn } from "@/lib/utils";
 
-function IconRoundedDoc({ className, ...props }: React.ComponentProps<"svg">) {
+export function IconRoundedDoc({
+  className,
+  ...props
+}: React.ComponentProps<"svg">) {
   return (
     <svg
       width="24"
@@ -20,7 +23,10 @@ function IconRoundedDoc({ className, ...props }: React.ComponentProps<"svg">) {
   );
 }
 
-function IconClose({ className, ...props }: React.ComponentProps<"svg">) {
+export function IconClose({
+  className,
+  ...props
+}: React.ComponentProps<"svg">) {
   return (
     <svg
       width="12"
@@ -36,7 +42,7 @@ function IconClose({ className, ...props }: React.ComponentProps<"svg">) {
   );
 }
 
-function IconMenu({
+export function IconMenu({
   color = "fill-black",
   className,
   ...props
@@ -58,7 +64,7 @@ function IconMenu({
   );
 }
 
-function IconArrow({
+export function IconArrow({
   direction = "up",
   color = "fill-primary-500",
   className,
@@ -85,7 +91,7 @@ function IconArrow({
   );
 }
 
-function IconPin({
+export function IconPin({
   color = "fill-primary-500",
   className,
   ...props
@@ -105,7 +111,7 @@ function IconPin({
   );
 }
 
-function IconShare({
+export function IconShare({
   color = "fill-primary-500",
   className,
   ...props
@@ -125,7 +131,7 @@ function IconShare({
   );
 }
 
-function IconExternalLink({
+export function IconExternalLink({
   color = "fill-primary-500",
   className,
   ...props
@@ -145,13 +151,3 @@ function IconExternalLink({
     </svg>
   );
 }
-
-export {
-  IconRoundedDoc,
-  IconClose,
-  IconMenu,
-  IconArrow,
-  IconPin,
-  IconShare,
-  IconExternalLink,
-};
