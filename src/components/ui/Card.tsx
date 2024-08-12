@@ -204,7 +204,7 @@ function CardCoverImage({
 CardCoverImage.displayName = "CardCoverImage";
 
 // 임시, 껍데기만 개발
-function CardMoreInfoButton({
+function CardLinkButton({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
@@ -220,7 +220,7 @@ function CardMoreInfoButton({
     </div>
   );
 }
-CardMoreInfoButton.displayName = "CardMoreInfoButton";
+CardLinkButton.displayName = "CardLinkButton";
 
 function CardFooter({
   className,
@@ -242,6 +242,6 @@ export {
   CardSubTitle,
   CardContent,
   CardCoverImage,
-  CardMoreInfoButton,
+  CardLinkButton,
   CardFooter,
 };
