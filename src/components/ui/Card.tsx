@@ -30,24 +30,24 @@ export const cardVariants = cva(`flex flex-col border relative`, {
   },
 });
 
-type CardProps = VariantProps<typeof cardVariants> & {
+export type CardProps = VariantProps<typeof cardVariants> & {
   children?: React.ReactNode;
 };
 
-type CardHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
+export type CardHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
   labelType?: LabelProps["variant"];
   labelText?: string;
   hasMenu?: boolean;
 };
 
-type CardTitleProps = React.HTMLAttributes<HTMLDivElement> & {
+export type CardTitleProps = React.HTMLAttributes<HTMLDivElement> & {
   size?: "big" | "small" | "xsmall" | "default";
   weight?: "bold" | "default";
   color?: string;
   isSingleLine?: boolean;
 };
 
-type CardContentProps = React.HTMLAttributes<HTMLDivElement> & {
+export type CardContentProps = React.HTMLAttributes<HTMLDivElement> & {
   bgColor?: "white" | "transparent" | "default";
 };
 
