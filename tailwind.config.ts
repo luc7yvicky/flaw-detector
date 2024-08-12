@@ -56,6 +56,9 @@ const config: Config = {
           10: "#E6E6E6",
           5: "#F3F3F3",
         },
+        line: {
+          light: "#E6E6E6"
+        }
       },
     },
   },
