@@ -29,8 +29,8 @@ export function IconClose({
 }: React.ComponentProps<"svg">) {
   return (
     <svg
-      width="12"
-      height="12"
+      width="11.5"
+      height="11.5"
       viewBox="0 0 12 12"
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
