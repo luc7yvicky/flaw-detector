@@ -4,8 +4,9 @@ import Image from "next/image";
 import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconArrow, IconMenu } from "./Icons";
+import { Label, LabelProps } from "./Label";
 
-export const CardVariants = cva(`flex flex-col border relative`, {
+export const cardVariants = cva(`flex flex-col border relative`, {
   variants: {
     variant: {
       default: "justify-between hover:bg-primary-50",
@@ -29,12 +30,13 @@ export const CardVariants = cva(`flex flex-col border relative`, {
   },
 });
 
-type CardProps = VariantProps<typeof CardVariants> & {
+type CardProps = VariantProps<typeof cardVariants> & {
   children?: React.ReactNode;
 };
 
 type CardHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
-  label?: string;
+  labelType?: LabelProps["variant"];
+  labelText?: string;
   hasMenu?: boolean;
 };
 
@@ -50,17 +52,22 @@ type CardContentProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 function Card({ variant, size, ...props }: CardProps) {
-  return <div className={cn(CardVariants({ variant, size }))} {...props} />;
+  return <div className={cn(cardVariants({ variant, size }))} {...props} />;
 }
 Card.displayName = "Card";
 
 function CardHeader({
-  label = "label",
+  labelType = "hot",
+  labelText = "HOT",
   hasMenu = false,
   className,
   children,
   ...props
 }: CardHeaderProps) {
+  const newLabelText =
+    labelType === "hot" || labelType === "new"
+      ? labelType.toUpperCase()
+      : labelText;
   return (
     <div
       className={cn(
@@ -70,8 +77,7 @@ function CardHeader({
       )}
       {...props}
     >
-      {/* 임시, Label 컴포넌트 자리 */}
-      <div>{label}</div>
+      <Label variant={labelType}>{newLabelText}</Label>
       {children}
       {hasMenu && <IconMenu />}
     </div>
