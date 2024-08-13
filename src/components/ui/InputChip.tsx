@@ -7,12 +7,11 @@ const inputChipVariants = cva(
   "inline-flex items-center justify-between min-w-[13.813rem] py-2 px-3 h-[2.188rem] text-base font-normal tracking-[-0.01em] leading-[1.216rem] text-gray-dark rounded-lg",
 );
 
-export interface InputChipProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-    VariantProps<typeof inputChipVariants> {
-  percentage?: string;
-  selected?: boolean;
-}
+export type InputChipProps = React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof inputChipVariants> & {
+    percentage?: string;
+    selected?: boolean;
+  };
 
 const InputChip: React.FC<InputChipProps> = ({
   percentage,
