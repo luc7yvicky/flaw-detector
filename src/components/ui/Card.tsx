@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
 import Image from "next/image";
 import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconArrow, IconMenu } from "./Icons";
+import { Label, LabelProps } from "./Label";
 
-export const CardVariants = cva(`flex flex-col border relative`, {
+export const cardVariants = cva(`flex flex-col border relative`, {
   variants: {
     variant: {
       default: "justify-between hover:bg-primary-50",
@@ -15,13 +15,13 @@ export const CardVariants = cva(`flex flex-col border relative`, {
     },
     size: {
       default:
-        "h-[12.5rem] w-[19.375rem] rounded-xl px-5 py-5 border-primary-100",
+        "h-[12.5rem] w-[19.375rem] rounded-xl border-primary-100 px-5 py-5",
       extended:
-        "h-[13.563rem] w-[26.375rem] px-7 py-7 rounded-lg gap-6 border-[#c3c3c3] [&>*:nth-child(2)]:mt-[-1.25rem]",
-      short: "w-[25.875rem] h-[17.188rem] px-7 py-7 rounded-lg gap-6",
-      long: "w-[54.063rem] h-[15.813rem] px-7 py-7 rounded-lg gap-6",
-      main: "w-[39.063rem] h-[24.375rem] px-9 py-9 rounded-[1.25rem]",
-      sub: "h-[24.375rem] w-[19.75rem] px-9 py-9 rounded-[1.25rem]",
+        "h-[13.563rem] w-[26.375rem] gap-6 rounded-lg border-[#c3c3c3] px-7 py-7 [&>*:nth-child(2)]:mt-[-1.25rem]",
+      short: "h-[17.188rem] w-[25.875rem] gap-6 rounded-lg px-7 py-7",
+      long: "h-[15.813rem] w-[54.063rem] gap-6 rounded-lg px-7 py-7",
+      main: "h-[24.375rem] w-[39.063rem] rounded-[1.25rem] px-9 py-9",
+      sub: "h-[24.375rem] w-[19.75rem] rounded-[1.25rem] px-9 py-9",
     },
   },
   defaultVariants: {
@@ -30,38 +30,44 @@ export const CardVariants = cva(`flex flex-col border relative`, {
   },
 });
 
-type CardProps = VariantProps<typeof CardVariants> & {
+export type CardProps = VariantProps<typeof cardVariants> & {
   children?: React.ReactNode;
 };
 
-type CardHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
-  label?: string;
+export type CardHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
+  labelType?: LabelProps["variant"];
+  labelText?: string;
   hasMenu?: boolean;
 };
 
-type CardTitleProps = React.HTMLAttributes<HTMLDivElement> & {
+export type CardTitleProps = React.HTMLAttributes<HTMLDivElement> & {
   size?: "big" | "small" | "xsmall" | "default";
   weight?: "bold" | "default";
   color?: string;
   isSingleLine?: boolean;
 };
 
-type CardContentProps = React.HTMLAttributes<HTMLDivElement> & {
+export type CardContentProps = React.HTMLAttributes<HTMLDivElement> & {
   bgColor?: "white" | "transparent" | "default";
 };
 
 function Card({ variant, size, ...props }: CardProps) {
-  return <div className={cn(CardVariants({ variant, size }))} {...props} />;
+  return <div className={cn(cardVariants({ variant, size }))} {...props} />;
 }
 Card.displayName = "Card";
 
 function CardHeader({
-  label = "label",
+  labelType = "hot",
+  labelText = "HOT",
   hasMenu = false,
   className,
   children,
   ...props
 }: CardHeaderProps) {
+  const newLabelText =
+    labelType === "hot" || labelType === "new"
+      ? labelType.toUpperCase()
+      : labelText;
   return (
     <div
       className={cn(
@@ -71,8 +77,7 @@ function CardHeader({
       )}
       {...props}
     >
-      {/* 임시, Label 컴포넌트 자리 */}
-      <div>{label}</div>
+      <Label variant={labelType}>{newLabelText}</Label>
       {children}
       {hasMenu && <IconMenu />}
     </div>
@@ -199,7 +204,7 @@ function CardCoverImage({
 CardCoverImage.displayName = "CardCoverImage";
 
 // 임시, 껍데기만 개발
-function CardMoreInfoButton({
+function CardLinkButton({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
@@ -215,7 +220,7 @@ function CardMoreInfoButton({
     </div>
   );
 }
-CardMoreInfoButton.displayName = "CardMoreInfoButton";
+CardLinkButton.displayName = "CardLinkButton";
 
 function CardFooter({
   className,
@@ -237,6 +242,6 @@ export {
   CardSubTitle,
   CardContent,
   CardCoverImage,
-  CardMoreInfoButton,
+  CardLinkButton,
   CardFooter,
 };
