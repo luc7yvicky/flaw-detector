@@ -196,7 +196,7 @@ function CardCoverImage({
       layout="fill"
       objectFit="cover"
       objectPosition="center"
-      className={cn("z-[-1] rounded-[1.25rem]", className)}
+      className={cn("-z-10 rounded-[1.25rem]", className)}
       {...props}
     />
   );
