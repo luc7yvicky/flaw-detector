@@ -36,9 +36,8 @@ const labelVariants = cva(
   },
 );
 
-export interface LabelProps
-  extends React.LabelHTMLAttributes<HTMLLabelElement>,
-    VariantProps<typeof labelVariants> {}
+export type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement> &
+  VariantProps<typeof labelVariants> & {};
 
 const Label: React.FC<LabelProps> = ({
   className,
