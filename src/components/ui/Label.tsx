@@ -13,6 +13,10 @@ const labelVariants = cva(
         unselected:
           "px-3 py-2 h-[2.188rem] bg-[#E8E8E8] text-[#ADADAD] font-semibold leading-[1.216rem]",
 
+        // 취약점 DB - grid label
+        index:
+          "px-[0.5rem] py-[0.75rem] h-[2.625rem] bg-white font-normal border border-gray-dark leading-[1.627rem] rounded-full",
+
         // MY 저장소 - UI 스크랩
         clipping:
           "px-3 py-2 h-[2.188rem] bg-bggray-light text-gray-default font-semibold leading-[1.216rem]",
