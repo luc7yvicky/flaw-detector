@@ -32,7 +32,7 @@ const getOptions = (type: string): Option[] => {
   }
 };
 
-export default function Dropdown({ type }: DropdownProps) {
+export default function Dropdown({ type, className, ...props }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const options = getOptions(type);
@@ -43,7 +43,13 @@ export default function Dropdown({ type }: DropdownProps) {
   };
 
   return (
-    <div className="relative flex w-[6.25rem] cursor-pointer flex-col gap-y-2">
+    <div
+      className={cn(
+        "relative flex w-[6.25rem] cursor-pointer flex-col gap-y-2",
+        className,
+      )}
+      {...props}
+    >
       <button
         className={cn(
           "inline-flex h-[2.75rem] w-full items-center justify-between rounded-lg border border-gray-default px-[0.813rem] py-[0.625rem] text-xl text-gray-dark",
@@ -86,3 +92,4 @@ export default function Dropdown({ type }: DropdownProps) {
     </div>
   );
 }
+Dropdown.displayName = "Dropdown";
