@@ -59,6 +59,7 @@ const config: Config = {
         line: {
           default: "#C3C3C3",
           light: "#E6E6E6",
+          dark: "#ADADAD",
         },
       },
     },
