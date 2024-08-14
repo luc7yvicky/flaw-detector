@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import * as React from "react";
+import { useEffect, useState } from "react";
 
 export type RankingProps = React.HTMLAttributes<HTMLUListElement> & {};
 
@@ -23,11 +23,13 @@ export const Ranking: React.FC<RankingProps> = ({
   children,
   ...props
 }) => {
-  const [highlightedTopic, setHighlightedTopic] = React.useState<number>(0);
+  const [highlightedTopic, setHighlightedTopic] = useState<number>(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const intervalId = setInterval(() => {
-      setHighlightedTopic((prevIndex) => (prevIndex + 1) % topics.length);
+      setHighlightedTopic(
+        (prevIndex: number) => (prevIndex + 1) % topics.length,
+      );
     }, 5000); // 5초마다 highlightedTopic 변경 (임시)
 
     return () => clearInterval(intervalId);
