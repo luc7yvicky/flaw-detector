@@ -20,7 +20,7 @@ const cardVariants = cva("relative flex flex-col", {
       extended:
         "h-[13.563rem] w-[26.375rem] gap-6 rounded-lg border-[#c3c3c3] px-7 py-7 [&>*:nth-child(2)]:mt-[-1.25rem]",
       short: "h-[17.188rem] w-[25.875rem] gap-6 rounded-lg px-7 py-7",
-      long: "h-[15.813rem] w-[54.063rem] gap-6 rounded-lg px-7 py-7",
+      long: "h-[16.125rem] w-[54.063rem] gap-6 rounded-lg px-7 py-7",
       main: "h-[24.375rem] w-[39.063rem] rounded-[1.25rem] px-9 py-9",
       sub: "h-[24.375rem] w-[19.75rem] rounded-[1.25rem] px-9 py-9",
       service: "h-[28.829rem] w-[21.208rem] rounded-[2.5rem]",
