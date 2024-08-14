@@ -147,7 +147,7 @@ function CardSubTitle({
       className={cn(
         "flex items-center",
         textColor,
-        size === "small" ? "text-xs" : "text-base",
+        size === "big" ? "text-xl" : size === "small" ? "text-xs" : "text-base",
         isSingleLine && "basis-full",
         className,
       )}
@@ -196,7 +196,7 @@ function CardCoverImage({
       layout="fill"
       objectFit="cover"
       objectPosition="center"
-      className={cn("z-[-1] rounded-[1.25rem]", className)}
+      className={cn("-z-10 rounded-[1.25rem]", className)}
       {...props}
     />
   );
