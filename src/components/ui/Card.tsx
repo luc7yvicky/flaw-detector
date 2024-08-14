@@ -246,12 +246,12 @@ CardFooter.displayName = "CardFooter";
 
 export {
   Card,
+  CardCoverImage,
   CardHeader,
   CardTitleWrapper,
   CardTitle,
   CardSubTitle,
   CardContent,
-  CardCoverImage,
   CardLinkButton,
   CardFooter,
 };
