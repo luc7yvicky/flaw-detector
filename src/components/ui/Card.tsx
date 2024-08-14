@@ -147,7 +147,7 @@ function CardSubTitle({
       className={cn(
         "flex items-center",
         textColor,
-        size === "small" ? "text-xs" : "text-base",
+        size === "big" ? "text-xl" : size === "small" ? "text-xs" : "text-base",
         isSingleLine && "basis-full",
         className,
       )}

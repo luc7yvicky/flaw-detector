@@ -30,6 +30,7 @@
   "rules": {
     "no-unused-vars": "warn",
     "no-unreachable": "warn",
+    "no-undef": "off",
     "strict": ["error", "global"],
     "react/jsx-uses-react": "off",
     "react/react-in-jsx-scope": "off",
