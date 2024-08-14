@@ -18,11 +18,7 @@ const topics = [
   "클린 코어",
 ];
 
-export const Ranking: React.FC<RankingProps> = ({
-  className,
-  children,
-  ...props
-}) => {
+export const Ranking: React.FC<RankingProps> = ({ className, ...props }) => {
   const [highlightedTopic, setHighlightedTopic] = useState<number>(0);
 
   useEffect(() => {
@@ -38,7 +34,7 @@ export const Ranking: React.FC<RankingProps> = ({
   return (
     <ul
       className={cn(
-        "border-line-default h-[36.25rem] w-[23.625rem] rounded-lg border px-9 py-5",
+        "h-[36.25rem] w-[21.625rem] rounded-lg border border-line-default p-5",
         className,
       )}
       {...props}
@@ -47,7 +43,7 @@ export const Ranking: React.FC<RankingProps> = ({
         <li
           key={index}
           className={cn(
-            "border-b border-line-light py-4 text-lg font-medium leading-[21.78px] tracking-[-0.01em]",
+            "border-b border-line-light py-4 pl-1 text-lg font-medium leading-[21.78px] tracking-[-0.01em]",
             index === topics.length - 1 && "border-none",
             index === highlightedTopic && "text-primary-500",
           )}
