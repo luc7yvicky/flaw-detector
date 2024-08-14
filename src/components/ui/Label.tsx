@@ -32,6 +32,10 @@ const labelVariants = cva(
         // MY 저장소 - UI 검출된 파일
         "outline-primary":
           "px-[0.75rem] py-[0.438rem] h-[1.875rem] bg-purple-light text-primary-500 font-normal border border-primary-300 leading-4",
+
+        // Landing
+        service:
+          "py-2 px-3 h-[2.875rem] font-medium border text-xl leading-[1.875rem] tracking-[-0.011em]",
       },
     },
     defaultVariants: {
@@ -42,6 +46,11 @@ const labelVariants = cva(
 
 export type LabelProps = React.LabelHTMLAttributes<HTMLLabelElement> &
   VariantProps<typeof labelVariants> & {};
+
+export type ServiceLabelProps = React.LabelHTMLAttributes<HTMLLabelElement> &
+  VariantProps<typeof labelVariants> & {
+    color: "pink" | "green" | "purple" | "blue" | "yellow" | "red";
+  };
 
 const Label: React.FC<LabelProps> = ({
   className,
@@ -58,4 +67,39 @@ const Label: React.FC<LabelProps> = ({
 
 Label.displayName = "Label";
 
-export { Label };
+const ServiceLabel: React.FC<ServiceLabelProps> = ({
+  className,
+  variant = "service",
+  color,
+  children,
+  ...props
+}) => {
+  let labelColor = "";
+
+  if (color === "pink") {
+    labelColor = "text-[#FF81A7] bg-[#FFF2F7] border-[#FF81A7]";
+  } else if (color === "green") {
+    labelColor = "text-[#00987C] bg-[#DDFFF3] border-[#00987C]";
+  } else if (color === "purple") {
+    labelColor = "text-[#A54CFF] bg-[#F5E4FF] border-[#A54CFF]";
+  } else if (color === "blue") {
+    labelColor = "text-[#4C93FF] bg-[#E4F2FF] border-[#4C93FF]";
+  } else if (color === "yellow") {
+    labelColor = "text-[#FF8A00] bg-[#FFFBE4] border-[#FF8A00]";
+  } else if (color === "red") {
+    labelColor = "text-[#FF3D00] bg-[#FFEAE4] border-[#FF3D00]";
+  }
+
+  return (
+    <span
+      className={cn(labelVariants({ variant, className }), labelColor)}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+};
+
+ServiceLabel.displayName = "ServiceLabel";
+
+export { Label, ServiceLabel };
