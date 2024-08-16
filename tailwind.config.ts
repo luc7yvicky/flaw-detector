@@ -38,6 +38,7 @@ const config: Config = {
         gray: {
           default: "#969696",
           dark: "#3F3F3F",
+          light: "#D6D6D6",
         },
         bggray: {
           light: "#F1F1F1",
