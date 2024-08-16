@@ -355,8 +355,9 @@ export function IconCircle({
       <circle cx="11" cy="11" r="11" />
     </svg>
   );
-  
-  export function IconMagnifierWithPlus({
+}
+
+export function IconMagnifierWithPlus({
   className,
   ...props
 }: React.ComponentProps<"svg">) {
