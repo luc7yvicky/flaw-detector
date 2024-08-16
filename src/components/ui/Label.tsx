@@ -33,6 +33,10 @@ const labelVariants = cva(
         "outline-primary":
           "px-[0.75rem] py-[0.438rem] h-[1.875rem] bg-purple-light text-primary-500 font-normal border border-primary-300 leading-4",
 
+        // MY 저장소 - InfoBox 위치 찾기
+        location:
+          "px-[0.5rem] py-[0.313rem] max-h-[1.813rem] border-2 border-primary-500 font-semibold tracking-[-0.011em] text-primary-500",
+
         // Landing
         service:
           "py-2 px-3 h-[2.875rem] font-medium border text-xl leading-[1.875rem] tracking-[-0.011em]",
