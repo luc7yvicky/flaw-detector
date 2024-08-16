@@ -50,9 +50,10 @@ const cardContentVariants = cva("", {
   },
 });
 
-export type CardProps = VariantProps<typeof cardVariants> & {
-  children?: React.ReactNode;
-};
+export type CardProps = React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof cardVariants> & {
+    children?: React.ReactNode;
+  };
 
 export type CardHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
   hasMenu?: boolean;
@@ -68,8 +69,13 @@ export type CardTitleProps = React.HTMLAttributes<HTMLDivElement> & {
 export type CardContentProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof cardContentVariants>;
 
-function Card({ variant, size, ...props }: CardProps) {
-  return <div className={cn(cardVariants({ variant, size }))} {...props} />;
+function Card({ variant, size, className, ...props }: CardProps) {
+  return (
+    <div
+      className={cn(cardVariants({ variant, size }), className)}
+      {...props}
+    />
+  );
 }
 Card.displayName = "Card";
 
