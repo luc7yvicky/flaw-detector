@@ -1,11 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import Dropdown from "@/components/ui/Dropdown";
-import Repo from "@/components/analyze/Repo";
-import { useEffect, useState } from "react";
-import { IconCaretLeft } from "@/components/ui/Icons";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import Repo from "@/components/analyze/Repo";
+import Dropdown from "@/components/ui/Dropdown";
+import { IconCaretLeft } from "@/components/ui/Icons";
 
 const ITEMS_PER_PAGE = 12;
 const dummyRepos = [
@@ -40,7 +40,7 @@ export default function Repos() {
 
   return (
     <>
-      <h1 className="flex-col-center-center gap-y-5 text-[3.75rem] leading-[1.2] -tracking-[0.01em] text-primary-500">
+      <h1 className="flex-col-center-center mt-[3.5rem] gap-y-5 text-[3.75rem] leading-[1.2] -tracking-[0.01em] text-primary-500">
         <span className="font-light">containing code files</span>
         <span className="rounded-full border-[0.25rem] border-primary-500 px-10 py-[1.156rem] leading-[1.1]">
           My Library
