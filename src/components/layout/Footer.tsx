@@ -1,7 +1,66 @@
+import Image from "next/image";
+import Link from "next/link";
+
 export default function Footer() {
   return (
-    <>
-      <footer className="h-[324px] bg-purple-light px-[80px]">Footer</footer>
-    </>
+    <footer className="h-[20.25rem] w-full bg-purple-light">
+      <div className="mx-auto max-w-[120rem] px-20 pb-[3.313rem] pt-[3.75rem]">
+        <Image
+          src="/images/footerLogo.png"
+          alt="SFAC SPACE Logo"
+          width={120}
+          height={55}
+        />
+        <div className="flex-between-end mt-[2.375rem]">
+          <section className="h-[7.375rem]">
+            <h4 className="mb-2 text-xl font-semibold leading-[1.875rem] tracking-[-0.011em] text-gray-dark">
+              CONTACT
+            </h4>
+            <ul className="flex-between-center gap-10 text-base font-medium leading-6 tracking-[-0.011em]">
+              <div className="flex-col-start-center gap-1">
+                <div className="flex gap-[1.625rem]">
+                  <li className="text-gray-default">(주)스팩스페이스</li>
+                  <li>
+                    <span className="mr-3 text-gray-default">대표자</span>
+                    <span>염민호</span>
+                  </li>
+                </div>
+                <li>서울 강서구 마곡중앙2로 11, 3층 303호</li>
+                <li>
+                  <span className="mr-6 text-gray-default">Email</span>
+                  <span>admin@sfacspace.com</span>
+                </li>
+              </div>
+              <div className="flex-col-start-center gap-1">
+                <li>
+                  <span className="mr-2 text-gray-default">사업자등록번호</span>
+                  <span>450-87-01864</span>
+                </li>
+                <li>
+                  <span className="mr-[0.875rem] text-gray-default">
+                    대표전화
+                  </span>
+                  <span>02-6217-1119</span>
+                </li>
+                <li>
+                  <span className="mr-[1.875rem] text-gray-default">팩스</span>
+                  <span>02-6217-1115</span>
+                </li>
+              </div>
+            </ul>
+          </section>
+
+          <div className="h-[4.125rem]">
+            <div className="flex gap-8 text-base font-medium leading-6 tracking-[-0.011em] text-gray-default underline underline-offset-2">
+              <Link href={"/doc/terms-of-service"}>서비스이용약관</Link>
+              <Link href={"/doc/privacy-policy"}>개인정보처리방침</Link>
+            </div>
+            <p className="mt-4 text-right text-base font-medium leading-[1.125rem] text-gray-dark">
+              ©Spacspace.All right reserved.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 }
