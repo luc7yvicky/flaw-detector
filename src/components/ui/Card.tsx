@@ -4,14 +4,15 @@ import Image from "next/image";
 import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconArrow, IconMenu } from "./Icons";
-import { Label, LabelProps } from "./Label";
 
-export const cardVariants = cva(`flex flex-col border relative`, {
+const cardVariants = cva("relative flex flex-col", {
   variants: {
     variant: {
-      default: "justify-between hover:bg-primary-50",
-      article: "justify-between border-[#c3c3c3]",
-      image: "justify-end border-0 hover:bg-opacity-70",
+      default: "justify-between border hover:bg-primary-50",
+      article: "justify-between border border-[#c3c3c3]",
+      image: "justify-end hover:bg-opacity-70",
+      service:
+        "justify-center items-center shadow-[0_5rem_3.75rem_-2.5rem_rgba(0,0,0,0.25)]",
     },
     size: {
       default:
@@ -19,9 +20,10 @@ export const cardVariants = cva(`flex flex-col border relative`, {
       extended:
         "h-[13.563rem] w-[26.375rem] gap-6 rounded-lg border-[#c3c3c3] px-7 py-7 [&>*:nth-child(2)]:mt-[-1.25rem]",
       short: "h-[17.188rem] w-[25.875rem] gap-6 rounded-lg px-7 py-7",
-      long: "h-[15.813rem] w-[54.063rem] gap-6 rounded-lg px-7 py-7",
+      long: "h-[16.125rem] w-[54.063rem] gap-6 rounded-lg px-7 py-7",
       main: "h-[24.375rem] w-[39.063rem] rounded-[1.25rem] px-9 py-9",
       sub: "h-[24.375rem] w-[19.75rem] rounded-[1.25rem] px-9 py-9",
+      service: "h-[28.829rem] w-[21.208rem] rounded-[2.5rem]",
     },
   },
   defaultVariants: {
@@ -30,13 +32,30 @@ export const cardVariants = cva(`flex flex-col border relative`, {
   },
 });
 
-export type CardProps = VariantProps<typeof cardVariants> & {
-  children?: React.ReactNode;
-};
+const cardContentVariants = cva("", {
+  variants: {
+    variant: {
+      default: "h-[3.688rem] w-full rounded-2xl px-5 py-5",
+      emoji: "flex-center-center mb-[2.344rem] mt-[1.694rem] h-fit w-full",
+    },
+    bgColor: {
+      default: "bg-bggray-light",
+      white: "bg-white",
+      transparent: "bg-transparent",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+    bgColor: "default",
+  },
+});
+
+export type CardProps = React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof cardVariants> & {
+    children?: React.ReactNode;
+  };
 
 export type CardHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
-  labelType?: LabelProps["variant"];
-  labelText?: string;
   hasMenu?: boolean;
 };
 
@@ -47,27 +66,25 @@ export type CardTitleProps = React.HTMLAttributes<HTMLDivElement> & {
   isSingleLine?: boolean;
 };
 
-export type CardContentProps = React.HTMLAttributes<HTMLDivElement> & {
-  bgColor?: "white" | "transparent" | "default";
-};
+export type CardContentProps = React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof cardContentVariants>;
 
-function Card({ variant, size, ...props }: CardProps) {
-  return <div className={cn(cardVariants({ variant, size }))} {...props} />;
+function Card({ variant, size, className, ...props }: CardProps) {
+  return (
+    <div
+      className={cn(cardVariants({ variant, size }), className)}
+      {...props}
+    />
+  );
 }
 Card.displayName = "Card";
 
 function CardHeader({
-  labelType = "hot",
-  labelText = "HOT",
   hasMenu = false,
   className,
   children,
   ...props
 }: CardHeaderProps) {
-  const newLabelText =
-    labelType === "hot" || labelType === "new"
-      ? labelType.toUpperCase()
-      : labelText;
   return (
     <div
       className={cn(
@@ -77,7 +94,6 @@ function CardHeader({
       )}
       {...props}
     >
-      <Label variant={labelType}>{newLabelText}</Label>
       {children}
       {hasMenu && <IconMenu />}
     </div>
@@ -109,12 +125,11 @@ function CardTitle({
   children,
   ...props
 }: CardTitleProps) {
-  const textColor = color ? `text-${color}` : "text-gray-dark";
+  const textColor = color ? { color } : { color: "text-gray-dark" };
   return (
     <p
       className={cn(
         "line-clamp-2 text-ellipsis",
-        textColor,
         size === "big"
           ? "text-[1.75rem] leading-[2.45rem]"
           : size === "small"
@@ -125,6 +140,7 @@ function CardTitle({
         weight === "bold" ? "font-semibold" : "font-medium",
         className,
       )}
+      style={textColor}
       {...props}
     >
       {children}
@@ -141,16 +157,16 @@ function CardSubTitle({
   children,
   ...props
 }: CardTitleProps) {
-  const textColor = color ? `text-${color}` : "text-gray-default";
+  const textColor = color ? { color } : { color: "text-gray-default" };
   return (
     <span
       className={cn(
-        "flex items-center",
-        textColor,
+        "flex items-center text-gray-default",
         size === "big" ? "text-xl" : size === "small" ? "text-xs" : "text-base",
         isSingleLine && "basis-full",
         className,
       )}
+      style={textColor}
       {...props}
     >
       {children}
@@ -160,6 +176,7 @@ function CardSubTitle({
 CardSubTitle.displayName = "CardSubTitle";
 
 function CardContent({
+  variant,
   bgColor,
   className,
   children,
@@ -167,19 +184,14 @@ function CardContent({
 }: CardContentProps) {
   return (
     <div
-      className={cn(
-        "h-[3.688rem] w-full rounded-2xl px-5 py-5",
-        bgColor === "white"
-          ? "bg-white"
-          : bgColor === "transparent"
-            ? "bg-transparent"
-            : "bg-bggray-light",
-        className,
-      )}
+      className={cn(cardContentVariants({ variant, bgColor }), className)}
+      {...props}
     >
-      <p className="text-base leading-[1.21rem]" {...props}>
-        {children}
-      </p>
+      {variant === "default" ? (
+        <p className="text-base leading-[1.21rem]">{children}</p>
+      ) : (
+        <>{children}</>
+      )}
     </div>
   );
 }
@@ -187,15 +199,18 @@ CardContent.displayName = "CardContent";
 
 function CardCoverImage({
   src,
+  alt,
   className,
   ...props
 }: React.ComponentProps<typeof Image>) {
   return (
     <Image
       src={src}
-      layout="fill"
-      objectFit="cover"
-      objectPosition="center"
+      alt={alt}
+      fill
+      priority
+      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      style={{ objectFit: "cover", objectPosition: "center" }}
       className={cn("-z-10 rounded-[1.25rem]", className)}
       {...props}
     />
@@ -233,15 +248,16 @@ function CardFooter({
     </div>
   );
 }
+CardFooter.displayName = "CardFooter";
 
 export {
   Card,
+  CardCoverImage,
   CardHeader,
   CardTitleWrapper,
   CardTitle,
   CardSubTitle,
   CardContent,
-  CardCoverImage,
   CardLinkButton,
   CardFooter,
 };
