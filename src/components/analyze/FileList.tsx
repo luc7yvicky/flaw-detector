@@ -33,10 +33,10 @@ export default function FileList() {
 
   return (
     <>
-      <ul className="block max-w-[247px] rounded-[12px] border border-line-light text-gray-dark">
+      <ul className="border-line-default block max-w-[247px] rounded-[12px] border text-gray-dark">
         {/* <FileListItem type="folder" name="src" />
         <FileListItem type="file" name="page.tsx" /> */}
-        <li className="px-3 py-2">
+        <li className="bg-primary-50 px-3 py-2">
           <label className="flex items-center">
             <input
               type="checkbox"

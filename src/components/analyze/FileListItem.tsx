@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { IconDoc, IconDone, IconError, IconFolder, IconOnProcess, IconOnWait } from "../ui/Icons";
+import {
+  IconDoc,
+  IconDone,
+  IconError,
+  IconFolder,
+  IconOnProcess,
+  IconOnWait,
+} from "../ui/Icons";
 
 interface FileListItemProps {
   id: string;
@@ -33,7 +40,7 @@ export default function FileListItem({
         setStatusIcon(<IconOnProcess />);
         break;
       case "onWait":
-        setStatusIcon(<IconOnWait color="fill-gray-default"/>);
+        setStatusIcon(<IconOnWait color="fill-gray-default" />);
         break;
       case "error":
         setStatusIcon(<IconError />);
@@ -45,7 +52,7 @@ export default function FileListItem({
 
   return (
     <li
-      className="border-line-light -mt-[1px] flex cursor-pointer border-t px-3 py-2"
+      className="-mt-[1px] flex cursor-pointer border-t border-line-default px-3 py-2 hover:bg-purple-light"
       onClick={handleItemClick}
     >
       <div
