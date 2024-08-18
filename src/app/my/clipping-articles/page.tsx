@@ -158,9 +158,13 @@ export default function ClippingArticles() {
   const [clippingArticles, setClippingArticles] = useState<any[]>([]);
 
   useEffect(() => {
-    setClippingArticles(
-      dummyclippingArticles.slice(0, currPage * ITEMS_PER_PAGE),
-    );
+    const timer = setTimeout(() => {
+      setClippingArticles(
+        dummyclippingArticles.slice(0, currPage * ITEMS_PER_PAGE),
+      );
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [currPage]);
 
   return (
