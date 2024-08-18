@@ -175,7 +175,7 @@ export default function ClippingArticles() {
         </span>
       </h1>
 
-      <section className="flex flex-col gap-y-12">
+      <section className="flex flex-col gap-y-12 last:gap-y-[7.75rem]">
         <div className="inline-flex h-11 items-center justify-between">
           <h2 className="text-[2rem] font-medium -tracking-[0.01em] text-gray-dark">
             Library
