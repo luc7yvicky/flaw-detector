@@ -61,7 +61,7 @@ export type CardHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
 
 export type CardTitleProps = React.HTMLAttributes<HTMLDivElement> & {
   size?: "big" | "small" | "xsmall" | "default";
-  weight?: "bold" | "default";
+  weight?: "bold" | "default" | "normal";
   color?: string;
   isSingleLine?: boolean;
 };
@@ -125,7 +125,7 @@ function CardTitle({
   children,
   ...props
 }: CardTitleProps) {
-  const textColor = color ? { color } : { color: "text-gray-dark" };
+  const textColor = color ? { color } : { color: "#3F3F3F" };
   return (
     <p
       className={cn(
@@ -137,7 +137,11 @@ function CardTitle({
             : size === "xsmall"
               ? "text-lg leading-[1.361rem]"
               : "text-2xl leading-9",
-        weight === "bold" ? "font-semibold" : "font-medium",
+        weight === "bold"
+          ? "font-semibold"
+          : weight === "normal"
+            ? "font-normal"
+            : "font-medium",
         className,
       )}
       style={textColor}
