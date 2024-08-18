@@ -155,13 +155,11 @@ const dummyclippingArticles = [
 
 export default function ClippingArticles() {
   const [currPage, setCurrPage] = useState<number>(1);
-  const [clippingArticles, setClippingArticles] = useState<any[]>([]);
+  const [articles, setArticles] = useState<any[]>([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setClippingArticles(
-        dummyclippingArticles.slice(0, currPage * ITEMS_PER_PAGE),
-      );
+      setArticles(dummyclippingArticles.slice(0, currPage * ITEMS_PER_PAGE));
     }, 500);
 
     return () => clearTimeout(timer);
@@ -187,9 +185,10 @@ export default function ClippingArticles() {
         </div>
 
         <div className="flex-between-center relative grid grid-cols-3 gap-x-6 gap-y-12">
-          {clippingArticles.map((article, index) => (
-            <ClippingArticle key={index} {...article} />
-          ))}
+          {articles &&
+            articles.map((article, index) => (
+              <ClippingArticle key={index} {...article} />
+            ))}
         </div>
 
         {dummyclippingArticles.length > currPage * ITEMS_PER_PAGE && (
