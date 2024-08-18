@@ -41,7 +41,7 @@ export default function AiAnalyze() {
           </Status>
           <FileList />
         </div>
-        <div className="flex gap-7 md:flex-col lg:flex-row">
+        <div className="flex gap-7 flex-col lg:flex-row mb-7">
           <CodeViewer type="asIs" />
           <CodeViewer type="toBe" />
         </div>
