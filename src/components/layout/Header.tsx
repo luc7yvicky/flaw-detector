@@ -15,7 +15,7 @@ export default function Header() {
             <Link href={"/vulnerability-db"}>취약점 DB</Link>
           </li>
           <li>
-            <Link href={"/repos"}>MY 저장소</Link>
+            <Link href={"/my/repos"}>MY 저장소</Link>
           </li>
         </ul>
       </header>

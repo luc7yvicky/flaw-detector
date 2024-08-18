@@ -45,14 +45,14 @@ export default function Dropdown({ type, className, ...props }: DropdownProps) {
   return (
     <div
       className={cn(
-        "relative flex w-[6.25rem] cursor-pointer flex-col gap-y-2",
+        "relative flex w-[5.563rem] cursor-pointer flex-col",
         className,
       )}
       {...props}
     >
       <button
         className={cn(
-          "inline-flex h-[2.75rem] w-full items-center justify-between rounded-lg border border-gray-default px-[0.813rem] py-[0.625rem] text-xl text-gray-dark",
+          "inline-flex h-[2.75rem] w-full items-center justify-between rounded-lg border border-gray-default px-[0.625rem] py-[0.625rem] text-xl text-gray-dark outline-0",
         )}
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -62,7 +62,7 @@ export default function Dropdown({ type, className, ...props }: DropdownProps) {
       {isOpen && (
         <ul
           className={cn(
-            "z-10 w-full overflow-hidden rounded-lg bg-white shadow-[0_0.125rem_1rem_0_rgba(0,0,0,0.25)]",
+            "absolute top-[3.25rem] z-10 w-full overflow-hidden rounded-lg bg-white shadow-[0_0.125rem_1rem_0_rgba(0,0,0,0.25)]",
           )}
           role="menu"
         >
@@ -71,11 +71,11 @@ export default function Dropdown({ type, className, ...props }: DropdownProps) {
               <li
                 key={id}
                 className={cn(
-                  "flex-center-center h-[2.438rem] w-full bg-white px-[0.719rem] py-[0.469rem] transition-all duration-300 first:rounded-t-lg last:rounded-b-lg",
+                  "flex-center-center h-[2.438rem] w-full bg-white px-[0.6rem] py-[0.469rem] transition-all duration-300 first:rounded-t-lg last:rounded-b-lg",
                   selectedIndex === index
                     ? "cursor-default justify-between bg-purple-dark"
                     : "hover:bg-purple-light",
-                  name.length > 3 && "px-[0.4rem]",
+                  name.length > 3 && "px-[0.1rem]",
                 )}
                 onClick={() => onClickOption(index)}
                 value={value}
