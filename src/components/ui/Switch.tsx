@@ -3,22 +3,12 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 
-const trackStyles = {
-  active: "bg-primary-500 border-4 border-primary-500 justify-end",
-  inactive: "bg-bggray-dark border-4 border-bggray-dark justify-start",
-};
-
-const thumbStyles = {
-  active: "top-0 left-0 bg-white",
-  inactive: "top-0 right-0 bg-purple-light",
-};
-
 function SwitchThumb({ isActive }: { isActive: boolean }) {
   return (
     <div
       className={cn(
         "relative h-6 w-6 rounded-[50%] transition-transform duration-300 active:scale-110 disabled:cursor-not-allowed disabled:bg-primary-200 disabled:bg-opacity-50",
-        isActive ? thumbStyles["active"] : thumbStyles["inactive"],
+        isActive ? "bg-white" : "bg-purple-light",
       )}
     >
       {/* ::after */}
@@ -40,6 +30,11 @@ export default function Switch({
   ...props
 }: React.HTMLAttributes<HTMLButtonElement>) {
   const [isActive, setIsActive] = useState(false);
+
+  const trackStyles = {
+    active: "bg-primary-500 border-4 border-primary-500 justify-end",
+    inactive: "bg-bggray-dark border-4 border-bggray-dark justify-start",
+  };
 
   return (
     <button
