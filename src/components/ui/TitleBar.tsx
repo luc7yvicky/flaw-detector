@@ -1,6 +1,7 @@
 import { useRouter } from "next/navigation";
 import Button from "./Button";
 import { IconArrow } from "./Icons";
+// import { IconCaretLeft } from "./Icons";
 
 type TitleBarProps = {
   title: string;
@@ -17,18 +18,19 @@ export default function TitleBar({ title, backPath }: TitleBarProps) {
     }
   };
   return (
-    <div className="flex-center-left mb-8 flex">
+    <div className="flex-center-left mb-8 flex h-[4.875rem]">
       <Button
         shape="pill"
         variant="outlined"
-        className="flex-center-center size-12"
+        className="flex-center-center size-[4.875rem] border-[0.25rem]"
         onClick={onClickButton}
       >
+        {/* <IconCaretLeft /> */}
         <IconArrow />
       </Button>
-      <h1 className="ml-[1.5rem] text-[2rem] font-bold text-primary-500">
+      <div className="flex-center-start ml-[1.5rem] flex size-full rounded-full border-[0.25rem] border-primary-500 px-[2rem] py-2 text-[2.5rem] text-primary-500">
         {title}
-      </h1>
+      </div>
     </div>
   );
 }
