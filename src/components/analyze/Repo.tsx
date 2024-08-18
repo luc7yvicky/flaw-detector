@@ -10,12 +10,9 @@ import { Label } from "../ui/Label";
 export type RepoInfo = {
   id: string;
   label: string;
-  labelStatus: string;
   repositoryName: string;
   caption: string;
   createdAt: string;
-  detectedAt: string;
-  filename: string;
 };
 
 export default function Repo({ id, label, repositoryName, caption }: RepoInfo) {
