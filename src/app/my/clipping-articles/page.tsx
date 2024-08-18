@@ -184,7 +184,7 @@ export default function ClippingArticles() {
           </div>
         </div>
 
-        <div className="flex-between-center relative grid grid-cols-3 gap-x-6 gap-y-12">
+        <div className="flex-between-center relative grid grid-cols-3 gap-x-6 gap-y-6">
           {articles &&
             articles.map((article, index) => (
               <ClippingArticle key={index} {...article} />
