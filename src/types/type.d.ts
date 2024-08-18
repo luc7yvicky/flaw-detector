@@ -3,6 +3,11 @@ export type ArticleDetailProps = {
   content: string;
   createdAt: string;
   showLabel?: boolean;
-  labelVariant?: "hot" | "new";
+  labelVariant?:
+    | "hot"
+    | "new"
+    | "clipping"
+    | "clipping-notify"
+    | "clipping-warning";
   labelText?: string;
 };
