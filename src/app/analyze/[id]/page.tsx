@@ -12,7 +12,7 @@ import { InputChip } from "@/components/ui/InputChip";
 import ProgressBar from "@/components/ui/ProgressBar";
 import TitleBar from "@/components/ui/TitleBar";
 
-export default function AiAnalyze() {
+export default function Analyze() {
   const counts = {
     error: 8,
     warning: 12,
@@ -20,11 +20,11 @@ export default function AiAnalyze() {
   };
 
   return (
-    <section className="px-[1rem] mx-auto w-full max-w-[110rem]">
+    <section className="mx-auto w-full max-w-[110rem] px-[1rem]">
       <TitleBar title="sfacweb-01" />
       <div className="grid grid-cols-[16rem_1fr] gap-7">
         <Button>선택한 파일 검사</Button>
-        <div className="border-line-default rounded-lg border p-5">
+        <div className="rounded-lg border border-line-default p-5">
           <ProgressBar value={0.7} className="mb-5" />
           <div className="flex gap-7">
             <InputChip selected percentage="75%">
@@ -41,7 +41,7 @@ export default function AiAnalyze() {
           </Status>
           <FileList />
         </div>
-        <div className="flex gap-7 flex-col lg:flex-row mb-7">
+        <div className="mb-7 flex flex-col gap-7 lg:flex-row">
           <CodeViewer type="asIs" />
           <CodeViewer type="toBe" />
         </div>

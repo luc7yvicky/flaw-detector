@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import Repo from "@/components/analyze/Repo";
+import Repo from "@/components/my/Repo";
 import Dropdown from "@/components/ui/Dropdown";
 import { IconCaretLeft } from "@/components/ui/Icons";
 

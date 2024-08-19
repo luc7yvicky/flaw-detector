@@ -1,6 +1,6 @@
 "use client";
 
-import DetectedFile from "@/components/analyze/DetectedFile";
+import DetectedFile from "@/components/my/DetectedFile";
 import Dropdown from "@/components/ui/Dropdown";
 import { IconCaretLeft } from "@/components/ui/Icons";
 import { useEffect, useState } from "react";
@@ -24,7 +24,7 @@ const dummyDetectedFiles = [
 
 export default function DetectedFiles() {
   const [currPage, setCurrPage] = useState<number>(1);
-  const [lastPageIndex, setLastPageIndex] = useState<number>(
+  const [lastPageIndex] = useState<number>(
     Math.ceil(dummyDetectedFiles.length / ITEMS_PER_PAGE),
   );
   const [detectedFiles, setDetectedFiles] = useState<any[]>([]);

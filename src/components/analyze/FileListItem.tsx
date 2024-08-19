@@ -17,7 +17,7 @@ interface FileListItemProps {
   onSelect: () => void;
 }
 export default function FileListItem({
-  id,
+  // id,
   type,
   name,
   status,
