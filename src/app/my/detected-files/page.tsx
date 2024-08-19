@@ -24,7 +24,6 @@ const dummyDetectedFiles = [
 
 export default function DetectedFiles() {
   const [currPage, setCurrPage] = useState<number>(1);
-  // 임시
   const [lastPageIndex, setLastPageIndex] = useState<number>(
     Math.ceil(dummyDetectedFiles.length / ITEMS_PER_PAGE),
   );
