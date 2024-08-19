@@ -35,9 +35,32 @@ const config: Config = {
         red: {
           light: "#FFEFEF",
         },
+        gray: {
+          default: "#969696",
+          dark: "#3F3F3F",
+          light: "#D6D6D6",
+        },
         bggray: {
           light: "#F1F1F1",
           dark: "#C2C2C2",
+        },
+        neutral: {
+          100: "#030303",
+          90: "#1A1A1A",
+          80: "#333333",
+          70: "#4D4D4D",
+          60: "#4D4D4D",
+          50: "#808080",
+          40: "#999999",
+          30: "#B3B3B3",
+          20: "#CCCCCC",
+          10: "#E6E6E6",
+          5: "#F3F3F3",
+        },
+        line: {
+          default: "#C3C3C3",
+          light: "#E6E6E6",
+          dark: "#ADADAD",
         },
       },
     },
