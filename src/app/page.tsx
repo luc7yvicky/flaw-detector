@@ -1,7 +1,9 @@
+import Section1 from "@/components/landing/Section1";
+
 export default function LandingPage() {
   return (
     <>
-      <h1>LandingPage</h1>
+      <Section1 />
     </>
   );
 }

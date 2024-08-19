@@ -18,7 +18,7 @@ export default function ProgressBar({
   return (
     <div
       className={cn(
-        "h-[0.75rem] w-[87rem] rounded-lg bg-line-light",
+        "h-[0.75rem] w-full rounded-lg bg-line-light",
         className,
       )}
       {...props}
