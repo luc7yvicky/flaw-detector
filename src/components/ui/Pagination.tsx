@@ -6,7 +6,7 @@ export type PaginationProps = {
   totalPages: number;
   startPage: number;
   endPage: number;
-  onChangePage: (page: number) => void;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -14,7 +14,7 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   startPage,
   endPage,
-  onChangePage,
+  setCurrentPage,
 }) => {
   const pages = Array.from(
     { length: endPage - startPage + 1 },
@@ -23,43 +23,39 @@ const Pagination: React.FC<PaginationProps> = ({
 
   return (
     <div className="flex items-center gap-[0.625rem]">
-      {/* 이전 페이지로 이동 */}
-
-      {startPage > 1 && (
+      {/* Render Previous Page button only if there's a previous page */}
+      {currentPage > 1 && (
         <button
-          onClick={() => onChangePage(currentPage > 1 ? currentPage - 1 : 1)}
+          onClick={() => setCurrentPage(currentPage - 1)}
           className="text-center text-[1rem] font-normal leading-6 tracking-[-0.011em] text-gray-dark focus:outline-none"
-          disabled={currentPage === 1}
+          aria-label="Previous Page"
         >
-          <IconCaretLeft className="fill-defualt" />
+          <IconCaretLeft className="fill-default" />
         </button>
       )}
-      {/* 페이지를 클릭했을 때  */}
+      {/* Page Numbers */}
       {pages.map((page) => (
         <button
           key={page}
-          onClick={() => onChangePage(page)}
+          onClick={() => setCurrentPage(page)}
           className={`${
             page === currentPage
               ? "font-semibold text-gray-dark"
               : "text-gray-dark"
           } h-9 w-9 text-center text-[1rem] font-normal leading-6 tracking-[-0.011em] focus:outline-none`}
+          aria-current={page === currentPage ? "page" : undefined}
         >
           {page}
         </button>
       ))}
-      {/* 다음 페이지로 이동*/}
-      {endPage < totalPages && (
+      {/* Render Next Page button only if there's a next page */}
+      {currentPage < totalPages && (
         <button
-          onClick={() =>
-            onChangePage(
-              currentPage < totalPages ? currentPage + 1 : totalPages,
-            )
-          }
+          onClick={() => setCurrentPage(currentPage + 1)}
           className="text-center text-[1rem] font-normal leading-6 tracking-[-0.011em] focus:outline-none"
-          disabled={currentPage === totalPages}
+          aria-label="Next Page"
         >
-          <IconCaretLeft className="fill-defualt rotate-180" />
+          <IconCaretLeft className="fill-default rotate-180" />
         </button>
       )}
     </div>
