@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import ClippingArticle from "@/components/analyze/ClippingArticle";
+import ClippingArticle from "@/components/my/ClippingArticle";
 import Dropdown from "@/components/ui/Dropdown";
 import { IconPlus } from "@/components/ui/Icons";
 
