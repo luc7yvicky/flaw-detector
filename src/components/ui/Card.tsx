@@ -3,7 +3,8 @@
 import Image from "next/image";
 import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { IconArrow, IconMenu } from "./Icons";
+import { IconArrow, IconKebabMenu } from "./Icons";
+import { useState } from "react";
 
 const cardVariants = cva("relative flex flex-col", {
   variants: {
@@ -77,7 +78,6 @@ function Card({ variant, size, className, ...props }: CardProps) {
     />
   );
 }
-Card.displayName = "Card";
 
 function CardHeader({
   hasMenu = false,
@@ -85,21 +85,38 @@ function CardHeader({
   children,
   ...props
 }: CardHeaderProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div
       className={cn(
-        "flex h-fit flex-wrap items-center gap-2",
+        "relative flex h-fit flex-wrap items-center gap-2",
         hasMenu ? "justify-between" : "justify-start",
         className,
       )}
       {...props}
     >
       {children}
-      {hasMenu && <IconMenu />}
+      {hasMenu && <IconKebabMenu onClick={() => setIsOpen(!isOpen)} />}
+      {hasMenu && isOpen && (
+        <ul className="absolute right-0 top-8 z-50 flex cursor-default flex-col rounded-lg bg-white text-xl font-medium leading-7 text-gray-dark shadow-[0_0.25rem_0.75rem_0_rgba(0,0,0,0.08)]">
+          <li
+            className="px-5 py-3 first:rounded-t-lg last:rounded-b-lg hover:bg-purple-light"
+            onClick={() => console.log("삭제")}
+          >
+            삭제
+          </li>
+          <li
+            className="px-5 py-3 first:rounded-t-lg last:rounded-b-lg hover:bg-purple-light"
+            onClick={() => console.log("공유")}
+          >
+            공유
+          </li>
+        </ul>
+      )}
     </div>
   );
 }
-CardHeader.displayName = "CardHeader";
 
 function CardTitleWrapper({
   className,
@@ -115,7 +132,6 @@ function CardTitleWrapper({
     </div>
   );
 }
-CardTitleWrapper.displayName = "CardTitleWrapper";
 
 function CardTitle({
   size = "default",
@@ -126,17 +142,24 @@ function CardTitle({
   ...props
 }: CardTitleProps) {
   const textColor = color ? { color } : { color: "#3F3F3F" };
+  const getTextSize = (size: string) => {
+    switch (size) {
+      case "big":
+        return "text-[1.75rem] leading-[2.45rem]";
+      case "small":
+        return "text-xl leading-[1.513rem]";
+      case "xsmall":
+        return "text-lg leading-[1.361rem]";
+      default:
+        return "text-2xl leading-9";
+    }
+  };
+
   return (
     <p
       className={cn(
-        "line-clamp-2 text-ellipsis",
-        size === "big"
-          ? "text-[1.75rem] leading-[2.45rem]"
-          : size === "small"
-            ? "text-xl leading-[1.513rem]"
-            : size === "xsmall"
-              ? "text-lg leading-[1.361rem]"
-              : "text-2xl leading-9",
+        "line-clamp-2 text-ellipsis tracking-[-0.01em]",
+        getTextSize(size),
         weight === "bold"
           ? "font-semibold"
           : weight === "normal"
@@ -151,7 +174,6 @@ function CardTitle({
     </p>
   );
 }
-CardTitle.displayName = "CardTitle";
 
 function CardSubTitle({
   size = "default",
@@ -165,7 +187,7 @@ function CardSubTitle({
   return (
     <span
       className={cn(
-        "flex items-center text-gray-default",
+        "flex items-center tracking-[-0.01em] text-gray-default",
         size === "big" ? "text-xl" : size === "small" ? "text-xs" : "text-base",
         isSingleLine && "basis-full",
         className,
@@ -177,7 +199,6 @@ function CardSubTitle({
     </span>
   );
 }
-CardSubTitle.displayName = "CardSubTitle";
 
 function CardContent({
   variant,
@@ -199,7 +220,6 @@ function CardContent({
     </div>
   );
 }
-CardContent.displayName = "CardContent";
 
 function CardCoverImage({
   src,
@@ -220,26 +240,26 @@ function CardCoverImage({
     />
   );
 }
-CardCoverImage.displayName = "CardCoverImage";
 
-// 임시, 껍데기만 개발
 function CardLinkButton({
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLAnchorElement>) {
   return (
-    <div
+    <a
       className={cn(
         "flex h-[4.25rem] w-[4.25rem] items-center justify-center rounded-[50%] bg-white opacity-70",
         className,
       )}
       {...props}
     >
-      <IconArrow direction="right" color="fill-black" />
-    </div>
+      <IconArrow
+        direction="right"
+        className="fill-black stroke-black stroke-[0.1rem]"
+      />
+    </a>
   );
 }
-CardLinkButton.displayName = "CardLinkButton";
 
 function CardFooter({
   className,
@@ -252,7 +272,6 @@ function CardFooter({
     </div>
   );
 }
-CardFooter.displayName = "CardFooter";
 
 export {
   Card,
