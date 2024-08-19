@@ -19,11 +19,14 @@ const dummyDetectedFiles = [
   { label: "label", detectedAt: "23.10.10", filename: "file10.txt" },
   { label: "label", detectedAt: "23.10.11", filename: "file11.txt" },
   { label: "label", detectedAt: "23.10.12", filename: "file12.txt" },
+  { label: "label", detectedAt: "23.10.13", filename: "file13.txt" },
 ];
 
 export default function DetectedFiles() {
   const [currPage, setCurrPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(0);
+  const [lastPageIndex, setLastPageIndex] = useState<number>(
+    Math.ceil(dummyDetectedFiles.length / ITEMS_PER_PAGE),
+  );
   const [detectedFiles, setDetectedFiles] = useState<any[]>([]);
 
   useEffect(() => {
@@ -33,6 +36,7 @@ export default function DetectedFiles() {
         currPage * ITEMS_PER_PAGE,
       ),
     );
+    // setLastPageIndex(Math.ceil(dummyDetectedFiles.length / ITEMS_PER_PAGE));
   }, [currPage]);
 
   return (
@@ -55,8 +59,8 @@ export default function DetectedFiles() {
         </div>
 
         <div className="flex-between-center relative grid grid-cols-4 gap-x-6 gap-y-12">
-          {detectedFiles.map((repo, index) => (
-            <DetectedFile key={index} {...repo} />
+          {detectedFiles.map((file, index) => (
+            <DetectedFile key={index} {...file} />
           ))}
 
           {/* 임시, Button */}
@@ -68,11 +72,11 @@ export default function DetectedFiles() {
               <IconCaretLeft className="fill-#343330" />
             </button>
           )}
-          {currPage < totalPages - 1 && (
+          {currPage < lastPageIndex && (
             <button
               className="flex-center-center absolute -right-6 bottom-[47%] h-[3.25rem] w-[3.25rem] rounded-[50%] border border-gray-dark bg-white"
               onClick={() =>
-                setCurrPage((prev) => Math.min(prev + 1, totalPages - 1))
+                setCurrPage((prev) => Math.min(prev + 1, lastPageIndex))
               }
             >
               <IconCaretLeft className="fill-#343330 rotate-180" />
