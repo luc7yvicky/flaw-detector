@@ -9,8 +9,10 @@ import {
 } from "@/components/analyze/Status";
 import Button from "@/components/ui/Button";
 import { InputChip } from "@/components/ui/InputChip";
+import Modal from "@/components/ui/Modal";
 import ProgressBar from "@/components/ui/ProgressBar";
 import TitleBar from "@/components/ui/TitleBar";
+import { useState } from "react";
 
 export default function Analyze() {
   const counts = {
@@ -19,11 +21,28 @@ export default function Analyze() {
     success: 23,
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalVariant, setModalVariant] = useState<"selectFile" | "processing">(
+    "selectFile",
+  );
+  const openModal = (variant: "selectFile" | "processing") => {
+    setModalVariant(variant);
+    setIsOpen(true);
+  };
+
+  const closeModal = () => setIsOpen(false);
+
+  const onProceedProcessing = () => {
+    openModal("processing");
+  };
+
   return (
     <section className="mx-auto w-full max-w-[110rem] px-[1rem]">
       <TitleBar title="sfacweb-01" />
       <div className="grid grid-cols-[16rem_1fr] gap-7">
-        <Button>선택한 파일 검사</Button>
+        <Button onClick={() => openModal("selectFile")}>
+          선택한 파일 검사
+        </Button>
         <div className="rounded-lg border border-line-default p-5">
           <ProgressBar value={0.7} className="mb-5" />
           <div className="flex gap-7">
@@ -46,6 +65,12 @@ export default function Analyze() {
           <CodeViewer type="toBe" />
         </div>
       </div>
+      <Modal
+        variant={modalVariant}
+        isOpen={isOpen}
+        onClose={closeModal}
+        onProceed={onProceedProcessing}
+      />
     </section>
   );
 }
