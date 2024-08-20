@@ -36,4 +36,8 @@
   .flex-col-center-center {
     @apply flex flex-col items-center justify-center;
   }
+
+  .flex-col-end-center {
+    @apply flex flex-col items-end justify-center;
+  }
 }
