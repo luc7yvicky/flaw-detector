@@ -5,7 +5,7 @@ export default function LandingPage() {
   return (
     <>
       <Section1 />
-      <CustomerService />
+      <CustomerService className="my-[6.5rem]" />
     </>
   );
 }
