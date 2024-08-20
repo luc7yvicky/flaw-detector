@@ -3,25 +3,33 @@ import { IconBug, IconRoundedDoc } from "./Icons";
 import Button from "./Button";
 
 type ModalProps = {
-  variant: "selectFile" | "processing" | "login";
+  variant: "selectFile" | "processing" | "login" | "inquirySubmitted";
   isOpen: boolean;
   onClose: () => void;
+  onProceed?: () => void;
 };
 
-export default function Modal({ variant, isOpen, onClose }: ModalProps) {
+export default function Modal({
+  variant,
+  isOpen,
+  onClose,
+  onProceed,
+}: ModalProps) {
   if (!isOpen) return null;
 
   //공통 스타일
-  const baseModalStyles = "relative bg-white rounded-[1.25rem]";
+  const baseModalStyles = "relative bg-white rounded-[1.25rem] ";
 
   //variant별 스타일 적용
   const modalStyles = clsx({
-    "w-[42.875rem] h-[29.875rem] p-[3rem] gap-[2.5rem]":
+    "w-[42.875rem] h-[29.875rem] p-[3rem] gap-[2.5rem] top-[10rem] ":
       variant === "selectFile",
-    "w-[26.688rem] h-[24.063rem] top-[13.188rem] left-[3.5rem] p-[3rem] gap-[3.313rem] ":
+    "w-[26.688rem] h-[24.063rem] top-[10rem] p-[3rem] gap-[3.313rem] ":
       variant === "processing",
-    "w-[21.313rem] h-[13.125rem] top-[15.375rem] left-[3.438rem] p-[2.5rem_3.75rem] gap-[2rem] rounded-[1.25rem] shadow-[0_0_1.55rem_rgba(0,0,0,0.25)]":
+    "w-[21.313rem] h-[13.125rem] top-[15.375rem] p-[2.5rem_3.75rem] gap-[2rem] rounded-[1.25rem] shadow-[0_0_1.55rem_rgba(0,0,0,0.25)]":
       variant === "login",
+    "w-[61.563rem] h-[21.563rem] p-[3.75rem] gap-[3.5rem] rounded-[2.5rem] ":
+      variant === "inquirySubmitted",
   });
 
   //variant별 콘텐츠 렌더링
@@ -68,7 +76,10 @@ export default function Modal({ variant, isOpen, onClose }: ModalProps) {
                 닫기
               </button>
               {/* 임시버튼 */}
-              <button className="h-[3.313rem] w-[8.5rem] gap-[0.625rem] rounded-xl bg-primary-500 p-[0.75rem_1.5rem] text-white">
+              <button
+                className="h-[3.313rem] w-[8.5rem] gap-[0.625rem] rounded-xl bg-primary-500 p-[0.75rem_1.5rem] text-white"
+                onClick={onProceed}
+              >
                 검사하기
               </button>
             </div>
@@ -100,9 +111,27 @@ export default function Modal({ variant, isOpen, onClose }: ModalProps) {
                 자세한 정보를 보고싶다면?
               </h2>
               {/* 임시버튼 */}
-              <button className="h-[4.625rem] w-[7.438rem] rounded-[999px] border-2 border-purple-600 p-[1rem_1.5rem] text-[1.75rem] font-light leading-[2.118rem] tracking-[-0.01em] text-purple-600">
+              <button className="h-[4.625rem] w-[7.438rem] rounded-[999px] border-2 border-primary-500 p-[1rem_1.5rem] text-[1.75rem] font-light leading-[2.118rem] tracking-[-0.01em] text-primary-500">
                 Login
               </button>
+            </div>
+          </>
+        );
+      case "inquirySubmitted":
+        return (
+          <>
+            <div className="flex-col-center-center">
+              <div className="flex-col-center-center h-[7.063rem] w-[41.8rem] gap-[1.438rem]">
+                <h1 className="text-[2.25rem] font-bold leading-[3.375rem] tracking-[-0.01em]">
+                  문의를 보냈어요!
+                </h1>
+                <p className="text-[1.5rem] font-medium leading-[2.25rem] tracking-[-0.011em] text-[#8F8F8F]">
+                  문의를 성공적으로 전송했어요. 빠른 시일 내에 답변해드릴게요.
+                </p>
+              </div>
+              <Button className="mt-14 h-14 w-[20.938rem] gap-[0.625rem] text-[1.25rem] tracking-[-0.011em]">
+                홈으로 가기
+              </Button>
             </div>
           </>
         );
@@ -114,8 +143,10 @@ export default function Modal({ variant, isOpen, onClose }: ModalProps) {
   return (
     <div
       className={clsx("fixed inset-0 z-50 flex items-center justify-center", {
-        "bg-black bg-opacity-50": variant === "processing",
-        "bg-transparent": variant !== "processing",
+        "bg-black bg-opacity-50":
+          variant === "processing" || variant === "inquirySubmitted",
+        "bg-transparent":
+          variant !== "processing" && variant != "inquirySubmitted",
       })}
     >
       <div className={`${baseModalStyles} ${modalStyles}`}>
