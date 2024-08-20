@@ -384,11 +384,16 @@ export function IconPlus({ className, ...props }: React.ComponentProps<"svg">) {
   );
 }
 
-export function IconBug({ className, ...props }: React.ComponentProps<"svg">) {
+export function IconBug({
+  className,
+  width = "191",
+  height = "196",
+  ...props
+}: React.ComponentProps<"svg"> & { width?: string; height?: string }) {
   return (
     <svg
-      width="191"
-      height="196"
+      width={width}
+      height={height}
       viewBox="0 0 191 196"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
