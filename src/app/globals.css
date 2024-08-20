@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  hr {
+    @apply h-[0.063rem] w-full border-0 bg-[#BABABA];
+  }
+}
+
 @layer components {
   .flex-center-center {
     @apply flex items-center justify-center;

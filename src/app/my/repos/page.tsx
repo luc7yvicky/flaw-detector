@@ -1,31 +1,56 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import Repo from "@/components/my/Repo";
+import Button from "@/components/ui/Button";
 import Dropdown from "@/components/ui/Dropdown";
 import { IconCaretLeft } from "@/components/ui/Icons";
+import Profile from "@/components/my/Profile";
+import Repo from "@/components/my/Repo";
+import TitleBar from "@/components/ui/TitleBar";
 
 const ITEMS_PER_PAGE = 12;
 const dummyRepos = [
-  { label: "label", repositoryName: "sfac-web-1", caption: "Caption" },
-  { label: "label", repositoryName: "sfac-web-2", caption: "Caption" },
-  { label: "label", repositoryName: "sfac-web-3", caption: "Caption" },
-  { label: "label", repositoryName: "sfac-web-4", caption: "Caption" },
-  { label: "label", repositoryName: "sfac-web-5", caption: "Caption" },
-  { label: "label", repositoryName: "sfac-web-6", caption: "Caption" },
-  { label: "label", repositoryName: "sfac-web-7", caption: "Caption" },
-  { label: "label", repositoryName: "sfac-web-8", caption: "Caption" },
-  { label: "label", repositoryName: "sfac-web-9", caption: "Caption" },
-  { label: "label", repositoryName: "sfac-web-10", caption: "Caption" },
-  { label: "label", repositoryName: "sfac-web-11", caption: "Caption" },
-  { label: "label", repositoryName: "sfac-web-12", caption: "Caption" },
+  { id: "1", label: "label", repositoryName: "sfac-web-1", caption: "Caption" },
+  { id: "2", label: "label", repositoryName: "sfac-web-2", caption: "Caption" },
+  { id: "3", label: "label", repositoryName: "sfac-web-3", caption: "Caption" },
+  { id: "4", label: "label", repositoryName: "sfac-web-4", caption: "Caption" },
+  { id: "5", label: "label", repositoryName: "sfac-web-5", caption: "Caption" },
+  { id: "6", label: "label", repositoryName: "sfac-web-6", caption: "Caption" },
+  { id: "7", label: "label", repositoryName: "sfac-web-7", caption: "Caption" },
+  { id: "8", label: "label", repositoryName: "sfac-web-8", caption: "Caption" },
+  { id: "9", label: "label", repositoryName: "sfac-web-9", caption: "Caption" },
+  {
+    id: "10",
+    label: "label",
+    repositoryName: "sfac-web-10",
+    caption: "Caption",
+  },
+  {
+    id: "11",
+    label: "label",
+    repositoryName: "sfac-web-11",
+    caption: "Caption",
+  },
+  {
+    id: "12",
+    label: "label",
+    repositoryName: "sfac-web-12",
+    caption: "Caption",
+  },
+  {
+    id: "13",
+    label: "label",
+    repositoryName: "sfac-web-13",
+    caption: "Caption",
+  },
 ];
 
-export default function Repos() {
+export default function ReposPage() {
   const [currPage, setCurrPage] = useState<number>(1);
-  const [totalPages, setTotalPages] = useState<number>(0);
+  const [lastPageIndex] = useState<number>(
+    Math.ceil(dummyRepos.length / ITEMS_PER_PAGE),
+  );
   const [repos, setRepos] = useState<any[]>([]);
 
   useEffect(() => {
@@ -35,46 +60,38 @@ export default function Repos() {
         currPage * ITEMS_PER_PAGE,
       ),
     );
-    setTotalPages(Math.ceil(12 / ITEMS_PER_PAGE));
+    // setLastPageIndex(Math.ceil(dummyRepos.length / ITEMS_PER_PAGE));
   }, [currPage]);
 
   return (
     <>
-      <h1 className="flex-col-center-center mt-[3.5rem] gap-y-5 text-[3.75rem] leading-[1.2] -tracking-[0.01em] text-primary-500">
-        <span className="font-light">containing code files</span>
-        <span className="rounded-full border-[0.25rem] border-primary-500 px-10 py-[1.156rem] leading-[1.1]">
-          My Library
+      <div className="flex-col-center-center mt-[3.5rem] gap-y-5">
+        <span className="text-[3.75rem] font-light leading-[1.2] -tracking-[0.01em] text-primary-500">
+          containing code files
         </span>
-      </h1>
+        <TitleBar
+          title="My Library"
+          align="center"
+          className="mb-0 h-full"
+          h1ClassName="border-[0.25rem] px-10 py-[1.156rem] text-[3.75rem] leading-[1.1]"
+          hasBackButton={false}
+        />
+      </div>
 
       <div className="flex flex-col gap-y-20">
         <section className="flex flex-col gap-y-20">
           <div className="flex-between-center h-[6.688rem] gap-4">
-            {/* User */}
-            <div className="inline-flex items-center gap-x-[2.75rem]">
-              <Image
-                src={"/images/gear.png"}
-                alt="avatar"
-                width={108}
-                height={108}
-                priority
-                className="h-[6.688rem] w-[6.688rem] rounded-[50%]"
-              />
-              <div className="flex-col-start-center text-[2.5rem] font-medium leading-tight -tracking-[0.01em] text-gray-dark">
-                <span>Hello,</span>
-                <span>marry@gmail.com</span>
-              </div>
-            </div>
-
-            {/* 임시, Button */}
+            <Profile avatar="/images/user.png" email="marry@gmail.com" />
             <Link href="/my/profile">
-              <button className="flex-center-center rounded-lg border-2 border-primary-500 px-5 py-4 text-2xl font-medium text-primary-500">
+              <Button
+                variant="outlined"
+                className="flex-center-center px-5 py-4 text-2xl font-medium"
+              >
                 프로필 정보
-              </button>
+              </Button>
             </Link>
           </div>
-
-          <hr className="h-[0.063rem] w-full border-[#BABABA]" />
+          <hr />
         </section>
 
         <section className="flex flex-col gap-y-12">
@@ -88,29 +105,37 @@ export default function Repos() {
             </div>
           </div>
 
-          <div className="flex-between-center relative grid grid-cols-4 gap-x-6 gap-y-12">
+          <div className="relative grid grid-cols-4 grid-rows-3 gap-x-6 gap-y-12">
             {repos.map((repo, index) => (
-              <Repo key={index} {...repo} />
+              <Link href={repo.id ? `/analyze/${repo.id}` : "#"} key={index}>
+                <Repo {...repo} />
+              </Link>
             ))}
 
-            {/* 임시, Button */}
             {currPage > 1 && (
-              <button
-                className="flex-center-center absolute -left-6 bottom-[47%] h-[3.25rem] w-[3.25rem] rounded-[50%] border border-gray-dark bg-white"
+              <Button
+                variant="navigation"
+                shape="pill"
+                className="-left-6"
                 onClick={() => setCurrPage((prev) => Math.max(prev - 1, 0))}
+                aria-label="Previous Page"
               >
                 <IconCaretLeft className="fill-#343330" />
-              </button>
+              </Button>
             )}
-            {currPage < totalPages - 1 && (
-              <button
-                className="flex-center-center absolute -right-6 bottom-[47%] h-[3.25rem] w-[3.25rem] rounded-[50%] border border-gray-dark bg-white"
+
+            {currPage < lastPageIndex && (
+              <Button
+                variant="navigation"
+                shape="pill"
+                className="-right-6"
                 onClick={() =>
-                  setCurrPage((prev) => Math.min(prev + 1, totalPages - 1))
+                  setCurrPage((prev) => Math.min(prev + 1, lastPageIndex))
                 }
+                aria-label="Next Page"
               >
                 <IconCaretLeft className="fill-#343330 rotate-180" />
-              </button>
+              </Button>
             )}
           </div>
         </section>
