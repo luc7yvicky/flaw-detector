@@ -13,7 +13,7 @@ const cardVariants = cva("relative flex flex-col", {
       article: "justify-between border border-[#c3c3c3]",
       image: "justify-end hover:bg-opacity-70",
       service:
-        "justify-center items-center shadow-[0_5rem_3.75rem_-2.5rem_rgba(0,0,0,0.25)]",
+        "justify-center items-center bg-white before:content-[''] before:absolute before:inset-0 before:shadow-[0_5rem_3.75rem_-2.5rem_rgba(0,0,0,0.25)] before:rounded-[2.5rem] before:z-30",
     },
     size: {
       default:
