@@ -179,6 +179,7 @@ const dummyClippingArticles = [
     createdAt: "2023.10.12 23:00:00",
   },
 ];
+
 export default function ClippingArticlesPage() {
   const [currPage, setCurrPage] = useState<number>(1);
   const [articles, setArticles] = useState<any[]>([]);
@@ -199,7 +200,7 @@ export default function ClippingArticlesPage() {
         className="mb-0 mt-[4.5rem]"
       />
 
-      <section className="flex flex-col gap-y-12 last:gap-y-[7.75rem]">
+      <article className="flex flex-col gap-y-12 last:gap-y-[7.75rem]">
         <div className="inline-flex h-11 items-center justify-between">
           <h2 className="text-[2rem] font-medium -tracking-[0.01em] text-gray-dark">
             Library
@@ -212,8 +213,8 @@ export default function ClippingArticlesPage() {
 
         <div className="flex-between-center relative grid grid-cols-3 gap-6">
           {articles &&
-            articles.map((article, index) => (
-              <Link href={`/vulnerability-db/${article.id}`} key={index}>
+            articles.map((article) => (
+              <Link href={`/vulnerability-db/${article.id}`} key={article.id}>
                 <ClippingArticle {...article} />
               </Link>
             ))}
@@ -232,7 +233,7 @@ export default function ClippingArticlesPage() {
             </Button>
           </div>
         )}
-      </section>
+      </article>
     </>
   );
 }

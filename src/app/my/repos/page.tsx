@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import Dropdown from "@/components/ui/Dropdown";
 import { IconCaretLeft } from "@/components/ui/Icons";
+import TitleBar from "@/components/ui/TitleBar";
 import Profile from "@/components/my/Profile";
 import Repo from "@/components/my/Repo";
-import TitleBar from "@/components/ui/TitleBar";
 
 const ITEMS_PER_PAGE = 12;
 const dummyRepos = [
@@ -106,11 +106,15 @@ export default function ReposPage() {
           </div>
 
           <div className="relative grid grid-cols-4 grid-rows-3 gap-x-6 gap-y-12">
-            {repos.map((repo, index) => (
-              <Link href={repo.id ? `/analyze/${repo.id}` : "#"} key={index}>
-                <Repo {...repo} />
-              </Link>
-            ))}
+            {repos &&
+              repos.map((repo) => (
+                <Link
+                  href={repo.id ? `/analyze/${repo.id}` : "#"}
+                  key={repo.id}
+                >
+                  <Repo {...repo} />
+                </Link>
+              ))}
 
             {currPage > 1 && (
               <Button
