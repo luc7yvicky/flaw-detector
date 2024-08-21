@@ -1,4 +1,4 @@
-import ServiceCard from "../ui/ServiceCard";
+import ServiceCard from "./ServiceCard";
 
 export default function Section4() {
   return (

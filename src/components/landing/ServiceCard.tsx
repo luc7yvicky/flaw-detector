@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { Card, CardContent, CardSubTitle } from "./Card";
-import { ServiceLabel, ServiceLabelProps } from "./Label";
+import { Card, CardContent, CardSubTitle } from "../ui/Card";
+import { ServiceLabel, ServiceLabelProps } from "../ui/Label";
 
 export type ServiceVariants = {
   variant:
