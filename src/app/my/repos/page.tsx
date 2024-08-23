@@ -49,13 +49,13 @@ const dummyRepos = [
 export default function ReposPage() {
   const [currPage, setCurrPage] = useState<number>(1);
   const [lastPageIndex] = useState<number>(
-    Math.ceil(dummyRepos.length / ITEMS_PER_PAGE),
+    Math.ceil(dummyRepos?.length / ITEMS_PER_PAGE),
   );
   const [repos, setRepos] = useState<any[]>([]);
 
   useEffect(() => {
     setRepos(
-      dummyRepos.slice(
+      dummyRepos?.slice(
         (currPage - 1) * ITEMS_PER_PAGE,
         currPage * ITEMS_PER_PAGE,
       ),
@@ -106,15 +106,11 @@ export default function ReposPage() {
           </div>
 
           <div className="relative grid grid-cols-4 grid-rows-3 gap-x-6 gap-y-12">
-            {repos &&
-              repos.map((repo) => (
-                <Link
-                  href={repo.id ? `/analyze/${repo.id}` : "#"}
-                  key={repo.id}
-                >
-                  <Repo {...repo} />
-                </Link>
-              ))}
+            {repos?.map((repo) => (
+              <Link href={repo.id ? `/analyze/${repo.id}` : "#"} key={repo.id}>
+                <Repo {...repo} />
+              </Link>
+            ))}
 
             {currPage > 1 && (
               <Button
