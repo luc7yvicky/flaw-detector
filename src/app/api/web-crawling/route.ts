@@ -28,7 +28,7 @@ export async function GET() {
   // Puppeteer로 브라우저 실행
   const browser = await puppeteer.launch({
     executablePath,
-    headless: false,
+    headless: true,
   });
 
   const page = await browser.newPage();
