@@ -28,13 +28,13 @@ const dummyDetectedFiles = [
 export default function DetectedFilesPage() {
   const [currPage, setCurrPage] = useState<number>(1);
   const [lastPageIndex] = useState<number>(
-    Math.ceil(dummyDetectedFiles.length / ITEMS_PER_PAGE),
+    Math.ceil(dummyDetectedFiles?.length / ITEMS_PER_PAGE),
   );
   const [detectedFiles, setDetectedFiles] = useState<any[]>([]);
 
   useEffect(() => {
     setDetectedFiles(
-      dummyDetectedFiles.slice(
+      dummyDetectedFiles?.slice(
         (currPage - 1) * ITEMS_PER_PAGE,
         currPage * ITEMS_PER_PAGE,
       ),
@@ -62,12 +62,11 @@ export default function DetectedFilesPage() {
         </div>
 
         <div className="relative grid grid-cols-4 grid-rows-3 gap-6">
-          {detectedFiles &&
-            detectedFiles.map((file) => (
-              <Link href={file.id ? `/analyze/${file.id}` : "#"} key={file.id}>
-                <DetectedFile {...file} />
-              </Link>
-            ))}
+          {detectedFiles?.map((file) => (
+            <Link href={file.id ? `/analyze/${file.id}` : "#"} key={file.id}>
+              <DetectedFile {...file} />
+            </Link>
+          ))}
 
           {currPage > 1 && (
             <Button
