@@ -12,7 +12,7 @@ export default function Section4() {
           </p>
         </article>
         <article className="relative w-full overflow-x-hidden">
-          <div className="relative ml-[-10.604rem] grid min-h-[35rem] w-[120%] grid-cols-6 gap-x-12 overflow-x-hidden whitespace-pre-wrap">
+          <div className="relative ml-[-10.604rem] grid min-h-[35rem] w-[120%] grid-cols-6 gap-x-12 whitespace-pre-wrap">
             <ServiceCard variant="security" />
             <ServiceCard variant="critical" />
             <ServiceCard variant="realtime" />
