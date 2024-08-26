@@ -1,9 +1,9 @@
 "use client";
 
 import { useTransition } from "react";
+import { loginWithGithub } from "@/lib/actions";
 import Button from "../ui/Button";
 import { IconCaretDoubleDown } from "../ui/Icons";
-import { githubLogin } from "@/lib/actions";
 
 export default function LandingSection1() {
   const [_, startTransition] = useTransition();
@@ -22,7 +22,7 @@ export default function LandingSection1() {
         <Button
           shape="pill"
           className="px-6 py-[0.688rem] text-[1.75rem] font-light leading-[2.118rem] -tracking-[0.01em]"
-          onClick={() => startTransition(async () => await githubLogin())}
+          onClick={() => startTransition(async () => await loginWithGithub())}
         >
           Login
         </Button>

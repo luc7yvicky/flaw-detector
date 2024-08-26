@@ -7,6 +7,9 @@ export const authConfig = {
     maxAge: 24 * 60 * 60,
   },
   callbacks: {
+    async redirect({ baseUrl }) {
+      return `${baseUrl}/my/repos`;
+    },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnAnalyze = nextUrl.pathname.startsWith("/analyze");
