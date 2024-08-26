@@ -28,13 +28,13 @@ const dummyDetectedFiles = [
 export default function DetectedFilesPage() {
   const [currPage, setCurrPage] = useState<number>(1);
   const [lastPageIndex] = useState<number>(
-    Math.ceil(dummyDetectedFiles.length / ITEMS_PER_PAGE),
+    Math.ceil(dummyDetectedFiles?.length / ITEMS_PER_PAGE),
   );
   const [detectedFiles, setDetectedFiles] = useState<any[]>([]);
 
   useEffect(() => {
     setDetectedFiles(
-      dummyDetectedFiles.slice(
+      dummyDetectedFiles?.slice(
         (currPage - 1) * ITEMS_PER_PAGE,
         currPage * ITEMS_PER_PAGE,
       ),
@@ -50,7 +50,7 @@ export default function DetectedFilesPage() {
         className="mb-0 mt-[4.5rem]"
       />
 
-      <section className="flex flex-col gap-y-12">
+      <article className="flex flex-col gap-y-12">
         <div className="inline-flex h-11 items-center justify-between">
           <h2 className="text-[2rem] font-medium -tracking-[0.01em] text-gray-dark">
             Library
@@ -62,8 +62,8 @@ export default function DetectedFilesPage() {
         </div>
 
         <div className="relative grid grid-cols-4 grid-rows-3 gap-6">
-          {detectedFiles.map((file, index) => (
-            <Link href={file.id ? `/analyze/${file.id}` : "#"} key={index}>
+          {detectedFiles?.map((file) => (
+            <Link href={file.id ? `/analyze/${file.id}` : "#"} key={file.id}>
               <DetectedFile {...file} />
             </Link>
           ))}
@@ -94,7 +94,7 @@ export default function DetectedFilesPage() {
             </Button>
           )}
         </div>
-      </section>
+      </article>
     </>
   );
 }
