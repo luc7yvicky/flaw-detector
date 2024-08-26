@@ -1,3 +1,4 @@
+import { RepoListData } from "@/types/type";
 import {
   Card,
   CardHeader,
@@ -7,22 +8,16 @@ import {
 } from "../ui/Card";
 import { Label } from "../ui/Label";
 
-export type RepoInfo = {
-  id: string;
-  label: string;
-  labelStatus: string;
-  repositoryName: string;
-  caption: string;
-  createdAt: string;
-  detectedAt: string;
-  filename: string;
-};
-
-export default function Repo({ id, label, repositoryName, caption }: RepoInfo) {
+export default function Repo({
+  id,
+  label,
+  repositoryName,
+  caption,
+}: RepoListData) {
   return (
     <Card key={id}>
       <CardHeader hasMenu>
-        <Label variant="outline">{label}</Label>
+        {label && <Label variant="outline">{label}</Label>}
       </CardHeader>
       <CardTitleWrapper>
         <CardTitle size="big" weight="normal" className="leading-tight">
