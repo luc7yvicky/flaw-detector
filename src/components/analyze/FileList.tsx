@@ -33,7 +33,7 @@ export default function FileList() {
 
   return (
     <>
-      <ul className="border-line-default block max-w-[247px] rounded-[12px] border text-gray-dark">
+      <ul className="block max-w-[247px] rounded-[12px] border border-line-default text-gray-dark">
         {/* <FileListItem type="folder" name="src" />
         <FileListItem type="file" name="page.tsx" /> */}
         <li className="bg-primary-50 px-3 py-2">

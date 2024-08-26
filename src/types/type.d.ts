@@ -1,8 +1,7 @@
-export type ArticleDetailProps = {
+export type ArticleListItem = {
+  id: string;
   title: string;
-  content: string;
   createdAt: string;
-  showLabel?: boolean;
   labelVariant?:
     | "hot"
     | "new"
@@ -11,3 +10,8 @@ export type ArticleDetailProps = {
     | "clipping-warning";
   labelText?: string;
 };
+
+export type ArticleDetailProps = {
+  content?: string;
+  showLabel?: boolean;
+} & ArticleListItem;
