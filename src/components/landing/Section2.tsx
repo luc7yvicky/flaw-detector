@@ -3,30 +3,25 @@ import { IconBug } from "../ui/Icons";
 
 export default function Section2() {
   return (
-    <section className="flex-between-center min-h-dvh w-full bg-primary-50 bg-cover bg-center text-[3.15rem] text-primary-500">
-      <div className="ml-[12rem] h-[29.5rem] w-[41rem]">
-        <h1 className="mb-3 text-[5rem] font-bold leading-[6.051rem] tracking-[-0.01em]">
-          쉽고 편하게
-          <br />
-          취약점을 발견하다
+    <section className="flex-end-center relative max-h-screen min-h-dvh w-full bg-primary-50 bg-cover bg-center text-primary-500">
+      <article className="absolute left-[12rem] h-[29.5rem] w-[41rem]">
+        <h1 className="flex-col-start-center w-full text-[5rem] font-bold leading-[6.051rem] tracking-[-0.01em]">
+          <span>쉽고 편하게</span>
+          <span>취약점을 발견하다</span>
         </h1>
         <p className="mt-[3.75rem] text-[2rem] font-bold leading-[2.421rem] tracking-[-0.01em] text-gray-dark">
-          코드보안
-          <br />
-          어떻게 관리하시나요?
+          <span>코드보안 어떻게 관리하시나요?</span>
         </p>
-        <p className="mb-2 mt-7 text-[1.25rem] leading-[1.512rem] tracking-[-0.01em] text-gray-default">
-          플로디텍터는 안전한 소프트웨어 개발을 위한 필수 도구로, <br />
-          코드의 보안 취약점을 사전에 수정함으로써
-          <br />
-          개발자들에게 편의와 안전한 개발 환경을 제공합니다.
+        <p className="flex-col-start-center mb-2 mt-7 space-y-2 text-[1.25rem] leading-[1.512rem] tracking-[-0.01em] text-gray-default">
+          <span>플로디텍터는 안전한 소프트웨어 개발을 위한 필수 도구로,</span>
+          <span>코드의 보안 취약점을 사전에 수정함으로써</span>
+          <span>개발자들에게 편의와 안전한 개발 환경을 제공합니다.</span>
         </p>
-      </div>
-
-      <div className="mr-[18.337rem] h-[23.875rem] w-[23.788rem] translate-x-[120%] translate-y-[4%] gap-[0.625rem] rounded-lg bg-white p-[5.813rem_5.938rem] shadow-[0rem_3.75rem_3.75rem_-1.5rem_#6100FF40]">
+      </article>
+      <div className="absolute right-[18.337rem] z-10 h-[23.875rem] w-[23.788rem] gap-[0.625rem] rounded-lg bg-white p-[5.813rem_5.938rem] shadow-[0rem_3.75rem_3.75rem_-1.5rem_#6100FF40]">
         <IconBug />
       </div>
-      <SquareBackground />
+      <SquareBackground className="absolute z-0" />
     </section>
   );
 }
@@ -38,7 +33,7 @@ export function SquareBackground({
   return (
     <svg
       width="532"
-      height="1022"
+      height="100vh"
       viewBox="0 0 400 1022"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
