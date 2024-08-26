@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 import Dropdown from "@/components/ui/Dropdown";
 import { IconCaretLeft } from "@/components/ui/Icons";
+import TitleBar from "@/components/ui/TitleBar";
 import Profile from "@/components/my/Profile";
 import Repo from "@/components/my/Repo";
-import TitleBar from "@/components/ui/TitleBar";
 
 const ITEMS_PER_PAGE = 12;
 const dummyRepos = [
@@ -49,13 +49,13 @@ const dummyRepos = [
 export default function ReposPage() {
   const [currPage, setCurrPage] = useState<number>(1);
   const [lastPageIndex] = useState<number>(
-    Math.ceil(dummyRepos.length / ITEMS_PER_PAGE),
+    Math.ceil(dummyRepos?.length / ITEMS_PER_PAGE),
   );
   const [repos, setRepos] = useState<any[]>([]);
 
   useEffect(() => {
     setRepos(
-      dummyRepos.slice(
+      dummyRepos?.slice(
         (currPage - 1) * ITEMS_PER_PAGE,
         currPage * ITEMS_PER_PAGE,
       ),
@@ -106,8 +106,8 @@ export default function ReposPage() {
           </div>
 
           <div className="relative grid grid-cols-4 grid-rows-3 gap-x-6 gap-y-12">
-            {repos.map((repo, index) => (
-              <Link href={repo.id ? `/analyze/${repo.id}` : "#"} key={index}>
+            {repos?.map((repo) => (
+              <Link href={repo.id ? `/analyze/${repo.id}` : "#"} key={repo.id}>
                 <Repo {...repo} />
               </Link>
             ))}

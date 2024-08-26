@@ -7,9 +7,10 @@ import Button from "@/components/ui/Button";
 import { IconPlus } from "@/components/ui/Icons";
 import TitleBar from "@/components/ui/TitleBar";
 import Link from "next/link";
+import { ArticleDetailProps } from "@/types/type";
 
 const ITEMS_PER_PAGE = 12;
-const dummyClippingArticles = [
+const dummyClippingArticles: ArticleDetailProps[] = [
   {
     id: "1",
     title: "Microsoft의 여러 보안 취약점에 대한 CNNVD의 보고서1",
@@ -179,13 +180,14 @@ const dummyClippingArticles = [
     createdAt: "2023.10.12 23:00:00",
   },
 ];
+
 export default function ClippingArticlesPage() {
   const [currPage, setCurrPage] = useState<number>(1);
-  const [articles, setArticles] = useState<any[]>([]);
+  const [articles, setArticles] = useState<ArticleDetailProps[]>([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setArticles(dummyClippingArticles.slice(0, currPage * ITEMS_PER_PAGE));
+      setArticles(dummyClippingArticles?.slice(0, currPage * ITEMS_PER_PAGE));
     }, 500);
 
     return () => clearTimeout(timer);
@@ -199,7 +201,7 @@ export default function ClippingArticlesPage() {
         className="mb-0 mt-[4.5rem]"
       />
 
-      <section className="flex flex-col gap-y-12 last:gap-y-[7.75rem]">
+      <article className="flex flex-col gap-y-12 last:gap-y-[7.75rem]">
         <div className="inline-flex h-11 items-center justify-between">
           <h2 className="text-[2rem] font-medium -tracking-[0.01em] text-gray-dark">
             Library
@@ -211,12 +213,11 @@ export default function ClippingArticlesPage() {
         </div>
 
         <div className="flex-between-center relative grid grid-cols-3 gap-6">
-          {articles &&
-            articles.map((article, index) => (
-              <Link href={`/vulnerability-db/${article.id}`} key={index}>
-                <ClippingArticle {...article} />
-              </Link>
-            ))}
+          {articles?.map((article) => (
+            <Link href={`/vulnerability-db/${article.id}`} key={article.id}>
+              <ClippingArticle {...article} />
+            </Link>
+          ))}
         </div>
 
         {dummyClippingArticles.length > currPage * ITEMS_PER_PAGE && (
@@ -232,7 +233,7 @@ export default function ClippingArticlesPage() {
             </Button>
           </div>
         )}
-      </section>
+      </article>
     </>
   );
 }
