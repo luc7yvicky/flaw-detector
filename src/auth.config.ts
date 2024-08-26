@@ -3,6 +3,9 @@ import github from "next-auth/providers/github";
 import { GITHUB_ID, GITHUB_SECRET } from "./lib/const";
 
 export const authConfig = {
+  session: {
+    maxAge: 24 * 60 * 60,
+  },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
