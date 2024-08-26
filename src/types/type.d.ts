@@ -11,3 +11,14 @@ export type ArticleDetailProps = {
     | "clipping-warning";
   labelText?: string;
 };
+
+export type RepoListData = {
+  id: number;
+  repositoryName: string;
+  label?: string;
+  labelStatus?: string;
+  caption?: string;
+  createdAt?: string;
+  detectedAt?: string;
+  filename?: string;
+};
