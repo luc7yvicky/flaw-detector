@@ -1,38 +1,53 @@
+import { useRouter } from "next/navigation";
 import clsx from "clsx";
+import { cva, VariantProps } from "class-variance-authority";
 import { IconBug, IconRoundedDoc } from "./Icons";
 import Button from "./Button";
 
-type ModalProps = {
-  variant: "selectFile" | "processing" | "login" | "inquirySubmitted";
-  isOpen: boolean;
-  onClose: () => void;
-  onProceed?: () => void;
-};
+const modalVariants = cva("relative bg-white rounded-[1.25rem]", {
+  variants: {
+    variant: {
+      selectFile: "",
+      processing: "",
+      login: "rounded-[1.25rem] shadow-[0_0_1.55rem_rgba(0,0,0,0.25)]",
+      inquirySubmitted: "rounded-[2.5rem]",
+    },
+    size: {
+      small:
+        "w-[21.313rem] h-[13.125rem] top-[15.375rem] p-[2.5rem_3.75rem] gap-[2rem]", //login
+      medium: "w-[26.688rem] h-[24.063rem] top-[10rem] p-[3rem] gap-[3.313rem]", //processing
+      large: "w-[42.875rem] h-[29.875rem] p-[3rem] gap-[2.5rem] top-[10rem]", //selectFile
+      extraLarge:
+        "w-[61.563rem] h-[21.563rem] p-[3.75rem] gap-[3.5rem] top-[10rem]", //inquirySubmitted
+    },
+  },
+  defaultVariants: {
+    variant: "selectFile",
+    size: "large",
+  },
+});
+
+export type ModalProps = React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof modalVariants> & {
+    isOpen: boolean;
+    onClose: () => void;
+    onProceed?: () => void;
+  };
 
 export default function Modal({
   variant,
+  size,
   isOpen,
   onClose,
   onProceed,
+  className,
+  children,
+  ...props
 }: ModalProps) {
+  const router = useRouter();
+
   if (!isOpen) return null;
 
-  //공통 스타일
-  const baseModalStyles = "relative bg-white rounded-[1.25rem] ";
-
-  //variant별 스타일 적용
-  const modalStyles = clsx({
-    "w-[42.875rem] h-[29.875rem] p-[3rem] gap-[2.5rem] top-[10rem] ":
-      variant === "selectFile",
-    "w-[26.688rem] h-[24.063rem] top-[10rem] p-[3rem] gap-[3.313rem] ":
-      variant === "processing",
-    "w-[21.313rem] h-[13.125rem] top-[15.375rem] p-[2.5rem_3.75rem] gap-[2rem] rounded-[1.25rem] shadow-[0_0_1.55rem_rgba(0,0,0,0.25)]":
-      variant === "login",
-    "w-[61.563rem] h-[21.563rem] p-[3.75rem] gap-[3.5rem] rounded-[2.5rem] ":
-      variant === "inquirySubmitted",
-  });
-
-  //variant별 콘텐츠 렌더링
   const renderContent = () => {
     switch (variant) {
       case "selectFile":
@@ -87,69 +102,73 @@ export default function Modal({
         );
       case "processing":
         return (
-          <>
-            <div className="flex h-full flex-col items-center justify-center gap-[3.313rem] text-center">
-              <IconBug width="106" height="109" />
-              <div className="h-[7.938rem] w-[22.688rem] gap-[2.375rem]">
-                <h2 className="mb-[2.375rem] text-[1.5rem] font-semibold leading-[1.816rem] tracking-[-0.01em] text-gray-dark">
-                  소스코드 취약점 분석중
-                </h2>
-                <p className="h-[3.75rem] text-center text-[1.25rem] font-medium leading-[1.875rem] tracking-[-0.01em] text-gray-default">
-                  AI 플로디텍터가 문제를 분석중입니다.
-                  <br />
-                  코드가 많을수록 처리시간이 길어집니다.
-                </p>
-              </div>
+          <div className="flex h-full flex-col items-center justify-center gap-[3.313rem] text-center">
+            <IconBug width="106" height="109" />
+            <div className="h-[7.938rem] w-[22.688rem] gap-[2.375rem]">
+              <h2 className="mb-[2.375rem] text-[1.5rem] font-semibold leading-[1.816rem] tracking-[-0.01em] text-gray-dark">
+                소스코드 취약점 분석중
+              </h2>
+              <p className="h-[3.75rem] text-center text-[1.25rem] font-medium leading-[1.875rem] tracking-[-0.01em] text-gray-default">
+                AI 플로디텍터가 문제를 분석중입니다.
+                <br />
+                코드가 많을수록 처리시간이 길어집니다.
+              </p>
             </div>
-          </>
+          </div>
         );
       case "login":
         return (
-          <>
-            <div className="flex w-[15rem] flex-col items-center justify-center text-center">
-              <h2 className="mb-8 h-6 w-[15rem] text-[1.25rem] font-semibold leading-[1.512rem] tracking-[-0.01em]">
-                자세한 정보를 보고싶다면?
-              </h2>
-              {/* 임시버튼 */}
-              <button className="h-[4.625rem] w-[7.438rem] rounded-[999px] border-2 border-primary-500 p-[1rem_1.5rem] text-[1.75rem] font-light leading-[2.118rem] tracking-[-0.01em] text-primary-500">
-                Login
-              </button>
-            </div>
-          </>
+          <div className="flex w-[15rem] flex-col items-center justify-center text-center">
+            <h2 className="mb-8 h-6 w-[15rem] text-[1.25rem] font-semibold leading-[1.512rem] tracking-[-0.01em]">
+              자세한 정보를 보고싶다면?
+            </h2>
+            <button className="h-[4.625rem] w-[7.438rem] rounded-[999px] border-2 border-primary-500 p-[1rem_1.5rem] text-[1.75rem] font-light leading-[2.118rem] tracking-[-0.01em] text-primary-500">
+              Login
+            </button>
+          </div>
         );
       case "inquirySubmitted":
         return (
-          <>
-            <div className="flex-col-center-center">
-              <div className="flex-col-center-center h-[7.063rem] w-[41.8rem] gap-[1.438rem]">
-                <h1 className="text-[2.25rem] font-bold leading-[3.375rem] tracking-[-0.01em]">
-                  문의를 보냈어요!
-                </h1>
-                <p className="text-[1.5rem] font-medium leading-[2.25rem] tracking-[-0.011em] text-[#8F8F8F]">
-                  문의를 성공적으로 전송했어요. 빠른 시일 내에 답변해드릴게요.
-                </p>
-              </div>
-              <Button className="mt-14 h-14 w-[20.938rem] gap-[0.625rem] text-[1.25rem] tracking-[-0.011em]">
-                홈으로 가기
-              </Button>
+          <div className="flex-col-center-center">
+            <div className="flex-col-center-center h-[7.063rem] w-[41.8rem] gap-[1.438rem]">
+              <h1 className="text-[2.25rem] font-bold leading-[3.375rem] tracking-[-0.01em]">
+                문의를 보냈어요!
+              </h1>
+              <p className="text-[1.5rem] font-medium leading-[2.25rem] tracking-[-0.011em] text-[#8F8F8F]">
+                문의를 성공적으로 전송했어요. 빠른 시일 내에 답변해드릴게요.
+              </p>
             </div>
-          </>
+            <Button
+              className="mt-14 h-14 w-[20.938rem] gap-[0.625rem] text-[1.25rem] tracking-[-0.011em]"
+              onClick={() => {
+                router.push("/");
+                onClose();
+              }}
+            >
+              홈으로 가기
+            </Button>
+          </div>
         );
       default:
-        return null;
+        return children;
     }
   };
 
   return (
     <div
       className={clsx("fixed inset-0 z-50 flex items-center justify-center", {
-        "bg-black bg-opacity-50":
-          variant === "processing" || variant === "inquirySubmitted",
-        "bg-transparent":
-          variant !== "processing" && variant != "inquirySubmitted",
+        "bg-black bg-opacity-50": ["processing", "inquirySubmitted"].includes(
+          variant || "",
+        ),
+        "bg-transparent": !["processing", "inquirySubmitted"].includes(
+          variant || "",
+        ),
       })}
     >
-      <div className={`${baseModalStyles} ${modalStyles}`}>
+      <div
+        className={clsx(modalVariants({ variant, size }), className)}
+        {...props}
+      >
         {renderContent()}
       </div>
     </div>

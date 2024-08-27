@@ -7,22 +7,10 @@ import Modal from "./Modal";
 
 export default function CustomerService({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [modalVariant, setModalVariant] = useState<
-    "selectFile" | "processing" | "login" | "inquirySubmitted"
-  >("inquirySubmitted");
-
-  const openModal = (
-    variant: "selectFile" | "processing" | "login" | "inquirySubmitted",
-  ) => {
-    setModalVariant(variant);
-    setIsOpen(true);
-  };
-
-  const closeModal = () => setIsOpen(false);
 
   const onClickSubmit = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    openModal("inquirySubmitted");
+    setIsOpen(true);
   };
 
   return (
@@ -112,12 +100,18 @@ export default function CustomerService({ className }: { className?: string }) {
         <button
           type="button"
           className="rounded-lg bg-primary-500 py-[0.813rem] text-lg font-semibold text-white"
-          onClick={() => openModal("inquirySubmitted")}
+          onClick={onClickSubmit}
         >
           문의 보내기
         </button>
       </form>
-      <Modal variant={modalVariant} isOpen={isOpen} onClose={closeModal} />
+
+      <Modal
+        variant="inquirySubmitted"
+        size="extraLarge"
+        isOpen={isOpen}
+        onClose={() => setIsOpen(false)}
+      />
     </section>
   );
 }
