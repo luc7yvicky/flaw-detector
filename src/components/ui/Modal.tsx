@@ -159,9 +159,9 @@ export function ModalTitle({
       className={cn(
         "tracking-[-0.01em]",
         getTextSize(size),
-        weight === "default" //selectedfile
-          ? "font-normal"
-          : weight === "semi-bold" //login
+        weight === "default"
+          ? "font-medium" //login
+          : weight === "semi-bold" //selectedfile
             ? "font-semibold"
             : "font-bold", //inquirySubmitted
         className,
