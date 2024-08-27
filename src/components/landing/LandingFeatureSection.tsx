@@ -1,16 +1,17 @@
 import { cn } from "@/lib/utils";
 import { IconBug } from "../ui/Icons";
 
-export default function Section2() {
+export default function LandingFeatureSection() {
   return (
     <section className="flex-end-center relative max-h-screen min-h-dvh w-full bg-primary-50 bg-cover bg-center text-primary-500">
       <article className="absolute left-[12rem] h-[29.5rem] w-[41rem]">
-        <h1 className="flex-col-start-center w-full text-[5rem] font-bold leading-[6.051rem] tracking-[-0.01em]">
+        <h2 className="flex-col-start-center w-full space-y-3 text-[5rem] font-bold leading-[6.051rem] tracking-[-0.01em]">
           <span>쉽고 편하게</span>
           <span>취약점을 발견하다</span>
-        </h1>
-        <p className="mt-[3.75rem] text-[2rem] font-bold leading-[2.421rem] tracking-[-0.01em] text-gray-dark">
-          <span>코드보안 어떻게 관리하시나요?</span>
+        </h2>
+        <p className="mt-[3.75rem] flex flex-col space-y-3 text-[2rem] font-bold leading-[2.421rem] tracking-[-0.01em] text-gray-dark">
+          <span>코드보안</span>
+          <span>어떻게 관리하시나요?</span>
         </p>
         <p className="flex-col-start-center mb-2 mt-7 space-y-2 text-[1.25rem] leading-[1.512rem] tracking-[-0.01em] text-gray-default">
           <span>플로디텍터는 안전한 소프트웨어 개발을 위한 필수 도구로,</span>

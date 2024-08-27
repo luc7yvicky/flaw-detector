@@ -3,5 +3,8 @@ export const LLAMA_API_URL = process.env.NEXT_PUBLIC_LLAMA_API_URL;
 export const LLAMA_USERNAME = process.env.NEXT_PUBLIC_LLAMA_USERNAME;
 export const LLAMA_PASSWORD = process.env.NEXT_PUBLIC_LLAMA_PASSWORD;
 
+export const GITHUB_ID = process.env.AUTH_GITHUB_ID;
+export const GITHUB_SECRET = process.env.AUTH_GITHUB_SECRET;
+
 export const ITEMS_PER_DB_PAGE = 5;
 export const DB_PAGES_PER_GROUP = 10;
