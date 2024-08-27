@@ -10,8 +10,16 @@ import Button from "@/components/ui/Button";
 import { InputChip } from "@/components/ui/InputChip";
 import ProgressBar from "@/components/ui/ProgressBar";
 import TitleBar from "@/components/ui/TitleBar";
+import { headers } from "next/headers";
 
 export default function AnalyzePage() {
+  const headersList = headers();
+  const path = headersList.get("x-invoke-path") || "";
+
+  // '/analyze/' 이후의 문자열을 repo 값으로 추출
+  const repoMatch = path.match(/\/analyze\/(.+)/);
+  const repo = repoMatch ? repoMatch[1] : "";
+
   const counts = {
     error: 8,
     warning: 12,
@@ -20,7 +28,7 @@ export default function AnalyzePage() {
 
   return (
     <section className="mx-auto mb-7 w-full max-w-[110rem] px-[1rem]">
-      <TitleBar title="sfacweb-01" />
+      <TitleBar title={repo ? repo : "loading..."} />
       <div className="grid grid-cols-[16rem_1fr] gap-7">
         <Button>선택한 파일 검사</Button>
         <div className="rounded-lg border border-line-default p-5">
@@ -38,7 +46,7 @@ export default function AnalyzePage() {
             <StatusWarning>{counts.warning}</StatusWarning>
             <StatusSuccess>{counts.success}</StatusSuccess>
           </Status>
-          <FileListServer username="joanshim" repo="flaw-detector" />
+          <FileListServer username="joanshim" repo={repo} />
         </div>
         <div className="flex h-full flex-col gap-7 lg:flex-row">
           <CodeViewer type="asIs" />
