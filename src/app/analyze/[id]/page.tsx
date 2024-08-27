@@ -1,6 +1,5 @@
-"use client";
 import CodeViewer from "@/components/analyze/CodeViewer";
-import FileList from "@/components/analyze/FileList";
+import FileListServer from "@/components/analyze/FileListServer";
 import {
   Status,
   StatusError,
@@ -39,7 +38,7 @@ export default function Analyze() {
             <StatusWarning>{counts.warning}</StatusWarning>
             <StatusSuccess>{counts.success}</StatusSuccess>
           </Status>
-          <FileList />
+          <FileListServer username="joanshim" repo="flaw-detector"/>
         </div>
         <div className="mb-7 flex flex-col gap-7 lg:flex-row">
           <CodeViewer type="asIs" />
