@@ -1,4 +1,7 @@
+"use client";
+
 import { useEffect, useState } from "react";
+import { RepoItem } from "@/types/type";
 import {
   IconDoc,
   IconDone,
@@ -7,70 +10,68 @@ import {
   IconOnProcess,
   IconOnWait,
 } from "../ui/Icons";
+import FileList from "./FileList";
+import { cn } from "@/lib/utils";
 
-interface FileListItemProps {
-  id: string;
-  type: "file" | "folder";
-  name: string;
-  status?: "done" | "onProgress" | "onWait" | "error";
-  isSelected: boolean;
-  onSelect: () => void;
-}
 export default function FileListItem({
-  // id,
-  type,
-  name,
-  status,
-  isSelected,
-  onSelect,
-}: FileListItemProps) {
-  const [statusIcon, setStatusIcon] = useState<React.ReactNode | null>(null);
+  item,
+  onToggle,
+  isNested,
+}: {
+  item: RepoItem;
+  onToggle: (item: RepoItem) => void;
+  isNested: boolean;
+}) {
+  const { name, type, path, expanded, items, status } = item;
 
   const handleItemClick = (e: React.MouseEvent<HTMLLIElement>) => {
     e.stopPropagation();
-    // console.log("file clicked", id);
+    if (type === "dir") {
+      onToggle(item);
+    }
   };
 
-  useEffect(() => {
+  const getStatusIcon = () => {
     switch (status) {
       case "done":
-        setStatusIcon(<IconDone />);
-        break;
+        return <IconDone />;
       case "onProgress":
-        setStatusIcon(<IconOnProcess />);
-        break;
+        return <IconOnProcess />;
       case "onWait":
-        setStatusIcon(<IconOnWait color="fill-gray-default" />);
-        break;
+        return <IconOnWait color="fill-gray-default" />;
       case "error":
-        setStatusIcon(<IconError />);
-        break;
+        return <IconError />;
       default:
-        setStatusIcon(null);
+        return null;
     }
-  }, [status]);
+  };
 
   return (
-    <li
-      className="-mt-[1px] flex cursor-pointer border-t border-line-default px-3 py-2 hover:bg-purple-light"
-      onClick={handleItemClick}
-    >
-      <div
-        className="mr-2 flex items-center"
-        onClick={(e) => e.stopPropagation()}
+    <>
+      <li
+        className={cn(
+          "flex cursor-pointer border-t border-line-default px-3 py-2 hover:bg-purple-light",
+          isNested && "pl-6",
+        )}
+        onClick={handleItemClick}
       >
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={onSelect}
-          className="mr-2"
-        />
-      </div>
-      <div className="mr-1 flex items-center">
-        {type === "file" ? <IconDoc /> : <IconFolder />}
-      </div>
-      <span className="w-full">{name}</span>
-      <div className="justify-self-end">{status ? statusIcon : null}</div>
-    </li>
+        <div className="flex">
+          <div
+            className="mr-2 flex items-center"
+            onClick={(e) => e.stopPropagation()}
+          ></div>
+          <div className="mr-1 flex items-center">
+            {type === "file" ? <IconDoc /> : <IconFolder />}
+          </div>
+          <span className="w-full">{name}</span>
+          <div className="justify-self-end">
+            {status ? getStatusIcon() : null}
+          </div>
+        </div>
+      </li>
+      {type === "dir" && expanded && items && items.length > 0 && (
+        <FileList structure={items} onToggle={onToggle} isNested />
+      )}
+    </>
   );
 }
