@@ -1,14 +1,16 @@
-import Section1 from "@/components/landing/Section1";
-import Section2 from "@/components/landing/Section2";
-import Section3 from "@/components/landing/Section3";
+import LandingHeroSection from "@/components/landing/LandingHeroSection";
+import LandingFeatureSection from "@/components/landing/LandingFeatureSection";
+import LandingDemoSection from "@/components/landing/LandingDemoSection";
+import LandingServiceSection from "@/components/landing/LandingServiceSection";
 import CustomerService from "@/components/ui/CustomerService";
 
 export default async function LandingPage() {
   return (
     <>
-      <Section1 />
-      <Section2 />
-      <Section3 />
+      <LandingHeroSection />
+      <LandingFeatureSection />
+      <LandingDemoSection />
+      <LandingServiceSection />
       <CustomerService className="my-[6.5rem]" />
     </>
   );

@@ -1,5 +1,5 @@
 import type { NextAuthConfig } from "next-auth";
-import github from "next-auth/providers/github";
+import Github from "next-auth/providers/github";
 import { GITHUB_ID, GITHUB_SECRET } from "./lib/const";
 
 export const authConfig = {
@@ -8,6 +8,9 @@ export const authConfig = {
   },
   callbacks: {
     async redirect({ baseUrl }) {
+      if (baseUrl.endsWith("/")) {
+        baseUrl = baseUrl.slice(0, -1);
+      }
       return `${baseUrl}/my/repos`;
     },
     authorized({ auth, request: { nextUrl } }) {
@@ -15,15 +18,14 @@ export const authConfig = {
       const isOnAnalyze = nextUrl.pathname.startsWith("/analyze");
 
       if (isOnAnalyze) {
-        if (isLoggedIn) return true;
-        return false;
+        return isLoggedIn;
       }
 
       return true;
     },
   },
   providers: [
-    github({
+    Github({
       clientId: GITHUB_ID,
       clientSecret: GITHUB_SECRET,
     }),
