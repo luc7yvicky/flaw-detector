@@ -7,6 +7,7 @@ import {
   CardTitleWrapper,
 } from "../ui/Card";
 import { Label } from "../ui/Label";
+import Link from "next/link";
 
 export default function Repo({
   id,
@@ -15,16 +16,18 @@ export default function Repo({
   caption,
 }: RepoListData) {
   return (
-    <Card key={id}>
-      <CardHeader hasMenu>
-        {label && <Label variant="outline">{label}</Label>}
-      </CardHeader>
-      <CardTitleWrapper>
-        <CardTitle size="big" weight="normal" className="leading-tight">
-          {repositoryName}
-        </CardTitle>
-        <CardSubTitle className="leading-none">{caption}</CardSubTitle>
-      </CardTitleWrapper>
-    </Card>
+    <Link href={`/analyze/${repositoryName}`}>
+      <Card key={id}>
+        <CardHeader hasMenu>
+          {label && <Label variant="outline">{label}</Label>}
+        </CardHeader>
+        <CardTitleWrapper>
+          <CardTitle size="big" weight="normal" className="leading-tight">
+            {repositoryName}
+          </CardTitle>
+          <CardSubTitle className="leading-none">{caption}</CardSubTitle>
+        </CardTitleWrapper>
+      </Card>
+    </Link>
   );
 }

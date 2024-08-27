@@ -23,7 +23,7 @@ export default function RepoList({
   return (
     <div className="flex-between-center relative grid grid-cols-4 gap-x-6 gap-y-12">
       {currentRepos.map((repo) => (
-        <Repo key={repo.id} {...repo} />
+        <Repo key={repo.repositoryName} {...repo} />
       ))}
 
       {currPage > 1 && (
