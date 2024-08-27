@@ -14,7 +14,7 @@ import ProgressBar from "@/components/ui/ProgressBar";
 import TitleBar from "@/components/ui/TitleBar";
 import { useState } from "react";
 
-export default function Analyze() {
+export default function AnalyzePage() {
   const counts = {
     error: 8,
     warning: 12,

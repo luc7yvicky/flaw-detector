@@ -1,38 +1,39 @@
-import { NextRequest, NextResponse } from "next/server";
-import { AUTH_URL, PASSWORD, USERNAME } from "@/lib/const";
+import { LLAMA_AUTH_URL, LLAMA_PASSWORD, LLAMA_USERNAME } from "@/lib/const";
+import { handleError } from "@/lib/helpers";
+import { NextResponse } from "next/server";
 
-export async function handler(req: NextRequest) {
-  if (req.method === "POST") {
-    const authResponse = await fetch(AUTH_URL!, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: USERNAME,
-        password: PASSWORD,
-      }),
-    });
-
-    if (!authResponse.ok) {
-      return NextResponse.json(
-        { message: "인증 실패" },
-        { status: authResponse.status },
-      );
-    }
-
-    const authData = await authResponse.json();
-    return NextResponse.json(authData, { status: 200 });
-  } else {
-    return NextResponse.json(
-      { message: `Method ${req.method} Not Allowed` },
-      { status: 405 },
-    );
+export async function getAPItoken() {
+  if (!LLAMA_USERNAME || !LLAMA_PASSWORD) {
+    throw new Error("환경 변수 USERNAME 또는 PASSWORD가 설정되지 않았습니다.");
   }
+
+  const authResponse = await fetch(LLAMA_AUTH_URL!, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      grant_type: "password",
+      username: LLAMA_USERNAME,
+      password: LLAMA_PASSWORD,
+      scope: "",
+    }),
+  });
+
+  if (!authResponse.ok) {
+    const errorData = await authResponse.json();
+    throw new Error(`인증 실패: ${JSON.stringify(errorData)}`);
+  }
+
+  const authData = await authResponse.json();
+  return authData.access_token;
 }
 
-export const config = {
-  api: {
-    bodyParser: true,
-  },
-};
+export async function POST() {
+  try {
+    const token = await getAPItoken();
+    return NextResponse.json({ access_token: token });
+  } catch (error) {
+    return handleError(error);
+  }
+}

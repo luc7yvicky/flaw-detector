@@ -13,17 +13,16 @@ const cardVariants = cva("relative flex flex-col", {
       article: "justify-between border border-[#c3c3c3]",
       image: "justify-end hover:bg-opacity-70",
       service:
-        "justify-center items-center shadow-[0_5rem_3.75rem_-2.5rem_rgba(0,0,0,0.25)]",
+        "justify-center items-center bg-white before:content-[''] before:absolute before:inset-0 before:shadow-[0_5rem_3.75rem_-2.5rem_rgba(0,0,0,0.25)] before:rounded-[2.5rem] before:z-30",
     },
     size: {
-      default:
-        "h-[12.5rem] w-[19.375rem] rounded-xl border-primary-100 px-5 py-5",
+      default: "h-[12.5rem] w-[19.375rem] rounded-xl border-primary-100 p-5",
       extended:
-        "h-[13.563rem] w-[26.375rem] gap-6 rounded-lg border-[#c3c3c3] px-7 py-7 [&>*:nth-child(2)]:mt-[-1.25rem]",
-      short: "h-[17.188rem] w-[25.875rem] gap-6 rounded-lg px-7 py-7",
-      long: "h-[16.125rem] w-[54.063rem] gap-6 rounded-lg px-7 py-7",
-      main: "h-[24.375rem] w-[39.063rem] rounded-[1.25rem] px-9 py-9",
-      sub: "h-[24.375rem] w-[19.75rem] rounded-[1.25rem] px-9 py-9",
+        "h-[13.563rem] w-[26.375rem] gap-6 rounded-lg border-[#c3c3c3] p-7 [&>*:nth-child(2)]:mt-[-1.25rem]",
+      short: "h-[17.188rem] w-[25.875rem] gap-6 rounded-lg p-7",
+      long: "h-[16.125rem] w-[54.063rem] gap-6 rounded-lg p-7",
+      main: "h-[24.375rem] w-[39.063rem] rounded-[1.25rem] p-9",
+      sub: "h-[24.375rem] w-[19.75rem] rounded-[1.25rem] p-9",
       service: "h-[28.829rem] w-[21.208rem] rounded-[2.5rem]",
     },
   },
@@ -36,7 +35,7 @@ const cardVariants = cva("relative flex flex-col", {
 const cardContentVariants = cva("", {
   variants: {
     variant: {
-      default: "h-[3.688rem] w-full rounded-2xl px-5 py-5",
+      default: "h-[3.688rem] w-full rounded-2xl p-5",
       emoji: "flex-center-center mb-[2.344rem] mt-[1.694rem] h-fit w-full",
     },
     bgColor: {
