@@ -1,6 +1,4 @@
-"use client";
-
-import { useEffect, useState } from "react";
+import { cn } from "@/lib/utils";
 import { RepoItem } from "@/types/type";
 import {
   IconDoc,
@@ -11,7 +9,6 @@ import {
   IconOnWait,
 } from "../ui/Icons";
 import FileList from "./FileList";
-import { cn } from "@/lib/utils";
 
 export default function FileListItem({
   item,
@@ -22,7 +19,7 @@ export default function FileListItem({
   onToggle: (item: RepoItem) => void;
   isNested: boolean;
 }) {
-  const { name, type, path, expanded, items, status } = item;
+  const { name, type, expanded, items, status } = item;
 
   const handleItemClick = (e: React.MouseEvent<HTMLLIElement>) => {
     e.stopPropagation();

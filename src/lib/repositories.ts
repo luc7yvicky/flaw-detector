@@ -111,7 +111,7 @@ async function fetchRepoContents(
 export async function fetchRootStructure(username: string, repo: string) {
   try {
     console.log(
-      `${username}/${repo} 레포지토리의 최상위 구조를 가져오는 중...`,
+      // `${username}/${repo} 레포지토리의 최상위 구조를 가져오는 중...`,
     );
     return await fetchRepoContents(username, repo);
   } catch (error) {

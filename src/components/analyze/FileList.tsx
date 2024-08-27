@@ -1,6 +1,5 @@
 import { RepoItem } from "@/types/type";
 import FileListItem from "./FileListItem";
-import { cn } from "@/lib/utils";
 
 export default function FileList({
   structure,
@@ -12,7 +11,7 @@ export default function FileList({
   isNested: boolean;
 }) {
   return (
-    <ul >
+    <ul>
       {structure.map((item) => (
         <FileListItem
           key={item.path}
