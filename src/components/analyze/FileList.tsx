@@ -1,4 +1,4 @@
-import { RepoItem } from "@/types/type";
+import { RepoContentItem } from "@/types/type";
 import FileListItem from "./FileListItem";
 
 export default function FileList({
@@ -6,8 +6,8 @@ export default function FileList({
   onToggle,
   isNested = false,
 }: {
-  structure: RepoItem[];
-  onToggle: (item: RepoItem) => void;
+  structure: RepoContentItem[];
+  onToggle: (item: RepoContentItem) => void;
   isNested: boolean;
 }) {
   return (

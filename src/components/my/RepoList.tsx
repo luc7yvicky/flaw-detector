@@ -7,7 +7,6 @@ import { RepoListData } from "@/types/type";
 
 const ITEMS_PER_PAGE = 12;
 
-
 export default function RepoList({
   initialRepos,
 }: {

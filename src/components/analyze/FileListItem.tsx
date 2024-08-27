@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { RepoItem } from "@/types/type";
+import { RepoContentItem } from "@/types/type";
 import {
   IconDoc,
   IconDone,
@@ -9,17 +9,18 @@ import {
   IconOnWait,
 } from "../ui/Icons";
 import FileList from "./FileList";
+import ProcessStatus from "./ProcessStatus";
 
 export default function FileListItem({
   item,
   onToggle,
   isNested,
 }: {
-  item: RepoItem;
-  onToggle: (item: RepoItem) => void;
+  item: RepoContentItem;
+  onToggle: (item: RepoContentItem) => void;
   isNested: boolean;
 }) {
-  const { name, type, expanded, items, status } = item;
+  const { name, type, expanded, items, processStatus } = item;
 
   const handleItemClick = (e: React.MouseEvent<HTMLLIElement>) => {
     e.stopPropagation();
@@ -29,7 +30,7 @@ export default function FileListItem({
   };
 
   const getStatusIcon = () => {
-    switch (status) {
+    switch (processStatus) {
       case "done":
         return <IconDone />;
       case "onProgress":
@@ -62,7 +63,7 @@ export default function FileListItem({
           </div>
           <span className="w-full">{name}</span>
           <div className="justify-self-end">
-            {status ? getStatusIcon() : null}
+            {processStatus ? getStatusIcon() : null}
           </div>
         </div>
       </li>

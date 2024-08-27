@@ -1,5 +1,5 @@
 import { OCTOKIT_TOKEN } from "@/lib/const";
-import { RepoItem, RepoListData } from "@/types/type";
+import { RepoContentItem, RepoListData } from "@/types/type";
 import { Octokit } from "@octokit/rest";
 
 type RepoListRawData = {
@@ -35,12 +35,6 @@ export async function getRepoLists() {
       (repo: RepoListRawData): RepoListData => ({
         id: repo.id,
         repositoryName: repo.name,
-        // label: generateLabel(repo),
-        // labelStatus: generateLabelStatus(repo),
-        // caption: generateCaption(repo),
-        // createdAt: generateCreatedAt(repo),
-        // detectedAt: generateDetectedAt(repo),
-        // filename: generateFilename(repo),
       }),
     );
   } catch (error) {
@@ -53,33 +47,35 @@ export async function getRepoLists() {
 export async function expandFolder(
   username: string,
   repo: string,
-  folder: RepoItem,
-) {
-  if (folder.type !== "dir" || folder.loaded) {
+  folder: RepoContentItem,
+): Promise<RepoContentItem> {
+  if (folder.type !== "dir" || folder.loadingStatus === "loaded") {
     return folder;
   }
 
   try {
+    folder.loadingStatus = "loading";
     folder.items = await fetchRepoContents(username, repo, folder.path);
-    folder.loaded = true;
+    folder.loadingStatus = "loaded";
     return folder;
   } catch (error) {
-    console.error(`${folder.path} 내용을 로드하는 중 오류 발생:`, error);
+    folder.loadingStatus = "error";
+    folder.error =
+      error instanceof Error ? error.message : "Unknown error occurred";
     throw error;
   }
 }
-
 // 해당 경로의 content를 1depth만 읽어옵니다 (폴더/파일)
 async function fetchRepoContents(
   username: string,
   repo: string,
   path: string = "",
-): Promise<RepoItem[]> {
-  try {
-    if (!username || !repo) {
-      throw new Error("GitHub username과 repository가 필요합니다.");
-    }
+): Promise<RepoContentItem[]> {
+  if (!username || !repo) {
+    throw new Error("GitHub username과 repository가 필요합니다.");
+  }
 
+  try {
     const response = await octokit.rest.repos.getContent({
       owner: username,
       repo: repo,
@@ -87,32 +83,32 @@ async function fetchRepoContents(
     });
 
     if (!Array.isArray(response.data)) {
-      // console.warn(`경로 ${path}에 대한 예상치 못한 응답입니다. 건너뜁니다.`);
-      // 오류 상태 업데이트
-      return [];
+      throw new Error(`경로 ${path}에 대한 예상치 못한 응답입니다.`);
     }
 
-    return response.data.map((item: any) => ({
-      name: item.name,
-      path: item.path,
-      type: item.type,
-      size: item.size,
-      sha: item.sha,
-      loaded: item.type === "file",
-      items: item.type === "dir" ? [] : undefined,
-    }));
+    return response.data.map(
+      (item: any): RepoContentItem => ({
+        name: item.name,
+        path: item.path,
+        type: item.type,
+        loadingStatus: item.type === "file" ? "loaded" : "initial",
+        size: item.size,
+        items: item.type === "dir" ? [] : undefined,
+      }),
+    );
   } catch (error) {
-    console.error(`${path}에 대한 레포 내용을 가져오는 중 오류 발생:`, error);
-    throw error;
+    throw new Error(
+      `${path}에 대한 레포 내용을 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "Unknown error"}`,
+    );
   }
 }
 
 // 레포의 최상위 루트폴더의 구조를 fetch합니다.
 export async function fetchRootStructure(username: string, repo: string) {
   try {
-    console.log(
-      // `${username}/${repo} 레포지토리의 최상위 구조를 가져오는 중...`,
-    );
+    // console.log(
+    //   `${username}/${repo} 레포지토리의 최상위 구조를 가져오는 중...`,
+    // );
     return await fetchRepoContents(username, repo);
   } catch (error) {
     console.error("fetchRootStructure에서 오류 발생:", error);

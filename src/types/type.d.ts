@@ -22,16 +22,16 @@ export type RepoListData = {
   filename?: string;
 };
 
-export type RepoItem = {
+export type RepoContentItem = {
   name: string;
   path: string;
   type: "file" | "dir";
-  status?: "done" | "onProgress" | "onWait" | "error";
+  processStatus?: "done" | "onProgress" | "onWait" | "error";
   expanded?: boolean;
   size?: number;
-  sha?: string;
-  loaded?: boolean;
+  loadingStatus: "initial" | "loading" | "loaded" | "error";
   items?: RepoItem[];
+  error?: string; 
 };
 export type ArticleDetailProps = {
   content?: string;

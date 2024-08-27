@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import FileList from "./FileList";
-import { RepoItem } from "@/types/type";
+import { RepoContentItem } from "@/types/type";
 import { expandFolder } from "@/lib/repositories";
 
 export default function FileExplorer({
@@ -11,42 +11,47 @@ export default function FileExplorer({
   username,
   repo,
 }: {
-  initialStructure: RepoItem[];
+  initialStructure: RepoContentItem[];
   username: string;
   repo: string;
 }) {
-  const [structure, setStructure] = useState<RepoItem[]>(initialStructure);
+  const [structure, setStructure] =
+    useState<RepoContentItem[]>(initialStructure);
 
-  const handleToggle = async (item: RepoItem) => {
+  const handleToggle = async (item: RepoContentItem) => {
     if (item.type === "dir") {
-      if (!item.loaded) {
+      if (item.loadingStatus !== "loaded") {
         try {
           setStructure((prevStructure) =>
-            updateStructureRecursively(prevStructure, {
+            updateNestedStructure(prevStructure, {
               ...item,
-              status: "onProgress",
+              loadingStatus: "loading",
             }),
           );
           const expandedFolder = await expandFolder(username, repo, item);
           setStructure((prevStructure) =>
-            updateStructureRecursively(prevStructure, {
+            updateNestedStructure(prevStructure, {
               ...expandedFolder,
               expanded: true,
-              status: "done",
+              loadingStatus: "loaded",
             }),
           );
         } catch (error) {
           console.error("Error expanding folder:", error);
           setStructure((prevStructure) =>
-            updateStructureRecursively(prevStructure, {
+            updateNestedStructure(prevStructure, {
               ...item,
-              status: "error",
+              loadingStatus: "error",
+              error:
+                error instanceof Error
+                  ? error.message
+                  : "Unknown error occurred",
             }),
           );
         }
       } else {
         setStructure((prevStructure) =>
-          updateStructureRecursively(prevStructure, {
+          updateNestedStructure(prevStructure, {
             ...item,
             expanded: !item.expanded,
           }),
@@ -55,10 +60,10 @@ export default function FileExplorer({
     }
   };
 
-  const updateStructureRecursively = (
-    items: RepoItem[],
-    updatedItem: RepoItem,
-  ): RepoItem[] => {
+  const updateNestedStructure = (
+    items: RepoContentItem[],
+    updatedItem: RepoContentItem,
+  ): RepoContentItem[] => {
     return items.map((item) => {
       if (item.path === updatedItem.path) {
         return updatedItem;
@@ -66,7 +71,7 @@ export default function FileExplorer({
       if (item.type === "dir" && item.items) {
         return {
           ...item,
-          items: updateStructureRecursively(item.items, updatedItem),
+          items: updateNestedStructure(item.items, updatedItem),
         };
       }
       return item;
