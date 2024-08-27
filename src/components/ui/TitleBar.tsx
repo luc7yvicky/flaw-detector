@@ -1,17 +1,33 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import Button from "./Button";
-import { IconArrow } from "./Icons";
-// import { IconCaretLeft } from "./Icons";
+import { IconCaretLeft } from "./Icons";
 
 type TitleBarProps = {
-  title: string;
+  hasBackButton?: boolean;
   backPath?: string;
+  title: string;
+  align?: "start" | "center";
+  h1ClassName?: string;
 };
 
-export default function TitleBar({ title, backPath }: TitleBarProps) {
+export default function TitleBar({
+  hasBackButton = true,
+  title,
+  backPath,
+  align = "start",
+  className,
+  h1ClassName,
+  ...props
+}: TitleBarProps & React.HTMLAttributes<HTMLDivElement>) {
   const router = useRouter();
+  const alignStyle =
+    align === "start" ? "flex-center-left" : "flex-center-center";
+  const h1AlignStyle =
+    align === "start" ? "w-flex-center-start" : "flex-center-center w-auto";
+
   const onClickButton = () => {
     if (backPath) {
       router.push(backPath);
@@ -20,35 +36,33 @@ export default function TitleBar({ title, backPath }: TitleBarProps) {
     }
   };
   return (
-    <div className="flex-center-left mb-8 flex h-[4.875rem]">
-      <Button
-        shape="pill"
-        variant="outlined"
-        className="flex-center-center size-[4.875rem] border-[0.25rem]"
-        onClick={onClickButton}
+    <div
+      className={cn("relative mb-8 flex h-[4.875rem]", alignStyle, className)}
+      {...props}
+    >
+      {hasBackButton && (
+        <Button
+          shape="pill"
+          variant="outlined"
+          className={cn(
+            "flex-center-center size-[4.875rem] border-[0.25rem] px-5",
+            align === "center" && "absolute left-0 z-30",
+          )}
+          onClick={onClickButton}
+        >
+          <IconCaretLeft className="stroke-primary-500 stroke-[0.1rem]" />
+        </Button>
+      )}
+      <h1
+        className={cn(
+          "flex size-full h-fit rounded-full border-[0.25rem] border-primary-500 px-[2rem] py-3 text-[2.5rem] leading-tight -tracking-[0.01em] text-primary-500",
+          hasBackButton && "ml-[1.5rem]",
+          h1AlignStyle,
+          h1ClassName,
+        )}
       >
-        {/* <IconCaretLeft /> */}
-        <IconArrow />
-      </Button>
-      <div className="flex-center-start ml-[1.5rem] flex size-full rounded-full border-[0.25rem] border-primary-500 px-[2rem] py-2 text-[2.5rem] text-primary-500">
         {title}
-      </div>
+      </h1>
     </div>
   );
 }
-// export default function TitleBar({ title, backPath }: TitleBarProps) {
-//   return (
-//     <div className="flex-center-left mb-11 flex">
-//       <Button
-//         shape="pill"
-//         variant="outlined"
-//         className="flex-center-center size-20"
-//       >
-//         <IconArrow />
-//       </Button>
-//       <h1 className="ml-[1.825rem] text-[2.5rem] font-bold text-primary-500">
-//         {title}
-//       </h1>
-//     </div>
-//   );
-// }

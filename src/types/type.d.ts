@@ -1,8 +1,7 @@
-export type ArticleDetailProps = {
+export type ArticleListItem = {
+  id: string;
   title: string;
-  content: string;
   createdAt: string;
-  showLabel?: boolean;
   labelVariant?:
     | "hot"
     | "new"
@@ -34,3 +33,7 @@ export type RepoItem = {
   loaded?: boolean;
   items?: RepoItem[];
 };
+export type ArticleDetailProps = {
+  content?: string;
+  showLabel?: boolean;
+} & ArticleListItem;
