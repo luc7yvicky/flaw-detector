@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Dropdown from "@/components/ui/Dropdown";
 import { Suspense } from "react";
-import { getRepoLists } from "@/lib/octokit";
+import { getRepoLists } from "@/lib/repositories";
 import RepoList from "@/components/my/RepoList";
 import { RepoListData } from "@/types/type";
 
