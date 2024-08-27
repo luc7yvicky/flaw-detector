@@ -17,11 +17,10 @@ const octokit = new Octokit({
 });
 
 // 레포지토리 리스트를 불러옵니다.
-export async function getRepoLists() {
+export async function getRepoLists(username: string) {
   try {
-    const username = "joanshim";
     if (!username) {
-      throw new Error("GitHub username is not set");
+      throw new Error("GitHub username이 존재하지 않습니다");
     }
 
     const { data } = await octokit.request("GET /users/{username}/repos", {
@@ -38,7 +37,7 @@ export async function getRepoLists() {
       }),
     );
   } catch (error) {
-    console.error("Error fetching repos:", error);
+    console.error("레포지토리 목록을 읽어오는 데 실패했습니다:", error);
     throw error;
   }
 }
@@ -61,7 +60,9 @@ export async function expandFolder(
   } catch (error) {
     folder.loadingStatus = "error";
     folder.error =
-      error instanceof Error ? error.message : "Unknown error occurred";
+      error instanceof Error
+        ? error.message
+        : "알 수 없는 에러가 발생했습니다.";
     throw error;
   }
 }
@@ -98,7 +99,7 @@ async function fetchRepoContents(
     );
   } catch (error) {
     throw new Error(
-      `${path}에 대한 레포 내용을 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "Unknown error"}`,
+      `${path}에 대한 레포 내용을 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
     );
   }
 }

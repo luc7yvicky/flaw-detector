@@ -37,7 +37,7 @@ export default function FileExplorer({
             }),
           );
         } catch (error) {
-          console.error("Error expanding folder:", error);
+          console.error("하위 콘텐츠를 읽어오는 데 실패했습니다:", error);
           setStructure((prevStructure) =>
             updateNestedStructure(prevStructure, {
               ...item,
@@ -45,7 +45,7 @@ export default function FileExplorer({
               error:
                 error instanceof Error
                   ? error.message
-                  : "Unknown error occurred",
+                  : "알 수 없는 에러가 발생했습니다.",
             }),
           );
         }

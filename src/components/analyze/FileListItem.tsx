@@ -9,7 +9,6 @@ import {
   IconOnWait,
 } from "../ui/Icons";
 import FileList from "./FileList";
-import ProcessStatus from "./ProcessStatus";
 
 export default function FileListItem({
   item,
@@ -26,6 +25,8 @@ export default function FileListItem({
     e.stopPropagation();
     if (type === "dir") {
       onToggle(item);
+    } else if (type === "file") {
+      // 선택된 파일의 path로 코드파일 읽어오기
     }
   };
 
@@ -63,7 +64,7 @@ export default function FileListItem({
           </div>
           <span className="w-full">{name}</span>
           <div className="justify-self-end">
-            {processStatus ? getStatusIcon() : null}
+            {processStatus && getStatusIcon()}
           </div>
         </div>
       </li>
