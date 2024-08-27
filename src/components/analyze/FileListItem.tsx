@@ -51,6 +51,7 @@ export default function FileListItem({
         className={cn(
           "flex cursor-pointer border-t border-line-default px-3 py-2 hover:bg-purple-light",
           isNested && "pl-6",
+          expanded && "bg-purple-50",
         )}
         onClick={handleItemClick}
       >
