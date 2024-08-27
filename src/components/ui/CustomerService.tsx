@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import { Input } from "./Input";
 import { TextArea } from "./TextArea";
 import { useState } from "react";
-import Modal from "./Modal";
 
 export default function CustomerService({ className }: { className?: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -105,13 +104,6 @@ export default function CustomerService({ className }: { className?: string }) {
           문의 보내기
         </button>
       </form>
-
-      <Modal
-        variant="inquirySubmitted"
-        size="extraLarge"
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-      />
     </section>
   );
 }

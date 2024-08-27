@@ -125,3 +125,32 @@ export const vulnerabilityDBDatas = [
     createdAt: "2024.03.11 09:20:55",
   },
 ];
+
+//selectedfile 모달에서 쓰이는 더미데이터
+export const dummyFileItems = [
+  {
+    title: "file name 1",
+    subtitle: "file sub title 1",
+    date: "4 months ago",
+  },
+  {
+    title: "file name 2",
+    subtitle: "file sub title 2",
+    date: "4 months ago",
+  },
+  {
+    title: "file name 3",
+    subtitle: "file sub title 3",
+    date: "4 months ago",
+  },
+  {
+    title: "file name 4",
+    subtitle: "file sub title 4",
+    date: "4 months ago",
+  },
+  {
+    title: "file name 5",
+    subtitle: "file sub title 5",
+    date: "4 months ago",
+  },
+];
