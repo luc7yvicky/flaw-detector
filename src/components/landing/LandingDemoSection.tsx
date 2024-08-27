@@ -2,7 +2,7 @@ import { exampleCode } from "@/lib/dummy";
 import ProcessStatus from "../analyze/ProcessStatus";
 import Button from "../ui/Button";
 
-export default function Section3() {
+export default function LandingDemoSection() {
   return (
     <section className="flex-end-center relative max-h-screen min-h-dvh w-full overflow-y-clip px-[9.063rem]">
       <article className="absolute left-[12rem] top-[5.7rem] w-[45.313rem] overflow-x-visible rounded-lg border border-neutral-30 p-10">
@@ -38,10 +38,10 @@ export default function Section3() {
         </div>
       </article>
       <article className="mt-[7%] flex w-fit flex-col gap-y-[2.125rem]">
-        <p className="flex-col-end-center w-full space-y-3 truncate text-[3.75rem] font-bold leading-[4.538rem] -tracking-[0.011em] text-primary-500">
+        <h3 className="flex-col-end-center w-full space-y-3 truncate text-[3.75rem] font-bold leading-[4.538rem] -tracking-[0.011em] text-primary-500">
           <span>최신 보안 동향을</span>
           <span>실시간으로 확인하세요.</span>
-        </p>
+        </h3>
         <p className="flex-col-end-center w-full space-y-2 text-xl font-medium leading-[1.513rem] -tracking-[0.011em] text-gray-default">
           <span>실시간으로 최신 보안 동향을 제공하여</span>
           <span>개발자들이 보안 취약점에 대한 최신 정보를 받을 수 있어</span>
