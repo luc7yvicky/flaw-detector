@@ -7,4 +7,3 @@ export const OCTOKIT_TOKEN = process.env.API_GITHUB_TOKEN;
 
 export const ITEMS_PER_DB_PAGE = 5;
 export const DB_PAGES_PER_GROUP = 10;
-

@@ -1,12 +1,14 @@
-import Image from "next/image";
-import Link from "next/link";
-import Dropdown from "@/components/ui/Dropdown";
-import { Suspense } from "react";
-import { getRepoLists } from "@/lib/repositories";
+import Profile from "@/components/my/Profile";
 import RepoList from "@/components/my/RepoList";
+import Button from "@/components/ui/Button";
+import Dropdown from "@/components/ui/Dropdown";
+import TitleBar from "@/components/ui/TitleBar";
+import { getRepoLists } from "@/lib/repositories";
 import { RepoListData } from "@/types/type";
+import Link from "next/link";
+import { Suspense } from "react";
 
-export default async function Repos() {
+export default async function ReposPage() {
   const repos: RepoListData[] = await getRepoLists();
   return (
     <>
@@ -49,7 +51,6 @@ export default async function Repos() {
               <Dropdown type="sort" />
             </div>
           </div>
-
           <Suspense fallback={<div>Loading repos...</div>}>
             <RepoList initialRepos={repos} />
           </Suspense>
