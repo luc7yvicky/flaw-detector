@@ -9,7 +9,7 @@ interface ProcessStatusProps extends StatusVariantsProps {
 }
 
 const statusVariants = cva(
-  "mb-8 w-full max-w-[20rem] rounded-lg border py-[0.625rem] text-center text-xl",
+  "mb-8 w-full max-w-[25.625rem] max-h-[2.75rem] rounded-lg border py-[0.625rem] text-center text-xl",
   {
     variants: {
       status: {
@@ -35,7 +35,7 @@ export default function ProcessStatus({
     <div className="flex w-full flex-col items-center">
       <div className="mb-6">
         {status === "inProgress" ? (
-          <IconOnProcess className="animate-spin" size={40}/>
+          <IconOnProcess className="animate-spin" size={40} />
         ) : (
           <IconDone />
         )}

@@ -10,7 +10,7 @@ const colorVariants = {
 };
 
 const infoBoxVariants = cva(
-  "flex-col-start-center relative h-fit w-full gap-y-[0.625rem] rounded-xl px-5 py-5",
+  "flex-col-start-center relative h-fit w-full gap-y-[0.625rem] rounded-xl p-5",
   {
     variants: {
       variant: {
