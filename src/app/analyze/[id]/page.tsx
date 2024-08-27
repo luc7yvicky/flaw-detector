@@ -19,7 +19,7 @@ export default function AnalyzePage() {
   };
 
   return (
-    <section className="mx-auto w-full max-w-[110rem] px-[1rem]">
+    <section className="mx-auto mb-7 w-full max-w-[110rem] px-[1rem]">
       <TitleBar title="sfacweb-01" />
       <div className="grid grid-cols-[16rem_1fr] gap-7">
         <Button>선택한 파일 검사</Button>
@@ -38,9 +38,9 @@ export default function AnalyzePage() {
             <StatusWarning>{counts.warning}</StatusWarning>
             <StatusSuccess>{counts.success}</StatusSuccess>
           </Status>
-          <FileListServer username="joanshim" repo="flaw-detector"/>
+          <FileListServer username="joanshim" repo="flaw-detector" />
         </div>
-        <div className="mb-7 flex flex-col gap-7 lg:flex-row">
+        <div className="flex h-full flex-col gap-7 lg:flex-row">
           <CodeViewer type="asIs" />
           <CodeViewer type="toBe" />
         </div>

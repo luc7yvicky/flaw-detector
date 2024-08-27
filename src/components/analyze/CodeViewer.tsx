@@ -32,7 +32,7 @@ export default function CodeViewer({ type, status, code }: CodeViewerProps) {
   };
 
   return (
-    <div className="flex-center-center min-h-[calc(100dvh-136px-80px-28px-3rem)] w-full flex-col rounded-lg border border-[#c3c3c3] p-11">
+    <div className="flex-center-center w-full flex-col rounded-lg border border-[#c3c3c3] p-11">
       {renderContent()}
     </div>
   );

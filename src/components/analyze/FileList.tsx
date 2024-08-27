@@ -11,7 +11,7 @@ export default function FileList({
   isNested: boolean;
 }) {
   return (
-    <ul>
+    <ul className="scrollbar-hide max-h-[calc(100dvh-12rem)] overflow-y-scroll">
       {structure.map((item) => (
         <FileListItem
           key={item.path}
