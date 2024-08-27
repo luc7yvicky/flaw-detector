@@ -9,7 +9,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 export default async function ReposPage() {
-  const repos: RepoListData[] = await getRepoLists();
+  const repos: RepoListData[] = await getRepoLists("joanshim");
   return (
     <>
       <div className="flex-col-center-center mt-[3.5rem] gap-y-5">
