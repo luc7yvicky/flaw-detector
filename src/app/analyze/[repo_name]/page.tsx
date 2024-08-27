@@ -10,15 +10,13 @@ import Button from "@/components/ui/Button";
 import { InputChip } from "@/components/ui/InputChip";
 import ProgressBar from "@/components/ui/ProgressBar";
 import TitleBar from "@/components/ui/TitleBar";
-import { headers } from "next/headers";
 
-export default function AnalyzePage() {
-  const headersList = headers();
-  const path = headersList.get("x-invoke-path") || "";
-
-  // '/analyze/' 이후의 문자열을 repo 값으로 추출
-  const repoMatch = path.match(/\/analyze\/(.+)/);
-  const repo = repoMatch ? repoMatch[1] : "";
+export default function AnalyzePage({
+  params,
+}: {
+  params: { repo_name: string };
+}) {
+  const repo = params.repo_name || "";
 
   const counts = {
     error: 8,
@@ -28,7 +26,7 @@ export default function AnalyzePage() {
 
   return (
     <section className="mx-auto mb-7 w-full max-w-[110rem] px-[1rem]">
-      <TitleBar title={repo ? repo : "loading..."} />
+      <TitleBar title={repo} />
       <div className="grid grid-cols-[16rem_1fr] gap-7">
         <Button>선택한 파일 검사</Button>
         <div className="rounded-lg border border-line-default p-5">
