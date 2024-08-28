@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import FileList from "./FileList";
 import { RepoContentItem } from "@/types/type";
-import { expandFolder } from "@/lib/repositories";
+import { expandFolder } from "@/lib/api/repositories";
 
 export default function FileExplorer({
   initialStructure,
