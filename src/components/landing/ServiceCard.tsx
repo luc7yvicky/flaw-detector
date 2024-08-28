@@ -74,7 +74,13 @@ export default function ServiceCard({
     <Card variant="service" size="service" className={className}>
       <ServiceLabel color={color}>{title}</ServiceLabel>
       <CardContent variant="emoji" bgColor="transparent">
-        <Image src={image} alt="key" width={120} height={180} />
+        <Image
+          src={image}
+          alt="service emoji"
+          width={120}
+          height={180}
+          style={{ width: 120, height: 180 }}
+        />
       </CardContent>
       <div className="flex-col-center-center gap-y-1">
         {descriptions.map((description, index) => (

@@ -1,53 +1,64 @@
+import { getAPItoken } from "@/lib/api/llama3";
+import { LLAMA_API_URL } from "@/lib/const";
 import { NextRequest, NextResponse } from "next/server";
-import { API_URL, PASSWORD, USERNAME } from "@/lib/const";
 
-export default async function handler(req: NextRequest) {
-  if (req.method === "POST") {
-    // 인증 진행
-    const authReq = await fetch(API_URL!, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: USERNAME,
-        password: PASSWORD,
-      }),
-    });
+export async function POST(request: NextRequest) {
+  try {
+    // 1. 인증 토큰 획득
+    const token = await getAPItoken();
 
-    if (!authReq.ok) {
+    // 2. 요청 본문 파싱
+    const body = await request.json();
+
+    // 3. 필수 필드 검증
+    if (
+      !body.user_message ||
+      typeof body.temperature !== "number" ||
+      typeof body.top_p !== "number"
+    ) {
       return NextResponse.json(
-        { message: "인증 실패" },
-        { status: authReq.status },
+        { message: "필수 필드 누락 또는 잘못된 형식", body: body },
+        { status: 400 },
       );
     }
 
-    const authData = await authReq.json();
-    const token = authData.access_token;
-
-    // 데이터 생성 요청
-    const genResponse = await fetch(process.env.NEXT_PUBLIC_API_URL!, {
+    // 4. Llama API로 요청 전송
+    const generateResponse = await fetch(LLAMA_API_URL!, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(await req.json()), // req.body 대신 req.json()을 사용해 Body를 파싱
+      body: JSON.stringify({
+        // prompt 추가 예정
+        user_message: body.user_message,
+        temperature: body.temperature,
+        top_p: body.top_p,
+      }),
     });
 
-    if (!genResponse.ok) {
+    // Llama API 응답 처리
+    const generateResponseText = await generateResponse.text();
+
+    if (!generateResponse.ok) {
       return NextResponse.json(
-        { message: "요청 실패" },
-        { status: genResponse.status },
+        {
+          message: "Llama API 오류",
+          error: generateResponseText,
+        },
+        { status: generateResponse.status },
       );
     }
 
-    const data = await genResponse.json();
-    return NextResponse.json(data, { status: 200 });
-  } else {
+    // 텍스트 응답을 그대로 반환
+    return NextResponse.json({
+      generated_text: generateResponseText,
+    });
+  } catch (error) {
+    console.error("요청 처리 중 오류 발생:", error);
     return NextResponse.json(
-      { message: `Method ${req.method} Not Allowed` },
-      { status: 405 },
+      { message: "서버 오류", error: String(error) },
+      { status: 500 },
     );
   }
 }
