@@ -1,5 +1,6 @@
+
+import { getChromeExecutablePath } from "@/lib/api/web-crawling";
 import puppeteer from "puppeteer-core";
-import { getChromeExecutablePath } from "../cisa/route";
 
 export async function GET() {
   const executablePath = getChromeExecutablePath();
@@ -13,7 +14,7 @@ export async function GET() {
   const page = await browser.newPage();
 
   // 크롤링할 사이트 URL로 이동
-  await page.goto("");
+  await page.goto("https://nextjs.org/");
 
   // 크롤링 코드 작성
 
