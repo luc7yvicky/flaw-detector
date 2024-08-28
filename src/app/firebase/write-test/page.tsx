@@ -2,7 +2,7 @@
 "use client";
 import { useState } from "react";
 
-export default function TestPage() {
+export default function WriteDataPage() {
   const [docData, setDocData] = useState({ name: "", age: "" });
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);

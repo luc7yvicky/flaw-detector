@@ -1,8 +1,8 @@
-// 데이터 읽기 테스트 코드
 "use client";
 import { useState } from "react";
 
-export default function TestPage() {
+// 데이터 읽기 테스트 코드
+export default function ReadDataPage() {
   const [docData, setDocData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
