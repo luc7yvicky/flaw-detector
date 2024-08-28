@@ -5,7 +5,7 @@ import { IconRoundedDoc } from "./Icons";
 const modalVariants = cva("relative flex flex-col bg-white ", {
   variants: {
     variant: {
-      selectFile: "justify-center items-center  border", //임시보더
+      selectFile: "justify-center items-center ",
       processing: "justify-center items-center",
       login:
         "justify-center items-center shadow-[0_0_1.55rem_rgba(0,0,0,0.25)]",
