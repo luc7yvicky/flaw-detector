@@ -150,8 +150,8 @@ function CardTitle({
   const textWeight = {
     bold: "font-semibold",
     normal: "font-normal",
-    default: "font-medium"
-  }
+    default: "font-medium",
+  };
   const textColor = color ? { color } : { color: "#3F3F3F" };
 
   return (
