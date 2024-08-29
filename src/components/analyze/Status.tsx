@@ -9,7 +9,7 @@ function Status({
   return (
     <div
       className={cn(
-        "flex-center-center h-[4.063rem] w-[15.375rem] gap-x-5 rounded-lg border border-line-default p-5 text-[1.268rem] font-medium -tracking-[0.01rem]",
+        "flex-center-center h-[4.063rem] w-full gap-x-5 rounded-lg border border-line-default p-5 text-[1.268rem] font-medium -tracking-[0.01rem]",
         className,
       )}
       {...props}

@@ -1,10 +1,24 @@
-export const LLAMA_AUTH_URL = process.env.NEXT_PUBLIC_LLAMA_AUTH_URL;
-export const LLAMA_API_URL = process.env.NEXT_PUBLIC_LLAMA_API_URL;
-export const LLAMA_USERNAME = process.env.NEXT_PUBLIC_LLAMA_USERNAME;
-export const LLAMA_PASSWORD = process.env.NEXT_PUBLIC_LLAMA_PASSWORD;
+export const LLAMA_AUTH_URL = process.env.LLAMA_AUTH_URL;
+export const LLAMA_API_URL = process.env.LLAMA_API_URL;
+export const LLAMA_USERNAME = process.env.LLAMA_USERNAME;
+export const LLAMA_PASSWORD = process.env.LLAMA_PASSWORD;
+
+export const OCTOKIT_TOKEN = process.env.API_GITHUB_TOKEN;
 
 export const GITHUB_ID = process.env.AUTH_GITHUB_ID;
 export const GITHUB_SECRET = process.env.AUTH_GITHUB_SECRET;
 
 export const ITEMS_PER_DB_PAGE = 5;
 export const DB_PAGES_PER_GROUP = 10;
+
+export const FIREBASE_API_KEY = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
+export const FIREBASE_AUTH_DOMAIN =
+  process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN;
+export const FIREBASE_PROJECT_ID = process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
+export const FIREBASE_STORAGE_BUCKET =
+  process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET;
+export const FIREBASE_MESSAGING_SENDER_ID =
+  process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID;
+export const FIREBASE_APP_ID = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
+export const FIREBASE_MEASUREMENTID =
+  process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENTID;
