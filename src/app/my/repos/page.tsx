@@ -3,7 +3,7 @@ import RepoList from "@/components/my/RepoList";
 import Button from "@/components/ui/Button";
 import Dropdown from "@/components/ui/Dropdown";
 import TitleBar from "@/components/ui/TitleBar";
-import { getRepoLists } from "@/lib/repositories";
+import { getRepoLists } from "@/lib/api/repositories";
 import { RepoListData } from "@/types/type";
 import Link from "next/link";
 import { Suspense } from "react";

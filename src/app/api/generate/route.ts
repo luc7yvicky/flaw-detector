@@ -1,6 +1,5 @@
 import { getAPItoken } from "@/lib/api/llama3";
 import { LLAMA_API_URL } from "@/lib/const";
-import { getAPItoken } from "@/lib/api/llama3";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
