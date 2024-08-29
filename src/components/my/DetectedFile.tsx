@@ -1,3 +1,4 @@
+import { RepoListData } from "@/types/type";
 import {
   Card,
   CardHeader,
@@ -6,14 +7,14 @@ import {
   CardTitleWrapper,
 } from "../ui/Card";
 import { Label } from "../ui/Label";
-import { RepoInfo } from "./Repo";
+
 
 export default function DetectedFile({
   id,
   label,
   detectedAt,
   filename,
-}: RepoInfo) {
+}: RepoListData) {
   return (
     <Card key={id}>
       <CardHeader hasMenu>
