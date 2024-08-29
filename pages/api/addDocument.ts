@@ -11,7 +11,7 @@ export default async function handler(
 
     try {
       // Firestore에 최초 문서 추가 (또는 기존 문서 업데이트)
-      const docRef = doc(db, "사용자", id);
+      const docRef = doc(db, "사용자", id); //"사용자"에 추가하고 싶은 컬렉션 명을 입력
       await setDoc(docRef, data);
 
       res.status(200).json({ message: "Document successfully written!" });
