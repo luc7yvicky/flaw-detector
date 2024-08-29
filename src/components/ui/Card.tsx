@@ -141,30 +141,25 @@ function CardTitle({
   children,
   ...props
 }: CardTitleProps) {
-  const textColor = color ? { color } : { color: "#3F3F3F" };
-  const getTextSize = (size: string) => {
-    switch (size) {
-      case "big":
-        return "text-[1.75rem] leading-[2.45rem]";
-      case "small":
-        return "text-xl leading-[1.513rem]";
-      case "xsmall":
-        return "text-lg leading-[1.361rem]";
-      default:
-        return "text-2xl leading-9";
-    }
+  const textSize = {
+    big: "text-[1.75rem] leading-[2.45rem]",
+    small: "text-xl leading-[1.513rem]",
+    xsmall: "text-lg leading-[1.361rem]",
+    default: "text-2xl leading-9",
   };
+  const textWeight = {
+    bold: "font-semibold",
+    normal: "font-normal",
+    default: "font-medium"
+  }
+  const textColor = color ? { color } : { color: "#3F3F3F" };
 
   return (
     <p
       className={cn(
         "line-clamp-2 text-ellipsis tracking-[-0.01em]",
-        getTextSize(size),
-        weight === "bold"
-          ? "font-semibold"
-          : weight === "normal"
-            ? "font-normal"
-            : "font-medium",
+        textSize[size],
+        textWeight[weight],
         className,
       )}
       style={textColor}
@@ -183,12 +178,18 @@ function CardSubTitle({
   children,
   ...props
 }: CardTitleProps) {
+  const textSize = {
+    big: "text-xl",
+    small: "text-xs",
+    xsmall: "text-xs",
+    default: "text-base",
+  };
   const textColor = color ? { color } : { color: "text-gray-default" };
   return (
     <span
       className={cn(
         "flex items-center tracking-[-0.01em] text-gray-default",
-        size === "big" ? "text-xl" : size === "small" ? "text-xs" : "text-base",
+        textSize[size],
         isSingleLine && "basis-full",
         className,
       )}
