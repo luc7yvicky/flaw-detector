@@ -1,6 +1,6 @@
-import LandingDemoSection from "@/components/landing/LandingDemoSection";
-import LandingFeatureSection from "@/components/landing/LandingFeatureSection";
 import LandingHeroSection from "@/components/landing/LandingHeroSection";
+import LandingFeatureSection from "@/components/landing/LandingFeatureSection";
+import LandingDemoSection from "@/components/landing/LandingDemoSection";
 import LandingServiceSection from "@/components/landing/LandingServiceSection";
 import CustomerService from "@/components/ui/CustomerService";
 import { redirectIfLoggedIn } from "@/lib/redirect";
