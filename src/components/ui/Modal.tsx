@@ -94,11 +94,7 @@ export function List({ items }: ListProps) {
               },
             )}
           >
-            <ListItem
-              title={item.title}
-              subtitle={item.subtitle}
-              date={item.date}
-            />
+            <ListItem {...item} />
           </ul>
         ))}
       </div>
@@ -143,29 +139,20 @@ export function ModalTitle({
   ...props
 }: ModalTitleProps) {
   const textColor = color ? { color } : { color: "#3F3F3F" };
-  const getTextSize = (size: string) => {
-    switch (size) {
-      case "big":
-        return "text-[2.25rem] leading-[3.375rem]"; //inquirySubmitted
-      case "small":
-        return "text-[1.15rem] leading-[1.512rem]"; //login
-      default:
-        return "text-[1.5rem] leading-[1.816rem]"; //processing, selectFile
-    }
-  };
+  const textSize = {
+    big: "text-[2.25rem] leading-[3.375rem]", //inquirySubmitted
+    small: "text-[1.15rem] leading-[1.512rem]", //login
+    default: "text-[1.5rem] leading-[1.816rem]", //processing, selectFile
+  }[size];
+  const fontWeight = {
+    bold: "font-bold", //inquirySubmitted
+    "semi-bold": "font-semibold", //selectedfile
+    default: "font-medium", //login
+  }[weight];
 
   return (
     <p
-      className={cn(
-        "tracking-[-0.01em]",
-        getTextSize(size),
-        weight === "default"
-          ? "font-medium" //login
-          : weight === "semi-bold" //selectedfile
-            ? "font-semibold"
-            : "font-bold", //inquirySubmitted
-        className,
-      )}
+      className={cn("tracking-[-0.01em]", textSize, fontWeight, className)}
       style={textColor}
       {...props}
     >
@@ -182,20 +169,12 @@ export function ModalTitleWrapper({
   variant: ModalVariant;
   children: React.ReactNode;
 }) {
-  const marginBottom = (() => {
-    switch (variant) {
-      case "selectFile":
-        return "mb-10";
-      case "processing":
-        return "mb-6";
-      case "login":
-        return "mb-8";
-      case "inquirySubmitted":
-        return "gap-[1.438rem]";
-      default:
-        return "";
-    }
-  })();
+  const marginBottom = {
+    selectFile: "mb-10",
+    processing: "mb-6",
+    login: "mb-8",
+    inquirySubmitted: "gap-[1.438rem]",
+  }[variant];
 
   return (
     <div className={cn("flex flex-col items-center", marginBottom)} {...props}>
@@ -206,22 +185,21 @@ export function ModalTitleWrapper({
 
 export function ModalDescription({
   size = "default",
-  color,
+  color = "text-gray-default",
   isSingleLine = false,
   className,
   children,
   ...props
 }: ModalTitleProps) {
-  const textColor = color ? { color } : { color: "text-gray-default" };
   return (
     <span
       className={cn(
-        "flex items-center tracking-[-0.01em] text-gray-default",
+        "flex items-center tracking-[-0.01em]",
         size === "big" ? "text-2xl" : size === "small" ? "text-xl" : "text-xs",
         isSingleLine && "basis-full",
+        color,
         className,
       )}
-      style={textColor}
       {...props}
     >
       {children}
