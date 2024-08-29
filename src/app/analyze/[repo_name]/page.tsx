@@ -13,7 +13,7 @@ import TitleBar from "@/components/ui/TitleBar";
 
 export default function AnalyzePage({
   params,
-}: {z
+}: {
   params: { repo_name: string };
 }) {
   const repo = params.repo_name || "";
@@ -46,10 +46,7 @@ export default function AnalyzePage({
           </Status>
           <FileListServer repo={repo} />
         </div>
-        <div className="flex h-full flex-col gap-7 lg:flex-row">
-          <CodeViewer type="asIs" />
-          <CodeViewer type="toBe" />
-        </div>
+        <CodeViewer />
       </div>
     </section>
   );
