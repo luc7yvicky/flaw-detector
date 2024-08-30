@@ -25,9 +25,10 @@ export async function getAllPosts(): Promise<Post[]> {
         source: docSnapshot.data().source,
         page_url: docSnapshot.data().page_url,
         title: docSnapshot.data().title,
-        created_at: docSnapshot.data().timestamp,
+        created_at: docSnapshot.data().created_at,
         content: docSnapshot.data().content,
       };
+
       posts.push(post);
     });
 
