@@ -1,12 +1,12 @@
-import { Post } from "@/types/post";
+import { VulnDBPost } from "@/types/type";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import db from "../../../firebaseConfig";
 
 /**
  * Firestore에서 모든 post를 가져옵니다.
- * @returns Promise<Post[]>
+ * @returns Promise<VulnDBPost[]>
  */
-export async function getAllPosts(): Promise<Post[]> {
+export async function getAllPosts(): Promise<VulnDBPost[]> {
   try {
     const postsCollection = collection(db, "posts");
     const postsSnapshot = await getDocs(postsCollection);
@@ -15,7 +15,7 @@ export async function getAllPosts(): Promise<Post[]> {
       return [];
     }
 
-    const posts: Post[] = [];
+    const posts: VulnDBPost[] = [];
     postsSnapshot.forEach((docSnapshot) => {
       // console.log(docSnapshot.id, " => ", docSnapshot.data());
 
@@ -41,9 +41,9 @@ export async function getAllPosts(): Promise<Post[]> {
 
 /**
  * Firestore에 새로운 post를 추가합니다.
- * @returns Promise<Post>
+ * @returns Promise<VulnDBPost>
  */
-export async function addPost(newPost: Post): Promise<Post> {
+export async function addPost(newPost: VulnDBPost): Promise<VulnDBPost> {
   try {
     const postsCollection = collection(db, "posts");
     const newPostRef = doc(postsCollection);

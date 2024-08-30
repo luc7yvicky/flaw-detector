@@ -31,9 +31,20 @@ export type RepoContentItem = {
   size?: number;
   loadingStatus: "initial" | "loading" | "loaded" | "error";
   items?: RepoItem[];
-  error?: string; 
+  error?: string;
 };
+
 export type ArticleDetailProps = {
   content?: string;
   showLabel?: boolean;
 } & ArticleListItem;
+
+export type VulnDBPost = {
+  id: string;
+  label: "기타" | "취약성 보고서" | "취약성 알림" | "취약성 경고";
+  source: "CERT/CC" | "CNNVD";
+  page_url: string;
+  title: string;
+  created_at: { seconds: number; nanoseconds: number }; // firestore timestamp
+  content: { block_id: string; text: string }[];
+};
