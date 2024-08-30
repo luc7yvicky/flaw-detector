@@ -1,23 +1,35 @@
+import Profile from "@/components/my/Profile";
 import Button from "@/components/ui/Button";
 import Switch from "@/components/ui/Switch";
 import TitleBar from "@/components/ui/TitleBar";
-import Profile from "@/components/my/Profile";
+import { logout } from "@/lib/actions";
 
 export default function SettingsPage() {
+  // 임시 데이터, db에서 데이터 받아와서 뿌릴 예정
+  const user = {
+    email: "gheddong2@naver.com",
+    image: "https://avatars.githubusercontent.com/u/87695983?v=4",
+  };
+
   return (
-    <>
+    <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <TitleBar title="Settings" align="center" className="mb-0 mt-[4.5rem]" />
 
       <div className="flex flex-col gap-y-20 last:mb-[5.438rem]">
         <section className="flex flex-col gap-y-20">
           <div className="flex-between-center h-[6.688rem] gap-4">
-            <Profile avatar="/images/user.png" email="marry@gmail.com" />
-            <Button
-              variant="outlined"
-              className="flex-center-center px-5 py-4 text-2xl font-medium"
-            >
-              로그아웃
-            </Button>
+            <Profile
+              avatar={user?.image || "/images/user.png"}
+              email={user?.email || "marry@gmail.com"}
+            />
+            <form action={logout}>
+              <Button
+                variant="outlined"
+                className="flex-center-center px-5 py-4 text-2xl font-medium"
+              >
+                로그아웃
+              </Button>
+            </form>
           </div>
           <hr />
         </section>
@@ -40,6 +52,6 @@ export default function SettingsPage() {
           </div>
         </section>
       </div>
-    </>
+    </div>
   );
 }

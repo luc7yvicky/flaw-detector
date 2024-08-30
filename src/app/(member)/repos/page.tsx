@@ -10,8 +10,13 @@ import { Suspense } from "react";
 
 export default async function ReposPage() {
   const repos: RepoListData[] = await getRepoLists("joanshim");
+  const user = {
+    email: "gheddong2@naver.com",
+    image: "https://avatars.githubusercontent.com/u/87695983?v=4",
+  };
+
   return (
-    <>
+    <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <div className="flex-col-center-center mt-[3.5rem] gap-y-5">
         <span className="text-[3.75rem] font-light leading-[1.2] -tracking-[0.01em] text-primary-500">
           containing code files
@@ -28,8 +33,11 @@ export default async function ReposPage() {
       <div className="flex flex-col gap-y-20">
         <section className="flex flex-col gap-y-20">
           <div className="flex-between-center h-[6.688rem] gap-4">
-            <Profile avatar="/images/user.png" email="marry@gmail.com" />
-            <Link href="/my/profile">
+            <Profile
+              avatar={user?.image || "/images/user.png"}
+              email={user?.email || "marry@gmail.com"}
+            />
+            <Link href="/me">
               <Button
                 variant="outlined"
                 className="flex-center-center px-5 py-4 text-2xl font-medium"
@@ -56,6 +64,6 @@ export default async function ReposPage() {
           </Suspense>
         </section>
       </div>
-    </>
+    </div>
   );
 }

@@ -11,7 +11,7 @@ import { InputChip } from "@/components/ui/InputChip";
 import ProgressBar from "@/components/ui/ProgressBar";
 import TitleBar from "@/components/ui/TitleBar";
 
-export default function AnalyzePage({
+export default function RepoPage({
   params,
 }: {
   params: { repo_name: string };

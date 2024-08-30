@@ -11,6 +11,11 @@ export type ArticleListItem = {
   labelText?: string;
 };
 
+export type ArticleDetailProps = {
+  content?: string;
+  showLabel?: boolean;
+} & ArticleListItem;
+
 export type RepoListData = {
   id: number;
   repositoryName: string;
@@ -31,9 +36,5 @@ export type RepoContentItem = {
   size?: number;
   loadingStatus: "initial" | "loading" | "loaded" | "error";
   items?: RepoItem[];
-  error?: string; 
+  error?: string;
 };
-export type ArticleDetailProps = {
-  content?: string;
-  showLabel?: boolean;
-} & ArticleListItem;
