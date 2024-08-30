@@ -21,7 +21,7 @@ export default function RepoList({
   const currentRepos = repos.slice(startIndex, endIndex);
 
   return (
-    <div className="flex-between-center relative grid grid-cols-4 gap-x-6 gap-y-12">
+    <div className="flex-between-center relative grid grid-cols-4 grid-rows-3 gap-x-6 gap-y-12">
       {currentRepos.map((repo) => (
         <Repo key={repo.repositoryName} {...repo} />
       ))}

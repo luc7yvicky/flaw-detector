@@ -116,7 +116,7 @@ export type ModalTitleProps = React.HTMLAttributes<HTMLDivElement> & {
 
 export function Modal({ variant, size, className, ...props }: ModalProps) {
   return (
-    <div className="flex-center-center fixed inset-0 z-50">
+    <div className="flex-center-center absolute inset-0 z-50">
       {/* 로그인 모달이 아닐 때만 어두운 배경 처리*/}
       {variant !== "login" && (
         <div className="fixed inset-0 bg-black opacity-50"></div> // 어두운 배경 처리

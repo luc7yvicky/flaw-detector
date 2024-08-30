@@ -1,15 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import ClippingArticle from "@/components/my/ClippingArticle";
-import Dropdown from "@/components/ui/Dropdown";
 import Button from "@/components/ui/Button";
+import Dropdown from "@/components/ui/Dropdown";
 import { IconPlus } from "@/components/ui/Icons";
 import TitleBar from "@/components/ui/TitleBar";
-import Link from "next/link";
+import { ITEMS_PER_MY_PAGE } from "@/lib/const";
 import { ArticleDetailProps } from "@/types/type";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-const ITEMS_PER_PAGE = 12;
 const dummyClippingArticles: ArticleDetailProps[] = [
   {
     id: "1",
@@ -181,20 +181,22 @@ const dummyClippingArticles: ArticleDetailProps[] = [
   },
 ];
 
-export default function ClippingArticlesPage() {
+export default function ScrapsPage() {
   const [currPage, setCurrPage] = useState<number>(1);
   const [articles, setArticles] = useState<ArticleDetailProps[]>([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setArticles(dummyClippingArticles?.slice(0, currPage * ITEMS_PER_PAGE));
+      setArticles(
+        dummyClippingArticles?.slice(0, currPage * ITEMS_PER_MY_PAGE),
+      );
     }, 500);
 
     return () => clearTimeout(timer);
   }, [currPage]);
 
   return (
-    <>
+    <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <TitleBar
         title="Clipping articles"
         align="center"
@@ -220,7 +222,7 @@ export default function ClippingArticlesPage() {
           ))}
         </div>
 
-        {dummyClippingArticles.length > currPage * ITEMS_PER_PAGE && (
+        {dummyClippingArticles.length > currPage * ITEMS_PER_MY_PAGE && (
           <div className="flex-center-center">
             <Button
               variant="outlined"
@@ -234,6 +236,6 @@ export default function ClippingArticlesPage() {
           </div>
         )}
       </article>
-    </>
+    </div>
   );
 }
