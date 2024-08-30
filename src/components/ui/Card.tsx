@@ -4,9 +4,9 @@ import Image from "next/image";
 import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 import { IconArrow, IconKebabMenu } from "./Icons";
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 
-const cardVariants = cva("relative flex flex-col", {
+const cardVariants = cva("relative flex flex-col w-full", {
   variants: {
     variant: {
       default: "justify-between border hover:bg-primary-50",
@@ -16,14 +16,15 @@ const cardVariants = cva("relative flex flex-col", {
         "justify-center items-center bg-white before:content-[''] before:absolute before:inset-0 before:shadow-[0_5rem_3.75rem_-2.5rem_rgba(0,0,0,0.25)] before:rounded-[2.5rem] before:z-30",
     },
     size: {
-      default: "h-[12.5rem] w-[19.375rem] rounded-xl border-primary-100 p-5",
+      default:
+        "h-[12.5rem] max-w-[19.375rem] rounded-xl border-primary-100 p-5",
       extended:
-        "h-[13.563rem] w-[26.375rem] gap-6 rounded-lg border-[#c3c3c3] p-7 [&>*:nth-child(2)]:mt-[-1.25rem]",
-      short: "h-[17.188rem] w-[25.875rem] gap-6 rounded-lg p-7",
-      long: "h-[16.125rem] w-[54.063rem] gap-6 rounded-lg p-7",
-      main: "h-[24.375rem] w-[39.063rem] rounded-[1.25rem] p-9",
-      sub: "h-[24.375rem] w-[19.75rem] rounded-[1.25rem] p-9",
-      service: "h-[28.829rem] w-[21.208rem] rounded-[2.5rem]",
+        "h-[13.563rem] max-w-[26.375rem] gap-6 rounded-lg border-[#c3c3c3] p-7 [&>*:nth-child(2)]:mt-[-1.25rem]",
+      short: "h-[17.188rem] max-w-[25.875rem] gap-6 rounded-lg p-7",
+      long: "h-[16.125rem] max-w-[54.063rem] gap-6 rounded-lg p-7",
+      main: "h-[24.375rem] max-w-[39.063rem] rounded-[1.25rem] p-9",
+      sub: "h-[24.375rem] max-w-[19.75rem] rounded-[1.25rem] p-9",
+      service: "h-[28.829rem] max-w-[21.208rem] rounded-[2.5rem]",
     },
   },
   defaultVariants: {
@@ -140,30 +141,25 @@ function CardTitle({
   children,
   ...props
 }: CardTitleProps) {
-  const textColor = color ? { color } : { color: "#3F3F3F" };
-  const getTextSize = (size: string) => {
-    switch (size) {
-      case "big":
-        return "text-[1.75rem] leading-[2.45rem]";
-      case "small":
-        return "text-xl leading-[1.513rem]";
-      case "xsmall":
-        return "text-lg leading-[1.361rem]";
-      default:
-        return "text-2xl leading-9";
-    }
+  const textSize = {
+    big: "text-[1.75rem] leading-[2.45rem]",
+    small: "text-xl leading-[1.513rem]",
+    xsmall: "text-lg leading-[1.361rem]",
+    default: "text-2xl leading-9",
   };
+  const textWeight = {
+    bold: "font-semibold",
+    normal: "font-normal",
+    default: "font-medium",
+  };
+  const textColor = color ? { color } : { color: "#3F3F3F" };
 
   return (
     <p
       className={cn(
         "line-clamp-2 text-ellipsis tracking-[-0.01em]",
-        getTextSize(size),
-        weight === "bold"
-          ? "font-semibold"
-          : weight === "normal"
-            ? "font-normal"
-            : "font-medium",
+        textSize[size],
+        textWeight[weight],
         className,
       )}
       style={textColor}
@@ -182,12 +178,18 @@ function CardSubTitle({
   children,
   ...props
 }: CardTitleProps) {
+  const textSize = {
+    big: "text-xl",
+    small: "text-xs",
+    xsmall: "text-xs",
+    default: "text-base",
+  };
   const textColor = color ? { color } : { color: "text-gray-default" };
   return (
     <span
       className={cn(
         "flex items-center tracking-[-0.01em] text-gray-default",
-        size === "big" ? "text-xl" : size === "small" ? "text-xs" : "text-base",
+        textSize[size],
         isSingleLine && "basis-full",
         className,
       )}
@@ -240,16 +242,17 @@ function CardCoverImage({
   );
 }
 
-function CardLinkButton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLAnchorElement>) {
+const CardLinkButton = forwardRef<
+  HTMLAnchorElement,
+  React.AnchorHTMLAttributes<HTMLAnchorElement>
+>(({ className, ...props }, ref) => {
   return (
     <a
       className={cn(
         "flex h-[4.25rem] w-[4.25rem] items-center justify-center rounded-[50%] bg-white opacity-70",
         className,
       )}
+      ref={ref}
       {...props}
     >
       <IconArrow
@@ -258,7 +261,8 @@ function CardLinkButton({
       />
     </a>
   );
-}
+});
+CardLinkButton.displayName = "CardLinkButton";
 
 function CardFooter({
   className,
