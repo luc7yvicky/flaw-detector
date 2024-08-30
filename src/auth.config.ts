@@ -3,21 +3,24 @@ import Github from "next-auth/providers/github";
 import { GITHUB_ID, GITHUB_SECRET } from "./lib/const";
 
 export const authConfig = {
+  pages: {
+    signIn: "/login",
+  },
   session: {
     maxAge: 24 * 60 * 60,
   },
   callbacks: {
-    async redirect({ baseUrl }) {
-      if (baseUrl.endsWith("/")) {
-        baseUrl = baseUrl.slice(0, -1);
+    async redirect({ url, baseUrl }) {
+      if (url.endsWith("/me")) {
+        return baseUrl;
       }
-      return `${baseUrl}/my/repos`;
+      return url.startsWith(baseUrl) ? url : baseUrl;
     },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnAnalyze = nextUrl.pathname.startsWith("/analyze");
+      const isOnRepos = nextUrl.pathname.startsWith("/repos");
 
-      if (isOnAnalyze) {
+      if (isOnRepos) {
         return isLoggedIn;
       }
 
