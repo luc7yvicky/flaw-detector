@@ -1,3 +1,5 @@
+import { Timestamp } from "firebase/firestore";
+
 export const exampleCode = `import SectionBusinessForever from "@/components/section-business-forever";
 import SectionVideoDisplayer from "@/components/section-video-displayer";
 import { Badge } from "@/components/ui/badge";
@@ -125,3 +127,22 @@ export const vulnerabilityDBDatas = [
     createdAt: "2024.03.11 09:20:55",
   },
 ];
+
+export const examplePost = {
+  label: "기타",
+  source: "CERT/CC",
+  page_url: "https://www.kb.cert.org/vuls/id/244112",
+  title:
+    "Multiple SMTP services are susceptible to spoofing attacks due to insufficient enforcement",
+  created_at: Timestamp.fromDate(new Date("2023-08-29T12:34:56Z")),
+  content: [
+    {
+      block_id: "afsd-sfsdf-35er",
+      text: "Multiple hosted, outbound SMTP servers are vulnerable to email impersonation. This allows authenticated users and certain trusted networks to send emails containing spoofed sender information. Two vulnerabilities were identified that reduce the authentication and verification of the sender, provided by the combination of Sender Policy Framework (SPF) and Domain Key Identified Mail (DKIM).",
+    },
+    {
+      block_id: "efsd-sdfff-35sr",
+      text: "Domain-based Message Authentication, Reporting, and Conformance (DMARC) builds on SPF and DKIM, adding linkage to the author (FROM:) domain name, published policies for recipient handling of authentication failures, and reporting from receivers to senders to improve and monitor protection of the domain from fraudulent email (DMARC.org). An authenticated remote attacker can spoof the identity of a sender when sending emails using a hosted service provider.",
+    },
+  ],
+};

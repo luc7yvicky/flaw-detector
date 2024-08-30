@@ -22,3 +22,6 @@ export const FIREBASE_MESSAGING_SENDER_ID =
 export const FIREBASE_APP_ID = process.env.NEXT_PUBLIC_FIREBASE_APP_ID;
 export const FIREBASE_MEASUREMENTID =
   process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENTID;
+
+export const VULN_DB_POSTS_API_URL =
+  "http://localhost:3000/api/vulnerability-db/posts";
