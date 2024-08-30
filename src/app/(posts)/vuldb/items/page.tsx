@@ -108,7 +108,7 @@ function CardContainer({ posts }: { posts: VulnDBPost[] }) {
                 </CardSubTitle>
               </CardTitleWrapper>
               <Link
-                href={`vulnerability-db/${cardData.id}`}
+                href={`/vuldb/items/${cardData.id}`}
                 passHref
                 legacyBehavior
               >

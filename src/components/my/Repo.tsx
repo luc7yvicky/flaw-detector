@@ -16,7 +16,7 @@ export default function Repo({
   caption,
 }: RepoListData) {
   return (
-    <Link href={`/analyze/${repositoryName}`}>
+    <Link href={`/repos/${repositoryName}`}>
       <Card key={id}>
         <CardHeader hasMenu>
           {label && <Label variant="outline">{label}</Label>}

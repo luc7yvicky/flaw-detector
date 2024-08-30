@@ -11,6 +11,11 @@ export type ArticleListItem = {
   labelText?: string;
 };
 
+export type ArticleDetailProps = {
+  content?: string;
+  showLabel?: boolean;
+} & ArticleListItem;
+
 export type RepoListData = {
   id: number;
   repositoryName: string;
@@ -33,11 +38,6 @@ export type RepoContentItem = {
   items?: RepoItem[];
   error?: string;
 };
-
-export type ArticleDetailProps = {
-  content?: string;
-  showLabel?: boolean;
-} & ArticleListItem;
 
 export type VulnDBPost = {
   id: string;

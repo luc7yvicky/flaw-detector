@@ -10,8 +10,10 @@ import { Label } from "@/components/ui/Label";
 import ArticleDetail from "@/components/vulnerability-db/ArticleDetail";
 
 import VulnerabilityGrid from "@/components/vulnerability-db/VulnerabilityGrid";
+import { redirectIfNotLoggedIn } from "@/lib/redirect";
 
-export default function VulnerabilityDBDetailPage() {
+export default async function VulnerabilityDBDetailPage() {
+  await redirectIfNotLoggedIn("/vuldb/items");
   //임시 더미데이터
   const articleData = {
     id: "1",
