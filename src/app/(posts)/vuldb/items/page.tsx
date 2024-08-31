@@ -10,14 +10,14 @@ import {
   CardTitleWrapper,
 } from "@/components/ui/Card";
 import Dashboard from "@/components/vulnerability-db/Dashboard";
-import { VULN_DB_POSTS_API_URL } from "@/lib/const";
+import { VUL_DB_POSTS_API_URL } from "@/lib/const";
 import { examplePost } from "@/lib/dummy";
 import { cn, formatTimestampAsDateTime } from "@/lib/utils";
 import { VulnDBPost } from "@/types/type";
 import Link from "next/link";
 
 async function getAllPosts() {
-  const res = await fetch(VULN_DB_POSTS_API_URL, {
+  const res = await fetch(VUL_DB_POSTS_API_URL, {
     method: "GET",
   });
   if (!res.ok) {
@@ -28,7 +28,7 @@ async function getAllPosts() {
 }
 
 async function addPost() {
-  const res = await fetch(VULN_DB_POSTS_API_URL, {
+  const res = await fetch(VUL_DB_POSTS_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -122,7 +122,7 @@ function CardContainer({ posts }: { posts: VulnDBPost[] }) {
   );
 }
 
-export default async function VulnerabilityDBPage() {
+export default async function VulDBPage() {
   const posts = await getAllPosts();
 
   return (
