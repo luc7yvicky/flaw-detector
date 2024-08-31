@@ -38,7 +38,7 @@ export default function Home() {
         </Card>
         <Card className="bg-transparent backdrop-blur-sm">`;
 
-export const examplePost = {
+export const exampleVulDBPost = {
   label: "기타",
   source: "CERT/CC",
   page_url: "https://www.kb.cert.org/vuls/id/244112",

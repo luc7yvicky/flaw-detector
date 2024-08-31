@@ -21,7 +21,6 @@ export const ITEMS_PER_DB_PAGE = 5;
 export const ITEMS_PER_MY_PAGE = 12;
 export const DB_PAGES_PER_GROUP = 10;
 
-export const VUL_DB_POSTS_API_URL =
-  "http://localhost:3000/api/vulnerability-db/posts";
+export const VUL_DB_POSTS_API_URL = "http://localhost:3000/api/vuldb/posts";
 export const WEB_CRAWLING_CERT_CC_API_URL =
   "http://localhost:3000/api/web-crawling/cert-cc";

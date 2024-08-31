@@ -39,7 +39,7 @@ export type RepoContentItem = {
   error?: string;
 };
 
-export type VulnDBPost = {
+export type VulDBPost = {
   id: string;
   label: "기타" | "취약성 보고서" | "취약성 알림" | "취약성 경고";
   source: "CERT/CC" | "CNNVD";

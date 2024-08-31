@@ -9,14 +9,14 @@ import {
   CardTitleProps,
   CardTitleWrapper,
 } from "@/components/ui/Card";
-import Dashboard from "@/components/vulnerability-db/Dashboard";
+import VulDBDashboard from "@/components/vulnerability-db/VulDBDashboard";
 import { VUL_DB_POSTS_API_URL } from "@/lib/const";
-import { examplePost } from "@/lib/dummy";
+import { exampleVulDBPost } from "@/lib/dummy";
 import { cn, formatTimestampAsDateTime } from "@/lib/utils";
-import { VulnDBPost } from "@/types/type";
+import { VulDBPost } from "@/types/type";
 import Link from "next/link";
 
-async function getAllPosts() {
+async function getAllVulDBPosts() {
   const res = await fetch(VUL_DB_POSTS_API_URL, {
     method: "GET",
   });
@@ -27,13 +27,13 @@ async function getAllPosts() {
   return data;
 }
 
-async function addPost() {
+async function addVulDBPost() {
   const res = await fetch(VUL_DB_POSTS_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ post: examplePost }),
+    body: JSON.stringify({ post: exampleVulDBPost }),
   });
 
   if (!res.ok) {
@@ -44,7 +44,7 @@ async function addPost() {
   return data;
 }
 
-function CardContainer({ posts }: { posts: VulnDBPost[] }) {
+function VulDBImageCardContainer({ posts }: { posts: VulDBPost[] }) {
   const newThreePosts = posts.slice(0, 3); // 최신에 수집된 3개 게시글 가져오기 (예정)
   const cardDatas = newThreePosts.map((item, index) => {
     const cardStyles = [
@@ -123,12 +123,12 @@ function CardContainer({ posts }: { posts: VulnDBPost[] }) {
 }
 
 export default async function VulDBPage() {
-  const posts = await getAllPosts();
+  const posts = await getAllVulDBPosts();
 
   return (
     <div className="mx-auto mb-[1.188rem] mt-[1.688rem] flex w-[82.063rem] flex-col gap-[4.75rem]">
-      <CardContainer posts={posts.data} />
-      <Dashboard posts={posts.data} /> {/* 취약점 DB & 실시간 Topic */}
+      <VulDBImageCardContainer posts={posts.data} />
+      <VulDBDashboard posts={posts.data} /> {/* 취약점 DB & 실시간 Topic */}
     </div>
   );
 }

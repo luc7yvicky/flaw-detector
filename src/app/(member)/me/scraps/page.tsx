@@ -216,7 +216,7 @@ export default function ScrapsPage() {
 
         <div className="flex-between-center relative grid grid-cols-3 gap-6">
           {articles?.map((article) => (
-            <Link href={`/vulnerability-db/${article.id}`} key={article.id}>
+            <Link href={`/vuldb/items/${article.id}`} key={article.id}>
               <ClippingArticle {...article} />
             </Link>
           ))}
