@@ -28,7 +28,7 @@
     "jest": true
   },
   "rules": {
-    "no-unused-vars": "warn",
+    "no-unused-vars": ["warn", { "varsIgnorePattern": "^_$" }],
     "no-unreachable": "warn",
     "no-undef": "off",
     "strict": ["error", "global"],

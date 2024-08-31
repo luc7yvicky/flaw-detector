@@ -3,13 +3,13 @@ import LandingFeatureSection from "@/components/landing/LandingFeatureSection";
 import LandingDemoSection from "@/components/landing/LandingDemoSection";
 import LandingServiceSection from "@/components/landing/LandingServiceSection";
 import CustomerService from "@/components/ui/CustomerService";
-import { redirectIfLoggedIn } from "@/lib/redirect";
+import { auth } from "@/auth";
 
 export default async function LandingPage() {
-  await redirectIfLoggedIn("/my/repos");
+  const session = await auth();
   return (
     <>
-      <LandingHeroSection />
+      <LandingHeroSection isLoggedIn={!!session} />
       <LandingFeatureSection />
       <LandingDemoSection />
       <LandingServiceSection />
