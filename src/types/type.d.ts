@@ -38,3 +38,13 @@ export type RepoContentItem = {
   items?: RepoItem[];
   error?: string;
 };
+
+export type VulnDBPost = {
+  id: string;
+  label: "기타" | "취약성 보고서" | "취약성 알림" | "취약성 경고";
+  source: "CERT/CC" | "CNNVD";
+  page_url: string;
+  title: string;
+  created_at: { seconds: number; nanoseconds: number }; // firestore timestamp
+  content: { block_id: string; text: string }[];
+};
