@@ -43,7 +43,7 @@ export type CertCCTextBlock = { id: string; text: string };
 
 export type CertCCLocalizedTextBlock = {
   original: CertCCTextBlock[];
-  translated: string[];
+  translated: CertCCTextBlock[];
 };
 
 // CERT/CC 게시글 내용

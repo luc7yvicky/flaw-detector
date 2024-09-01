@@ -1,3 +1,4 @@
+import { VulDBPost } from "@/types/type";
 import { Timestamp } from "firebase/firestore";
 
 export const exampleCode = `import SectionBusinessForever from "@/components/section-business-forever";
@@ -38,23 +39,49 @@ export default function Home() {
         </Card>
         <Card className="bg-transparent backdrop-blur-sm">`;
 
-export const exampleVulDBPost = {
+export const exampleCertCCVulDBPost: VulDBPost = {
+  id: "VulDB-09-01",
   label: "기타",
   source: "CERT/CC",
   page_url: "https://www.kb.cert.org/vuls/id/244112",
-  title:
-    "Multiple SMTP services are susceptible to spoofing attacks due to insufficient enforcement",
-  created_at: Timestamp.fromDate(new Date("2023-08-29T12:34:56Z")),
-  content: [
-    {
-      block_id: "afsd-sfsdf-35er",
-      text: "Multiple hosted, outbound SMTP servers are vulnerable to email impersonation. This allows authenticated users and certain trusted networks to send emails containing spoofed sender information. Two vulnerabilities were identified that reduce the authentication and verification of the sender, provided by the combination of Sender Policy Framework (SPF) and Domain Key Identified Mail (DKIM).",
+  title: {
+    original:
+      "Multiple SMTP services are susceptible to spoofing attacks due to insufficient enforcement",
+    translated:
+      "여러 SMTP 서비스가 불충분한 강화로 인해 스푸핑 공격에 취약합니다.",
+  },
+  created_at: Timestamp.fromDate(new Date("2023-09-01T12:34:56Z")),
+  content: {
+    overview: {
+      original: [{ id: "1", text: "overview" }],
+      translated: [{ id: "1", text: "overview" }],
     },
-    {
-      block_id: "efsd-sdfff-35sr",
-      text: "Domain-based Message Authentication, Reporting, and Conformance (DMARC) builds on SPF and DKIM, adding linkage to the author (FROM:) domain name, published policies for recipient handling of authentication failures, and reporting from receivers to senders to improve and monitor protection of the domain from fraudulent email (DMARC.org). An authenticated remote attacker can spoof the identity of a sender when sending emails using a hosted service provider.",
+    description: {
+      original: [
+        { id: "1", text: "description1" },
+        { id: "2", text: "description2" },
+      ],
+      translated: [
+        { id: "1", text: "description1" },
+        { id: "2", text: "description2" },
+      ],
     },
-  ],
+    impact: {
+      original: [{ id: "1", text: "impact" }],
+      translated: [{ id: "1", text: "impact" }],
+    },
+    solution: {
+      original: [
+        { id: "1", text: "solution1" },
+        { id: "2", text: "solution2" },
+      ],
+      translated: [
+        { id: "1", text: "solution1" },
+        { id: "2", text: "solution2" },
+      ],
+    },
+    cveIDs: ["CVE-2024-7208", "CVE-2024-7209"],
+  },
 };
 
 //selectedfile 모달에서 쓰이는 더미데이터
