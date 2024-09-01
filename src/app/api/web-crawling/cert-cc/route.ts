@@ -40,147 +40,182 @@ export async function GET() {
     await page.waitForSelector(Checkbox2024Selector);
     await page.waitForSelector(Checkbox2023Selector);
 
+    // 체크박스 상태 확인 및 초기화
+    const is2024Checked = await page.$eval(
+      Checkbox2024Selector,
+      (el) => el.checked,
+    );
+    if (is2024Checked) {
+      await page.click(Checkbox2024Selector);
+    }
     await page.click(Checkbox2024Selector);
+
+    const is2023Checked = await page.$eval(
+      Checkbox2023Selector,
+      (el) => el.checked,
+    );
+    if (is2023Checked) {
+      await page.click(Checkbox2023Selector);
+    }
     await page.click(Checkbox2023Selector);
 
     await new Promise((r) => setTimeout(r, 3000));
 
-    // 게시글 링크 수집
-    const postLinks = await page.evaluate(() => {
-      const links = Array.from(
-        document.querySelectorAll(".vulnerability-list h4 a"),
-      );
-      return links.map((link) => (link as HTMLAnchorElement).href);
-    });
+    // 페이지네이션을 고려하여 게시글 링크 수집
+    let hasNextPage = true;
+    while (hasNextPage) {
+      const postLinks = await page.evaluate(() => {
+        const links = Array.from(
+          document.querySelectorAll(".vulnerability-list h4 a"),
+        );
+        return links.map((link) => (link as HTMLAnchorElement).href);
+      });
 
-    // 각 게시물 링크를 방문하여 내용 크롤링
-    for (let link of postLinks) {
-      const postDetailPage = await browser.newPage();
-      await postDetailPage.goto(link, { waitUntil: "networkidle2" });
+      // 각 게시물 링크를 방문하여 내용 크롤링
+      for (let link of postLinks) {
+        const postDetailPage = await browser.newPage();
+        await postDetailPage.goto(link, { waitUntil: "networkidle2" });
 
-      const uuid = crypto.randomUUID(); // 변경 예정
+        const uuid = crypto.randomUUID(); // 변경 예정
 
-      const postData = await postDetailPage.evaluate(() => {
-        function extractContentBetweenElements(
-          startElement: HTMLElement | null,
-          endElement: HTMLElement | null,
-          tags: string[] = [
-            "P",
-            "UL",
-            "LI",
-            "BLOCKQUOTE",
-            "H3",
-            "H4",
-            "STRONG",
-          ],
-        ): { id: string; text: string }[] {
-          if (!startElement || !endElement) return [];
+        const postData = await postDetailPage.evaluate(() => {
+          function extractContentBetweenElements(
+            startElement: HTMLElement | null,
+            endElement: HTMLElement | null,
+            tags: string[] = [
+              "P",
+              "UL",
+              "LI",
+              "BLOCKQUOTE",
+              "H3",
+              "H4",
+              "STRONG",
+            ],
+          ): { id: string; text: string }[] {
+            if (!startElement || !endElement) return [];
 
-          let currentElement = startElement.nextElementSibling;
-          const content: { id: string; text: string }[] = [];
+            let currentElement = startElement.nextElementSibling;
+            const content: { id: string; text: string }[] = [];
 
-          while (currentElement && currentElement !== endElement) {
-            if (tags.includes(currentElement.tagName)) {
-              content.push({
-                id: crypto.randomUUID(),
-                text: currentElement.textContent?.trim() || "",
-              });
+            while (currentElement && currentElement !== endElement) {
+              if (tags.includes(currentElement.tagName)) {
+                content.push({
+                  id: crypto.randomUUID(),
+                  text: currentElement.textContent?.trim() || "",
+                });
+              }
+              currentElement = currentElement.nextElementSibling;
             }
-            currentElement = currentElement.nextElementSibling;
+
+            return content;
           }
 
-          return content;
-        }
+          const postTitle = document.querySelector("h2.subtitle");
 
-        const postTitle = document.querySelector("h2.subtitle");
+          const overviewElement = document.querySelector(
+            ".blog-post #overview",
+          ) as HTMLElement | null;
+          const descriptionElement = document.querySelector(
+            ".blog-post #description",
+          ) as HTMLElement | null;
+          const impactElement = document.querySelector(
+            ".blog-post #impact",
+          ) as HTMLElement | null;
+          const solutionElement = document.querySelector(
+            ".blog-post #solution",
+          ) as HTMLElement | null;
+          const acknowledgementsElement = document.querySelector(
+            ".blog-post #acknowledgements",
+          ) as HTMLElement | null;
 
-        const overviewElement = document.querySelector(
-          ".blog-post #overview",
-        ) as HTMLElement | null;
-        const descriptionElement = document.querySelector(
-          ".blog-post #description",
-        ) as HTMLElement | null;
-        const impactElement = document.querySelector(
-          ".blog-post #impact",
-        ) as HTMLElement | null;
-        const solutionElement = document.querySelector(
-          ".blog-post #solution",
-        ) as HTMLElement | null;
-        const acknowledgementsElement = document.querySelector(
-          ".blog-post #acknowledgements",
-        ) as HTMLElement | null;
+          const overviewContent = extractContentBetweenElements(
+            overviewElement,
+            descriptionElement,
+          );
 
-        const overviewContent = extractContentBetweenElements(
-          overviewElement,
-          descriptionElement,
-        );
+          const descriptionContent = extractContentBetweenElements(
+            descriptionElement,
+            impactElement,
+          );
 
-        const descriptionContent = extractContentBetweenElements(
-          descriptionElement,
-          impactElement,
-        );
+          const impactContent = extractContentBetweenElements(
+            impactElement,
+            solutionElement,
+          );
 
-        const impactContent = extractContentBetweenElements(
-          impactElement,
-          solutionElement,
-        );
+          const solutionContent = extractContentBetweenElements(
+            solutionElement,
+            acknowledgementsElement,
+          );
 
-        const solutionContent = extractContentBetweenElements(
-          solutionElement,
-          acknowledgementsElement,
-        );
+          const links = Array.from(
+            document.querySelectorAll("#other-information + div a"),
+          );
 
-        const links = Array.from(
-          document.querySelectorAll("#other-information + div a"),
-        );
+          const cveLinks = links
+            .filter((link) =>
+              (link as HTMLAnchorElement).innerText
+                .toLowerCase()
+                .includes("cve"),
+            )
+            .map((link) => (link as HTMLAnchorElement).innerText);
 
-        const cveLinks = links
-          .filter((link) =>
-            (link as HTMLAnchorElement).innerText.toLowerCase().includes("cve"),
-          )
-          .map((link) => (link as HTMLAnchorElement).innerText);
-
-        return {
-          title: {
-            original: postTitle
-              ? (postTitle as HTMLElement).innerText
-              : "제목을 찾을 수 없습니다.",
-            translated: "",
-          },
-          content: {
-            overview: {
-              original: overviewContent,
-              translated: [],
+          return {
+            title: {
+              original: postTitle
+                ? (postTitle as HTMLElement).innerText
+                : "제목을 찾을 수 없습니다.",
+              translated: "",
             },
-            description: {
-              original: descriptionContent,
-              translated: [],
+            content: {
+              overview: {
+                original: overviewContent,
+                translated: [],
+              },
+              description: {
+                original: descriptionContent,
+                translated: [],
+              },
+              impact: {
+                original: impactContent,
+                translated: [],
+              },
+              solution: {
+                original: solutionContent,
+                translated: [],
+              },
+              cveIDs: cveLinks,
             },
-            impact: {
-              original: impactContent,
-              translated: [],
-            },
-            solution: {
-              original: solutionContent,
-              translated: [],
-            },
-            cveIDs: cveLinks,
-          },
-        };
-      });
+          };
+        });
 
-      posts.push({
-        id: uuid,
-        label: "기타",
-        source: "CERT/CC",
-        page_url: link,
-        created_at: { seconds: Date.now() / 1000, nanoseconds: 0 },
-        ...postData,
-      });
-      await postDetailPage.close();
+        posts.push({
+          id: uuid,
+          label: "기타",
+          source: "CERT/CC",
+          page_url: link,
+          created_at: { seconds: Date.now() / 1000, nanoseconds: 0 },
+          ...postData,
+        });
+        await postDetailPage.close();
+      }
+
+      const nextPageButton = await page.$("li.pagination-next > a");
+      if (nextPageButton) {
+        await new Promise((r) => setTimeout(r, 2000));
+
+        await nextPageButton.click();
+
+        await page.waitForNavigation({
+          waitUntil: "domcontentloaded",
+          timeout: 40000,
+        });
+        await new Promise((r) => setTimeout(r, 2000));
+      } else {
+        hasNextPage = false;
+      }
     }
 
-    // 브라우저 종료
     await browser.close();
     return NextResponse.json({ posts });
   } catch (error) {
