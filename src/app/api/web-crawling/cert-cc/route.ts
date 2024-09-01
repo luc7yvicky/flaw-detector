@@ -15,7 +15,7 @@ export async function GET() {
 
     const posts = [];
 
-    // vuls 페이지로 이동
+    // CERT/CC 취약점 정보 페이지로 이동
     const VULS_URL = "https://www.kb.cert.org/vuls/";
     await page.goto(VULS_URL, {
       waitUntil: "domcontentloaded",
@@ -61,21 +61,111 @@ export async function GET() {
       const uuid = crypto.randomUUID(); // 변경 예정
 
       const postData = await postDetailPage.evaluate(() => {
+        function extractContentBetweenElements(
+          startElement: HTMLElement | null,
+          endElement: HTMLElement | null,
+          tags: string[] = [
+            "P",
+            "UL",
+            "LI",
+            "BLOCKQUOTE",
+            "H3",
+            "H4",
+            "STRONG",
+          ],
+        ): { id: string; text: string }[] {
+          if (!startElement || !endElement) return [];
+
+          let currentElement = startElement.nextElementSibling;
+          const content: { id: string; text: string }[] = [];
+
+          while (currentElement && currentElement !== endElement) {
+            if (tags.includes(currentElement.tagName)) {
+              content.push({
+                id: crypto.randomUUID(),
+                text: currentElement.textContent?.trim() || "",
+              });
+            }
+            currentElement = currentElement.nextElementSibling;
+          }
+
+          return content;
+        }
+
         const postTitle = document.querySelector("h2.subtitle");
 
-        const paragraphElements = Array.from(
-          document.querySelectorAll("div.blog-post p"),
+        const overviewElement = document.querySelector(
+          ".blog-post #overview",
+        ) as HTMLElement | null;
+        const descriptionElement = document.querySelector(
+          ".blog-post #description",
+        ) as HTMLElement | null;
+        const impactElement = document.querySelector(
+          ".blog-post #impact",
+        ) as HTMLElement | null;
+        const solutionElement = document.querySelector(
+          ".blog-post #solution",
+        ) as HTMLElement | null;
+        const acknowledgementsElement = document.querySelector(
+          ".blog-post #acknowledgements",
+        ) as HTMLElement | null;
+
+        const overviewContent = extractContentBetweenElements(
+          overviewElement,
+          descriptionElement,
         );
-        const content = paragraphElements.map((p) => ({
-          text: (p as HTMLElement).innerText,
-          block_id: crypto.randomUUID(),
-        }));
+
+        const descriptionContent = extractContentBetweenElements(
+          descriptionElement,
+          impactElement,
+        );
+
+        const impactContent = extractContentBetweenElements(
+          impactElement,
+          solutionElement,
+        );
+
+        const solutionContent = extractContentBetweenElements(
+          solutionElement,
+          acknowledgementsElement,
+        );
+
+        const links = Array.from(
+          document.querySelectorAll("#other-information + div a"),
+        );
+
+        const cveLinks = links
+          .filter((link) =>
+            (link as HTMLAnchorElement).innerText.toLowerCase().includes("cve"),
+          )
+          .map((link) => (link as HTMLAnchorElement).innerText);
 
         return {
-          title: postTitle
-            ? (postTitle as HTMLElement).innerText
-            : "내용을 찾을 수 없습니다.",
-          content,
+          title: {
+            original: postTitle
+              ? (postTitle as HTMLElement).innerText
+              : "제목을 찾을 수 없습니다.",
+            translated: "",
+          },
+          content: {
+            overview: {
+              original: overviewContent,
+              translated: [],
+            },
+            description: {
+              original: descriptionContent,
+              translated: [],
+            },
+            impact: {
+              original: impactContent,
+              translated: [],
+            },
+            solution: {
+              original: solutionContent,
+              translated: [],
+            },
+            cveIDs: cveLinks,
+          },
         };
       });
 
