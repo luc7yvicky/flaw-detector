@@ -39,12 +39,34 @@ export type RepoContentItem = {
   error?: string;
 };
 
+export type CertCCTextBlock = { id: string; text: string };
+
+export type CertCCLocalizedTextBlock = {
+  original: CertCCTextBlock[];
+  translated: string[];
+};
+
+// CERT/CC 게시글 내용
+export type CertCCContent = {
+  overview: CertCCLocalizedTextBlock;
+  description: CertCCLocalizedTextBlock;
+  impact: CertCCLocalizedTextBlock;
+  solution: CertCCLocalizedTextBlock;
+  cveIDs: string[];
+};
+
+// CNNVD 게시글 내용
+export type CnnvdContent = { block_id: string; text: string }[];
+
 export type VulDBPost = {
   id: string;
   label: "기타" | "취약성 보고서" | "취약성 알림" | "취약성 경고";
   source: "CERT/CC" | "CNNVD";
   page_url: string;
-  title: string;
+  title: {
+    original: string;
+    translated: string;
+  };
   created_at: { seconds: number; nanoseconds: number }; // firestore timestamp
-  content: { block_id: string; text: string }[];
+  content: CertCCContent | CnnvdContent;
 };
