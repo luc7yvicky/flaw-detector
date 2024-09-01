@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/Card";
 import VulDBDashboard from "@/components/vulnerability-db/VulDBDashboard";
 import { VUL_DB_POSTS_API_URL } from "@/lib/const";
-import { exampleVulDBPost } from "@/lib/dummy";
 import { cn, formatTimestampAsDateTime } from "@/lib/utils";
 import { VulDBPost } from "@/types/type";
 import Link from "next/link";
@@ -27,22 +26,22 @@ async function getAllVulDBPosts() {
   return data;
 }
 
-async function addVulDBPost() {
-  const res = await fetch(VUL_DB_POSTS_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ post: exampleVulDBPost }),
-  });
+// async function addVulDBPost() {
+//   const res = await fetch(VUL_DB_POSTS_API_URL, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({ post: exampleCertCCVulDBPost }),
+//   });
 
-  if (!res.ok) {
-    throw new Error("post 추가하기 실패");
-  }
+//   if (!res.ok) {
+//     throw new Error("post 추가하기 실패");
+//   }
 
-  const data = await res.json();
-  return data;
-}
+//   const data = await res.json();
+//   return data;
+// }
 
 function VulDBImageCardContainer({ posts }: { posts: VulDBPost[] }) {
   const newThreePosts = posts.slice(0, 3); // 최신에 수집된 3개 게시글 가져오기 (예정)
@@ -84,7 +83,7 @@ function VulDBImageCardContainer({ posts }: { posts: VulDBPost[] }) {
           >
             <CardCoverImage
               src={cardData.imageSrc}
-              alt={`미리보기 이미지: ${cardData.title}`}
+              alt={`미리보기 이미지: ${cardData.title.translated}`}
             />
             <CardFooter className="items-end">
               <CardTitleWrapper
@@ -99,7 +98,7 @@ function VulDBImageCardContainer({ posts }: { posts: VulDBPost[] }) {
                     firstCard && "leading-[2.118rem]",
                   )}
                 >
-                  {cardData.title}
+                  {cardData.title.translated}
                 </CardTitle>
                 <CardSubTitle
                   size={cardData.subtitleSize as CardTitleProps["size"]}
