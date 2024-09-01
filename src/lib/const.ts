@@ -21,7 +21,7 @@ export const ITEMS_PER_DB_PAGE = 5;
 export const ITEMS_PER_MY_PAGE = 12;
 export const DB_PAGES_PER_GROUP = 10;
 
-export const WEB_CRAWLING_SEARCH_KEYWORD = "program"; // 임시 검색어
+export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability"; // 임시 검색어
 
 export const VUL_DB_POSTS_API_URL = "http://localhost:3000/api/vuldb/posts";
 export const WEB_CRAWLING_CERT_CC_API_URL =
