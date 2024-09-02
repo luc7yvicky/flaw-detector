@@ -10,7 +10,7 @@ export async function GET() {
     const executablePath = getChromeExecutablePath();
     const browser = await puppeteer.launch({
       executablePath,
-      headless: false,
+      headless: true,
     });
     const page = await browser.newPage();
 
