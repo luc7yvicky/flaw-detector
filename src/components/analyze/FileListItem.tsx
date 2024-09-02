@@ -10,8 +10,9 @@ import {
 } from "../ui/Icons";
 import FileList from "./FileList";
 import { useFileViewerStore } from "@/stores/store";
+import { memo, useMemo } from "react";
 
-export default function FileListItem({
+function FileListItem({
   item,
   onToggle,
   isNested,
@@ -41,7 +42,7 @@ export default function FileListItem({
     }
   };
 
-  const getStatusIcon = () => {
+  const statusIcon = useMemo(() => {
     switch (processStatus) {
       case "done":
         return <IconDone />;
@@ -54,7 +55,12 @@ export default function FileListItem({
       default:
         return null;
     }
-  };
+  }, [processStatus]);
+
+  const showNestedList = useMemo(
+    () => type === "dir" && expanded && items && items.length > 0,
+    [type, expanded, items],
+  );
 
   return (
     <>
@@ -75,12 +81,13 @@ export default function FileListItem({
             {type === "file" ? <IconDoc /> : <IconFolder />}
           </div>
           <span className="w-full">{name}</span>
-          <div className="justify-self-end">
-            {processStatus && getStatusIcon()}
-          </div>
+
+          {processStatus && (
+            <div className="justify-self-end">{statusIcon}</div>
+          )}
         </div>
       </li>
-      {type === "dir" && expanded && items && items.length > 0 && (
+      {showNestedList && items && (
         <FileList
           structure={items}
           onToggle={onToggle}
@@ -92,3 +99,5 @@ export default function FileListItem({
     </>
   );
 }
+
+export default memo(FileListItem);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import FileList from "./FileList";
 import { RepoContentItem } from "@/types/type";
@@ -25,8 +25,30 @@ export default function FileExplorer({
     resetFileViewer();
   }, [resetFileViewer, repo]);
 
-  const handleToggle = async (item: RepoContentItem) => {
-    if (item.type === "dir") {
+  const updateNestedStructure = useCallback(
+    (
+      items: RepoContentItem[],
+      updatedItem: RepoContentItem,
+    ): RepoContentItem[] => {
+      return items.map((item) => {
+        if (item.path === updatedItem.path) {
+          return updatedItem;
+        }
+        if (item.type === "dir" && item.items) {
+          return {
+            ...item,
+            items: updateNestedStructure(item.items, updatedItem),
+          };
+        }
+        return item;
+      });
+    },
+    [],
+  );
+
+  const handleToggle = useCallback(
+    async (item: RepoContentItem) => {
+      if (item.type !== "dir") return;
       if (item.loadingStatus !== "loaded") {
         try {
           setStructure((prevStructure) =>
@@ -64,26 +86,9 @@ export default function FileExplorer({
           }),
         );
       }
-    }
-  };
-
-  const updateNestedStructure = (
-    items: RepoContentItem[],
-    updatedItem: RepoContentItem,
-  ): RepoContentItem[] => {
-    return items.map((item) => {
-      if (item.path === updatedItem.path) {
-        return updatedItem;
-      }
-      if (item.type === "dir" && item.items) {
-        return {
-          ...item,
-          items: updateNestedStructure(item.items, updatedItem),
-        };
-      }
-      return item;
-    });
-  };
+    },
+    [username, repo, updateNestedStructure],
+  );
 
   return (
     <div className="overflow-hidden rounded-lg border border-line-default">
