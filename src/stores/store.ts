@@ -8,6 +8,7 @@ interface FileViewerState {
   error: string | null;
   setCurrentFile: (file: string) => void;
   fetchFileContent: (owner: string, repo: string, path: string) => Promise<void>;
+  resetFileViewer: () => void; 
 }
 
 export const useFileViewerStore = create<FileViewerState>((set) => ({
@@ -25,4 +26,5 @@ export const useFileViewerStore = create<FileViewerState>((set) => ({
       set({ error: error instanceof Error ? error.message : 'Unknown error', isLoading: false });
     }
   },
+  resetFileViewer: () => set({ currentFile: null, fileContent: null, error: null }),
 }));

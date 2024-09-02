@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import FileList from "./FileList";
 import { RepoContentItem } from "@/types/type";
 import { expandFolder } from "@/lib/api/repositories";
+import { useFileViewerStore } from "@/stores/store";
 
 export default function FileExplorer({
   initialStructure,
@@ -17,6 +18,12 @@ export default function FileExplorer({
 }) {
   const [structure, setStructure] =
     useState<RepoContentItem[]>(initialStructure);
+
+  const resetFileViewer = useFileViewerStore((state) => state.resetFileViewer);
+
+  useEffect(() => {
+    resetFileViewer();
+  }, [resetFileViewer, repo]);
 
   const handleToggle = async (item: RepoContentItem) => {
     if (item.type === "dir") {
@@ -80,8 +87,8 @@ export default function FileExplorer({
 
   return (
     <div className="overflow-hidden rounded-lg border border-line-default">
-      <div className="mb-4 flex items-center">
-        <span>전체선택</span>
+      <div className="flex items-center border-b border-line-default bg-purple-light p-5 text-xl">
+        Files
       </div>
       <FileList
         structure={structure}
