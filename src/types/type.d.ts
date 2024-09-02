@@ -22,6 +22,7 @@ export type RepoListData = {
   label?: string;
   labelStatus?: string;
   caption?: string;
+  detectedStatus: "done" | "onProgress" | "notChecked";
   createdAt?: string;
   detectedAt?: string;
   filename?: string;
