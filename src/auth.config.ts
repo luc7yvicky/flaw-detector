@@ -31,6 +31,9 @@ export const authConfig = {
     Github({
       clientId: GITHUB_ID,
       clientSecret: GITHUB_SECRET,
+      authorization: {
+        params: { scope: "repo" },
+      },
     }),
   ],
 } satisfies NextAuthConfig;
