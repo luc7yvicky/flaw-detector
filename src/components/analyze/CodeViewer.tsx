@@ -50,7 +50,7 @@ export default function CodeViewer() {
         wrapLines
         className="p-11"
         PreTag={({ children, ...props }) => (
-          <pre {...props} className="!m-0">
+          <pre {...props} className="!m-0 h-full">
             {children}
           </pre>
         )}
