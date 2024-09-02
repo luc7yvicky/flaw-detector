@@ -9,15 +9,14 @@ import {
   CardTitleProps,
   CardTitleWrapper,
 } from "@/components/ui/Card";
-import Dashboard from "@/components/vulnerability-db/Dashboard";
-import { VULN_DB_POSTS_API_URL } from "@/lib/const";
-import { examplePost } from "@/lib/dummy";
+import VulDBDashboard from "@/components/vulnerability-db/VulDBDashboard";
+import { VUL_DB_POSTS_API_URL } from "@/lib/const";
 import { cn, formatTimestampAsDateTime } from "@/lib/utils";
-import { VulnDBPost } from "@/types/type";
+import { VulDBPost } from "@/types/type";
 import Link from "next/link";
 
-async function getAllPosts() {
-  const res = await fetch(VULN_DB_POSTS_API_URL, {
+async function getAllVulDBPosts() {
+  const res = await fetch(VUL_DB_POSTS_API_URL, {
     method: "GET",
   });
   if (!res.ok) {
@@ -27,24 +26,24 @@ async function getAllPosts() {
   return data;
 }
 
-async function addPost() {
-  const res = await fetch(VULN_DB_POSTS_API_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ post: examplePost }),
-  });
+// async function addVulDBPost() {
+//   const res = await fetch(VUL_DB_POSTS_API_URL, {
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//     },
+//     body: JSON.stringify({ post: exampleCertCCVulDBPost }),
+//   });
 
-  if (!res.ok) {
-    throw new Error("post 추가하기 실패");
-  }
+//   if (!res.ok) {
+//     throw new Error("post 추가하기 실패");
+//   }
 
-  const data = await res.json();
-  return data;
-}
+//   const data = await res.json();
+//   return data;
+// }
 
-function CardContainer({ posts }: { posts: VulnDBPost[] }) {
+function VulDBImageCardContainer({ posts }: { posts: VulDBPost[] }) {
   const newThreePosts = posts.slice(0, 3); // 최신에 수집된 3개 게시글 가져오기 (예정)
   const cardDatas = newThreePosts.map((item, index) => {
     const cardStyles = [
@@ -84,7 +83,7 @@ function CardContainer({ posts }: { posts: VulnDBPost[] }) {
           >
             <CardCoverImage
               src={cardData.imageSrc}
-              alt={`미리보기 이미지: ${cardData.title}`}
+              alt={`미리보기 이미지: ${cardData.title.translated}`}
             />
             <CardFooter className="items-end">
               <CardTitleWrapper
@@ -99,7 +98,7 @@ function CardContainer({ posts }: { posts: VulnDBPost[] }) {
                     firstCard && "leading-[2.118rem]",
                   )}
                 >
-                  {cardData.title}
+                  {cardData.title.translated}
                 </CardTitle>
                 <CardSubTitle
                   size={cardData.subtitleSize as CardTitleProps["size"]}
@@ -122,13 +121,13 @@ function CardContainer({ posts }: { posts: VulnDBPost[] }) {
   );
 }
 
-export default async function VulnerabilityDBPage() {
-  const posts = await getAllPosts();
+export default async function VulDBPage() {
+  const posts = await getAllVulDBPosts();
 
   return (
     <div className="mx-auto mb-[1.188rem] mt-[1.688rem] flex w-[82.063rem] flex-col gap-[4.75rem]">
-      <CardContainer posts={posts.data} />
-      <Dashboard posts={posts.data} /> {/* 취약점 DB & 실시간 Topic */}
+      <VulDBImageCardContainer posts={posts.data} />
+      <VulDBDashboard posts={posts.data} /> {/* 취약점 DB & 실시간 Topic */}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { addPost, getAllPosts } from "@/lib/api/posts";
-import { VulnDBPost } from "@/types/type";
+import { VulDBPost } from "@/types/type";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
@@ -24,7 +24,7 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const { post }: { post: VulnDBPost } = await request.json();
+    const { post }: { post: VulDBPost } = await request.json();
     const addedPost = await addPost(post);
 
     return NextResponse.json(
