@@ -87,6 +87,8 @@ export default function FileExplorer({
         structure={structure}
         onToggle={handleToggle}
         isNested={false}
+        username={username}
+        repo={repo}
       />
     </div>
   );

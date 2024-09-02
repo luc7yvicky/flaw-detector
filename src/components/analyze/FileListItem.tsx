@@ -9,24 +9,35 @@ import {
   IconOnWait,
 } from "../ui/Icons";
 import FileList from "./FileList";
+import { useFileViewerStore } from "@/stores/store";
 
 export default function FileListItem({
   item,
   onToggle,
   isNested,
+  username,
+  repo,
 }: {
   item: RepoContentItem;
   onToggle: (item: RepoContentItem) => void;
   isNested: boolean;
+  username: string;
+  repo: string;
 }) {
-  const { name, type, expanded, items, processStatus } = item;
+  const { name, type, expanded, items, processStatus, path } = item;
+  const fetchFileContent = useFileViewerStore(
+    (state) => state.fetchFileContent,
+  );
+  const setCurrentFile = useFileViewerStore((state) => state.setCurrentFile);
 
-  const handleItemClick = (e: React.MouseEvent<HTMLLIElement>) => {
+  const handleItemClick = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.stopPropagation();
     if (type === "dir") {
       onToggle(item);
     } else if (type === "file") {
       // 선택된 파일의 path로 코드파일 읽어오기
+      setCurrentFile(name);
+      await fetchFileContent(username, repo, path);
     }
   };
 
@@ -70,7 +81,13 @@ export default function FileListItem({
         </div>
       </li>
       {type === "dir" && expanded && items && items.length > 0 && (
-        <FileList structure={items} onToggle={onToggle} isNested />
+        <FileList
+          structure={items}
+          onToggle={onToggle}
+          isNested
+          username={username}
+          repo={repo}
+        />
       )}
     </>
   );
