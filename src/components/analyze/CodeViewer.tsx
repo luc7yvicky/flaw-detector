@@ -2,7 +2,6 @@
 
 import { useFileViewerStore } from "@/stores/store";
 
-import ProcessStatus from "./ProcessStatus";
 import { IconMagnifierWithPlus } from "../ui/Icons";
 import { getLanguage } from "@/lib/utils";
 import dynamic from "next/dynamic";
@@ -23,17 +22,21 @@ export default function CodeViewer() {
     );
   }, []);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const renderContent = (): string => {
+    if (isLoading) {
+      return "Loading...";
+    }
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+    if (error) {
+      return `Error: ${error}`;
+    }
 
-  if (!currentFile || !fileContent) {
+    return fileContent || "";
+  };
+
+  if (!currentFile && !isLoading && !error) {
     return (
-      <div className="flex-center-center flex-col gap-8 rounded-lg border border-[#c3c3c3]">
+      <div className="flex-center-center h-full flex-col gap-8 rounded-lg border border-[#c3c3c3]">
         <IconMagnifierWithPlus />
         <div className="text-2xl text-primary-500">파일을 선택하세요</div>
       </div>
@@ -44,7 +47,7 @@ export default function CodeViewer() {
     <div className="w-full flex-col overflow-hidden rounded-lg border border-[#c3c3c3]">
       {/* <ProcessStatus status={status} /> */}
       <SyntaxHighlighter
-        language={getLanguage(currentFile)}
+        language={currentFile ? getLanguage(currentFile) : "text"}
         style={highlighterStyle}
         // showLineNumbers
         wrapLines
@@ -55,7 +58,7 @@ export default function CodeViewer() {
           </pre>
         )}
       >
-        {fileContent}
+        {renderContent()}
       </SyntaxHighlighter>
     </div>
   );
