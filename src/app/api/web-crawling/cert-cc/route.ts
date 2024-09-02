@@ -4,6 +4,7 @@ import { handleError } from "@/lib/helpers";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
 
+// 전반적인 리팩토링 필요
 export async function GET() {
   try {
     const executablePath = getChromeExecutablePath();
@@ -92,7 +93,7 @@ export async function GET() {
               "STRONG",
             ],
           ): { id: string; text: string }[] {
-            if (!startElement || !endElement) return [];
+            if (!startElement) return [];
 
             let currentElement = startElement.nextElementSibling;
             const content: { id: string; text: string }[] = [];
@@ -130,17 +131,20 @@ export async function GET() {
 
           const overviewContent = extractContentBetweenElements(
             overviewElement,
-            descriptionElement,
+            descriptionElement ||
+              impactElement ||
+              solutionElement ||
+              acknowledgementsElement,
           );
 
           const descriptionContent = extractContentBetweenElements(
             descriptionElement,
-            impactElement,
+            impactElement || solutionElement || acknowledgementsElement,
           );
 
           const impactContent = extractContentBetweenElements(
             impactElement,
-            solutionElement,
+            solutionElement || acknowledgementsElement,
           );
 
           const solutionContent = extractContentBetweenElements(
