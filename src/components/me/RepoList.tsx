@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Repo from "@/components/my/Repo";
+import Repo from "@/components/me/Repo";
 import { IconCaretLeft } from "@/components/ui/Icons";
 import { RepoListData } from "@/types/type";
 
