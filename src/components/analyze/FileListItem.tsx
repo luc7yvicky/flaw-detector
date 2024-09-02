@@ -7,10 +7,11 @@ import {
   IconFolder,
   IconOnProcess,
   IconOnWait,
+  IconStar,
 } from "../ui/Icons";
 import FileList from "./FileList";
 import { useFileViewerStore } from "@/stores/store";
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 
 function FileListItem({
   item,
@@ -18,12 +19,16 @@ function FileListItem({
   isNested,
   username,
   repo,
+  isActive,
+  onActivate,
 }: {
   item: RepoContentItem;
   onToggle: (item: RepoContentItem) => void;
   isNested: boolean;
   username: string;
   repo: string;
+  isActive: boolean;
+  onActivate: (path: string) => void;
 }) {
   const { name, type, expanded, items, processStatus, path } = item;
   const fetchFileContent = useFileViewerStore(
@@ -31,11 +36,20 @@ function FileListItem({
   );
   const setCurrentFile = useFileViewerStore((state) => state.setCurrentFile);
 
+  const [isSelected, setIsSelected] = useState(false);
+
+  const handleBookmark = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    // TODO: 북마크 로직 구현
+    console.log(`Bookmarked: ${name}`);
+  };
+
   const handleItemClick = async (e: React.MouseEvent<HTMLLIElement>) => {
     e.stopPropagation();
     if (type === "dir") {
       onToggle(item);
     } else if (type === "file") {
+      onActivate(path);
       // 선택된 파일의 path로 코드파일 읽어오기
       setCurrentFile(name);
       await fetchFileContent(username, repo, path);
@@ -66,25 +80,35 @@ function FileListItem({
     <>
       <li
         className={cn(
-          "flex cursor-pointer border-t border-line-default px-3 py-2 hover:bg-purple-light",
+          "group/item flex cursor-pointer border-t border-line-default px-3 py-2 hover:bg-purple-light",
           isNested && "pl-6",
+          isActive && "bg-primary-50",
           expanded && "bg-purple-50",
         )}
         onClick={handleItemClick}
       >
-        <div className="flex">
-          <div
-            className="mr-2 flex items-center"
-            onClick={(e) => e.stopPropagation()}
-          ></div>
-          <div className="mr-1 flex items-center">
-            {type === "file" ? <IconDoc /> : <IconFolder />}
+        <div className="flex w-full justify-between">
+          <div className="flex w-full">
+            <div
+              className="mr-2 flex items-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <input type="checkbox" />
+            </div>
+            <div className="mr-1 flex items-center">
+              {type === "file" ? <IconDoc /> : <IconFolder />}
+            </div>
+            <span>{name}</span>
           </div>
-          <span className="w-full">{name}</span>
-
-          {processStatus && (
-            <div className="justify-self-end">{statusIcon}</div>
-          )}
+          <div className="flex-center-center invisible">
+            <button
+              className="group-hover/item:visible"
+              onClick={handleBookmark}
+            >
+              <IconStar className="fill-primary-300" />
+            </button>
+            {processStatus && statusIcon}
+          </div>
         </div>
       </li>
       {showNestedList && items && (
