@@ -1,14 +1,16 @@
+import { getChromeExecutablePath } from "@/lib/api/chrome";
 import { handleError } from "@/lib/helpers";
-import Chromium from "@sparticuz/chromium";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
 
 export async function GET() {
   try {
+    const executablePath = getChromeExecutablePath();
+
     // Puppeteer로 브라우저 실행
     const browser = await puppeteer.launch({
-      executablePath: await Chromium.executablePath(),
-      headless: true,
+      executablePath,
+      headless: false,
     });
 
     const page = await browser.newPage();
