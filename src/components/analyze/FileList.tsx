@@ -15,11 +15,6 @@ export default function FileList({
   username: string;
   repo: string;
 }) {
-  const [activeItem, setActiveItem] = useState<string | null>(null);
-
-  const handleItemActivation = (path: string) => {
-    setActiveItem(path);
-  };
   return (
     <ul className="scrollbar-hide max-h-[calc(100dvh-12rem)] overflow-y-scroll">
       {structure.map((item) => (
@@ -30,8 +25,6 @@ export default function FileList({
           isNested={isNested}
           username={username}
           repo={repo}
-          isActive={item.path === activeItem}
-          onActivate={handleItemActivation}
         />
       ))}
     </ul>

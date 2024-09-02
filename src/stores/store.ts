@@ -1,14 +1,18 @@
-import { create } from 'zustand';
-import { fetchCodes } from '@/lib/api/repositories';
+import { create } from "zustand";
+import { fetchCodes } from "@/lib/api/repositories";
 
 interface FileViewerState {
   currentFile: string | null;
   fileContent: string | null;
   isLoading: boolean;
   error: string | null;
-  setCurrentFile: (file: string) => void;
-  fetchFileContent: (owner: string, repo: string, path: string) => Promise<void>;
-  resetFileViewer: () => void; 
+  setCurrentFile: (file: string | null) => void;
+  fetchFileContent: (
+    owner: string,
+    repo: string,
+    path: string,
+  ) => Promise<void>;
+  resetFileViewer: () => void;
 }
 
 export const useFileViewerStore = create<FileViewerState>((set) => ({
@@ -23,8 +27,12 @@ export const useFileViewerStore = create<FileViewerState>((set) => ({
       const content = await fetchCodes(owner, repo, path);
       set({ fileContent: content, isLoading: false });
     } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'Unknown error', isLoading: false });
+      set({
+        error: error instanceof Error ? error.message : "Unknown error",
+        isLoading: false,
+      });
     }
   },
-  resetFileViewer: () => set({ currentFile: null, fileContent: null, error: null }),
+  resetFileViewer: () =>
+    set({ currentFile: null, fileContent: null, error: null }),
 }));
