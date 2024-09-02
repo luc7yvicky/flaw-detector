@@ -16,7 +16,11 @@ const octokit = new Octokit({
   auth: OCTOKIT_TOKEN,
 });
 
-export async function fetchCodes(owner: string, repo: string, path: string): Promise<string> {
+export async function fetchCodes(
+  owner: string,
+  repo: string,
+  path: string,
+): Promise<string> {
   if (!owner || !repo || !path) {
     throw new Error("owner, repo, path 모두 필요합니다.");
   }
@@ -31,8 +35,8 @@ export async function fetchCodes(owner: string, repo: string, path: string): Pro
       },
     });
 
-    if (typeof response.data === 'string') {
-      return response.data
+    if (typeof response.data === "string") {
+      return response.data;
     } else {
       throw new Error("예상치 못한 응답 형식입니다.");
     }
@@ -47,11 +51,10 @@ export async function fetchCodes(owner: string, repo: string, path: string): Pro
 
 // 레포지토리 리스트를 불러옵니다.
 export async function getRepoLists(username: string) {
+  if (!username) {
+    throw new Error("GitHub username이 존재하지 않습니다");
+  }
   try {
-    if (!username) {
-      throw new Error("GitHub username이 존재하지 않습니다");
-    }
-
     const { data } = await octokit.request("GET /users/{username}/repos", {
       username: username,
       headers: {
