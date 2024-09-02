@@ -1,6 +1,6 @@
 "use client";
 
-import ClippingArticle from "@/components/my/ClippingArticle";
+import ClippingArticle from "@/components/me/ClippingArticle";
 import Button from "@/components/ui/Button";
 import Dropdown from "@/components/ui/Dropdown";
 import { IconPlus } from "@/components/ui/Icons";
