@@ -38,7 +38,7 @@ export async function GET() {
       //클릭 후 들어가서 데이터를 크롤링할 배열 준비
       const crawledData = [];
 
-      for (const [index, element] of Array.from(elements.entries())) {
+      for (const [index] of Array.from(elements.entries())) {
         console.log(`Attempting to click on element ${index + 1}`);
 
         // 다시 요소를 선택
@@ -47,9 +47,6 @@ export async function GET() {
 
         // 요소가 존재하는지 확인
         if (!refreshedElement) {
-          console.log(
-            `Element at index ${index + 1} not found after navigation.`,
-          );
           continue; // 다음 요소로 넘어감
         }
 
@@ -68,89 +65,104 @@ export async function GET() {
         const detailTitle = await page.$eval("p.detail-title", (el) =>
           el.textContent?.trim(),
         );
-        const paragraphs = await page.$$eval(
-          "div.detail-content > p",
-          (elements) =>
-            elements
-              .map((el) => el.textContent?.trim())
-              .filter((text) => text !== ""),
-        );
 
-        const tableData = await page.$$eval(
-          "div.detail-content table",
-          (tables) =>
-            tables.flatMap((table) => {
-              const rows = Array.from(table.querySelectorAll("tr"));
+        // CnnvdContent 추출
+        const content = await page.evaluate(() => {
+          //모든 p태그 선택
+          const paragraphs = document.querySelectorAll(
+            "div.detail-content > p.MsoNormal",
+          );
+          let overview = "";
+          let introduction = "";
+          let vulnDetail = "";
+          let remediation = "";
 
-              // 첫 번째 행을 컬럼 헤더로 사용
-              const headers = Array.from(
-                rows[0].querySelectorAll("th, td"),
-              ).map((header) => header.textContent?.trim());
+          let section = "overview";
+          let skipNextP = false; //table 이후 나오는 p태그 스킵하기 위한 플래그
 
-              // 나머지 행을 데이터로 사용
-              return rows.slice(1).map((row) => {
-                const columns = Array.from(row.querySelectorAll("td"));
-                return columns.reduce(
-                  (acc: { [key: string]: string }, column, index) => {
-                    acc[headers[index] || `Column${index + 1}`] =
-                      column.textContent?.trim() || "";
-                    return acc;
-                  },
-                  {},
-                );
-              });
-            }),
-        );
+          paragraphs.forEach((p) => {
+            const text = p.textContent?.trim() || "";
 
-        if (detailTitle && paragraphs.length > 0) {
-          console.log("Detail Page Data:", {
-            detailTitle,
-            paragraphs,
-            tableData,
+            // <table class="MsoTableGrid">가 등장하면 그 이후의 <p> 태그 스킵
+            if (p.tagName === "TABLE" && p.classList.contains("MsoTableGrid")) {
+              skipNextP = true;
+              return;
+            }
+
+            if (skipNextP && p.className === "") {
+              // 테이블 바로 다음에 있는 클래스가 없는 <p> 태그는 무시
+              return;
+            } else if (p.className !== "") {
+              skipNextP = false; // 다시 <p class="MsoNormal">이므로 처리할 수 있도록 설정
+            }
+
+            if (text.startsWith("一、")) {
+              section = "introduction";
+              introduction += text + "\n";
+              return;
+            } else if (text.startsWith("二、")) {
+              section = "vulnDetail";
+              vulnDetail += text + "\n"; // "二、"이 글자 포함
+              return;
+            } else if (text.startsWith("三、")) {
+              section = "remediation";
+              remediation += text + "\n"; // "三、"이 글자 포함
+              return;
+            }
+            if (section === "overview") {
+              overview += text + "\n";
+            } else if (section === "introduction") {
+              introduction += text + "\n";
+            } else if (section === "vulnDetail") {
+              vulnDetail += text + "\n";
+            } else if (section === "remediation") {
+              remediation += text + "\n";
+            }
           });
 
-          //크롤링한 데이터 저장
-          crawledData.push({
-            detailTitle,
-            paragraphs,
-            tableData,
-            timestamp: new Date(),
-          });
-        } else {
-          console.log("Failed to retrieve data from detail page");
-        }
-        //다시 원래 페이지 돌아가기
-        await page.goBack({ waitUntil: "networkidle0" });
-        console.log(
-          `Returned to main page after processing element ${index + 1}`,
-        );
-      }
+          return {
+            overview: overview.trim(),
+            introduction: introduction.trim(),
+            vulnDetail: vulnDetail.trim(),
+            remediation: remediation.trim(),
+          };
+        });
 
-      if (crawledData.length > 0) {
-        //firestore에 각 크롤링 데이터 개별 문서로 저장
+        const timestamp = new Date();
+        const created_at = {
+          seconds: Math.floor(timestamp.getTime() / 1000),
+          nanoseconds: timestamp.getMilliseconds() * 1e6,
+        };
+
+        const docData = {
+          id: page.url(),
+          label: "취약성 경고", // 예시로 "취약성 경고" 사용
+          source: "CNNVD",
+          page_url: page.url(),
+          title: {
+            original: detailTitle || "",
+            translated: "", // 번역된 제목은 여기서 처리하거나 이후에 추가 가능
+          },
+          created_at,
+          content,
+        };
+
+        crawledData.push(docData);
+
+        // Firestore에 저장
         const collectionRef = collection(db, "cnnvd-data");
+        const newDocRef = doc(collectionRef);
+        await setDoc(newDocRef, docData);
 
-        for (const data of crawledData) {
-          const newDocRef = doc(collectionRef);
-          await setDoc(newDocRef, data);
-        }
-
-        console.log("All data written to Firestore successfully");
-      } else {
-        console.log("No data was crawled.");
+        await page.goBack({ waitUntil: "networkidle0" });
       }
 
-      // 브라우저 종료
       await browser.close();
-      console.log("Browser closed successfully");
-
-      // return NextResponse.json({ titles });
       return NextResponse.json({
-        message: "DATA saved to Firestore",
+        message: "Data saved to Firestore",
         crawledData,
       });
     } else {
-      console.log("No elements found with the selector 'p.content-title'");
       throw new Error("Element not found");
     }
   } catch (error) {
