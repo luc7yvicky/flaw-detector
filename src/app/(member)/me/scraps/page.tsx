@@ -1,6 +1,6 @@
 "use client";
 
-import ClippingArticle from "@/components/my/ClippingArticle";
+import ClippingArticle from "@/components/me/ClippingArticle";
 import Button from "@/components/ui/Button";
 import Dropdown from "@/components/ui/Dropdown";
 import { IconPlus } from "@/components/ui/Icons";
@@ -216,7 +216,7 @@ export default function ScrapsPage() {
 
         <div className="flex-between-center relative grid grid-cols-3 gap-6">
           {articles?.map((article) => (
-            <Link href={`/vulnerability-db/${article.id}`} key={article.id}>
+            <Link href={`/vuldb/items/${article.id}`} key={article.id}>
               <ClippingArticle {...article} />
             </Link>
           ))}

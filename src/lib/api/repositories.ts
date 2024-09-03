@@ -16,13 +16,45 @@ const octokit = new Octokit({
   auth: OCTOKIT_TOKEN,
 });
 
+export async function fetchCodes(
+  owner: string,
+  repo: string,
+  path: string,
+): Promise<string> {
+  if (!owner || !repo || !path) {
+    throw new Error("owner, repo, path 모두 필요합니다.");
+  }
+
+  try {
+    const response = await octokit.repos.getContent({
+      owner,
+      repo,
+      path,
+      mediaType: {
+        format: "raw",
+      },
+    });
+
+    if (typeof response.data === "string") {
+      return response.data;
+    } else {
+      throw new Error("예상치 못한 응답 형식입니다.");
+    }
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`파일 내용을 가져오는 중 오류 발생: ${error.message}`);
+    } else {
+      throw new Error("파일 내용을 가져오는 중 알 수 없는 오류 발생");
+    }
+  }
+}
+
 // 레포지토리 리스트를 불러옵니다.
 export async function getRepoLists(username: string) {
+  if (!username) {
+    throw new Error("GitHub username이 존재하지 않습니다");
+  }
   try {
-    if (!username) {
-      throw new Error("GitHub username이 존재하지 않습니다");
-    }
-
     const { data } = await octokit.request("GET /users/{username}/repos", {
       username: username,
       headers: {
@@ -34,6 +66,7 @@ export async function getRepoLists(username: string) {
       (repo: RepoListRawData): RepoListData => ({
         id: repo.id,
         repositoryName: repo.name,
+        detectedStatus: "notChecked",
       }),
     );
   } catch (error) {

@@ -15,11 +15,14 @@ export const FIREBASE_STORAGE_BUCKET = process.env.FIREBASE_STORAGE_BUCKET;
 export const FIREBASE_MESSAGING_SENDER_ID =
   process.env.FIREBASE_MESSAGING_SENDER_ID;
 export const FIREBASE_APP_ID = process.env.FIREBASE_APP_ID;
-export const FIREBASE_MEASUREMENT_ID = process.env.FIREBASE_MEASUREMENTID;
+export const FIREBASE_MEASUREMENT_ID = process.env.FIREBASE_MEASUREMENT_ID;
 
 export const ITEMS_PER_DB_PAGE = 5;
 export const ITEMS_PER_MY_PAGE = 12;
 export const DB_PAGES_PER_GROUP = 10;
 
-export const VULN_DB_POSTS_API_URL =
-  "http://localhost:3000/api/vulnerability-db/posts";
+export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability"; // 임시 검색어
+
+export const VUL_DB_POSTS_API_URL = "http://localhost:3000/api/vuldb/posts";
+export const WEB_CRAWLING_CERT_CC_API_URL =
+  "http://localhost:3000/api/web-crawling/cert-cc";

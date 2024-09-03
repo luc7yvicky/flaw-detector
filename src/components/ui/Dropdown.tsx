@@ -11,8 +11,8 @@ export type DropdownProps = React.HTMLAttributes<HTMLDivElement> & {
 export type Option = { id: string; name: string; value: string };
 
 const typeOptions: Option[] = [
-  { id: "0", name: "폴더순", value: "folder" },
-  { id: "1", name: "파일순", value: "file" },
+  { id: "0", name: "검사완료", value: "done" },
+  { id: "1", name: "검사중", value: "onProgress" },
 ];
 
 const sortOptions: Option[] = [

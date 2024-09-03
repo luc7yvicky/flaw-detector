@@ -1,17 +1,13 @@
+import { auth } from "@/auth";
 import Image from "next/image";
 
-export default function Profile({
-  avatar,
-  email,
-}: {
-  avatar: string;
-  email: string;
-}) {
+export default async function Profile() {
+  const session = await auth();
   return (
     <article className="inline-flex items-center gap-x-[2.75rem]">
       <Image
-        src={avatar}
-        alt="avatar"
+        src={session?.user.image || "/images/avatar.png"}
+        alt={`${session?.user.username}의 아바타`}
         width={108}
         height={108}
         priority
@@ -19,7 +15,7 @@ export default function Profile({
       />
       <p className="flex-col-start-center text-[2.5rem] font-medium leading-tight -tracking-[0.01em] text-gray-dark">
         <span>Hello,</span>
-        <span>{email}</span>
+        <span>{session?.user.email || "marry@gmail.com"}</span>
       </p>
     </article>
   );

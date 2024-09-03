@@ -46,3 +46,27 @@ export const formatTimestampAsDateTime = (timestamp: {
 
   return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
 };
+
+/* 선택한 파일의 확장자로 작성 언어를 리턴하여 코드 하이라이터의 속성으로 사용합니다*/
+export const getLanguage = (filename: string) => {
+  const extension = filename.split(".").pop()?.toLowerCase();
+  switch (extension) {
+    case "js":
+    case "jsx":
+      return "javascript";
+    case "ts":
+    case "tsx":
+      return "typescript";
+    case "py":
+      return "python";
+    case "html":
+      return "html";
+    case "css":
+      return "css";
+    case "json":
+      return "json";
+    // 확장자-언어 추가 가능
+    default:
+      return "javascript";
+  }
+};

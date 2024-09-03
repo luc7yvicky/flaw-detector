@@ -1,5 +1,6 @@
-import Profile from "@/components/my/Profile";
-import RepoList from "@/components/my/RepoList";
+import { auth } from "@/auth";
+import Profile from "@/components/me/Profile";
+import RepoList from "@/components/me/RepoList";
 import Button from "@/components/ui/Button";
 import Dropdown from "@/components/ui/Dropdown";
 import TitleBar from "@/components/ui/TitleBar";
@@ -9,11 +10,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 export default async function ReposPage() {
-  const repos: RepoListData[] = await getRepoLists("joanshim");
-  const user = {
-    email: "gheddong2@naver.com",
-    image: "https://avatars.githubusercontent.com/u/87695983?v=4",
-  };
+  const session = await auth();
+  const repos: RepoListData[] = await getRepoLists(session?.user?.username);
 
   return (
     <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
@@ -33,10 +31,7 @@ export default async function ReposPage() {
       <div className="flex flex-col gap-y-20">
         <section className="flex flex-col gap-y-20">
           <div className="flex-between-center h-[6.688rem] gap-4">
-            <Profile
-              avatar={user?.image || "/images/user.png"}
-              email={user?.email || "marry@gmail.com"}
-            />
+            <Profile />
             <Link href="/me">
               <Button
                 variant="outlined"
