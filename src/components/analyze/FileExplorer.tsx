@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import FileList from "./FileList";
 import { RepoContentItem } from "@/types/type";
 import { expandFolder } from "@/lib/api/repositories";
+import { useFileViewerStore } from "@/stores/store";
 
 export default function FileExplorer({
   initialStructure,
@@ -18,8 +19,36 @@ export default function FileExplorer({
   const [structure, setStructure] =
     useState<RepoContentItem[]>(initialStructure);
 
-  const handleToggle = async (item: RepoContentItem) => {
-    if (item.type === "dir") {
+  const resetFileViewer = useFileViewerStore((state) => state.resetFileViewer);
+
+  useEffect(() => {
+    resetFileViewer();
+  }, [resetFileViewer, repo]);
+
+  const updateNestedStructure = useCallback(
+    (
+      items: RepoContentItem[],
+      updatedItem: RepoContentItem,
+    ): RepoContentItem[] => {
+      return items.map((item) => {
+        if (item.path === updatedItem.path) {
+          return updatedItem;
+        }
+        if (item.type === "dir" && item.items) {
+          return {
+            ...item,
+            items: updateNestedStructure(item.items, updatedItem),
+          };
+        }
+        return item;
+      });
+    },
+    [],
+  );
+
+  const handleToggle = useCallback(
+    async (item: RepoContentItem) => {
+      if (item.type !== "dir") return;
       if (item.loadingStatus !== "loaded") {
         try {
           setStructure((prevStructure) =>
@@ -57,36 +86,21 @@ export default function FileExplorer({
           }),
         );
       }
-    }
-  };
-
-  const updateNestedStructure = (
-    items: RepoContentItem[],
-    updatedItem: RepoContentItem,
-  ): RepoContentItem[] => {
-    return items.map((item) => {
-      if (item.path === updatedItem.path) {
-        return updatedItem;
-      }
-      if (item.type === "dir" && item.items) {
-        return {
-          ...item,
-          items: updateNestedStructure(item.items, updatedItem),
-        };
-      }
-      return item;
-    });
-  };
+    },
+    [username, repo, updateNestedStructure],
+  );
 
   return (
     <div className="overflow-hidden rounded-lg border border-line-default">
-      <div className="mb-4 flex items-center">
-        <span>전체선택</span>
+      <div className="flex items-center border-b border-line-default bg-purple-light p-5 text-xl">
+        Files
       </div>
       <FileList
         structure={structure}
         onToggle={handleToggle}
         isNested={false}
+        username={username}
+        repo={repo}
       />
     </div>
   );
