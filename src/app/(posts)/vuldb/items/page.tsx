@@ -35,22 +35,22 @@ async function getAllVulDBPosts() {
   return data;
 }
 
-// async function addVulDBPost() {
-//   const res = await fetch(VUL_DB_POSTS_API_URL, {
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify({ post: exampleCertCCVulDBPost }),
-//   });
+async function addVulDBPost(post: VulDBPost) {
+  const res = await fetch(VUL_DB_POSTS_API_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ post }),
+  });
 
-//   if (!res.ok) {
-//     throw new Error("post 추가하기 실패");
-//   }
+  if (!res.ok) {
+    throw new Error("post 추가하기 실패");
+  }
 
-//   const data = await res.json();
-//   return data;
-// }
+  const data = await res.json();
+  return data;
+}
 
 function VulDBImageCardContainer({ posts }: { posts: VulDBPost[] }) {
   const newThreePosts = posts.slice(0, 3); // 최신에 수집된 3개 게시글 가져오기 (예정)
@@ -225,11 +225,19 @@ export default async function VulDBPage() {
     }),
   );
 
+  console.log(posts);
+
+  if (translatedPosts) {
+    translatedPosts.map(async (post: VulDBPost) => {
+      return await addVulDBPost(post);
+    });
+  }
+
   return (
     <div className="mx-auto mb-[1.188rem] mt-[1.688rem] flex w-[82.063rem] flex-col gap-[4.75rem]">
       <VulDBImageCardContainer posts={posts.data} />
       <VulDBDashboard posts={posts.data} /> {/* 취약점 DB & 실시간 Topic */}
-      {translatedPosts.map((post: VulDBPost) => {
+      {/* {posts.data.map((post: VulDBPost) => {
         return (
           <div key={post.id} className="rounded-md border border-slate-400 p-6">
             <h2 className="text-2xl font-bold">
@@ -321,7 +329,7 @@ export default async function VulDBPage() {
             </div>
           </div>
         );
-      })}
+      })} */}
     </div>
   );
 }
