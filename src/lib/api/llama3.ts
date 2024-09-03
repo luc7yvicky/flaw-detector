@@ -1,9 +1,9 @@
 import { LLAMA_AUTH_URL, LLAMA_PASSWORD, LLAMA_USERNAME } from "../const";
 import { getPromptConfig } from '@/lib/promptConfig';
 
-export async function generateLlm(config_name: string, currentMessage: string) {
+export async function generateLlm(config_name: string, current_message: string) {
   const config = getPromptConfig(config_name);
-  const user_message = `${currentMessage}\n${config.systemPrompt}`;
+  const user_message = `${current_message}\n${config.systemPrompt}`;
 
   const response = await fetch('/api/generate', {
     method: 'POST',
