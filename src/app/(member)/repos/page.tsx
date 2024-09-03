@@ -1,5 +1,4 @@
 import { auth } from "@/auth";
-import { auth } from "@/auth";
 import Profile from "@/components/me/Profile";
 import RepoList from "@/components/me/RepoList";
 import Button from "@/components/ui/Button";
