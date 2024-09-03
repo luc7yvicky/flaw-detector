@@ -7,7 +7,7 @@ export default async function Profile() {
     <article className="inline-flex items-center gap-x-[2.75rem]">
       <Image
         src={session?.user.image || "/images/avatar.png"}
-        alt="avatar"
+        alt={`${session?.user.username}의 아바타`}
         width={108}
         height={108}
         priority
