@@ -171,7 +171,7 @@ export default async function VulDBPage() {
 
   const translateText = async (originalText: string) => {
     const res = await getGeneratedText(
-      `다음 텍스트를 번역해주세요. ${originalText}`,
+      `다음 텍스트를 번역해주세요. CVE 번호와 url등은 제외하고 이어서 번역해주세요. ${originalText}`,
     );
     return res.generated_text;
   };
@@ -227,34 +227,101 @@ export default async function VulDBPage() {
 
   return (
     <div className="mx-auto mb-[1.188rem] mt-[1.688rem] flex w-[82.063rem] flex-col gap-[4.75rem]">
-      <div className="mx-auto mb-[1.188rem] mt-[1.688rem] flex w-[82.063rem] flex-col gap-[4.75rem]">
-        {translatedPosts.map((post) => {
-          return (
-            <div key={post.id}>
-              <h2>{post.title.translated}</h2>
-              <div>
-                {post.content.overview.translated.map((t: any) => {
-                  console.log(t);
-                  return t.text;
-                })}
-              </div>
-              <div>
-                {post.content.description.translated.map((t: any) => t.text)}
-              </div>
-              <div>
-                {post.content.impact.translated.map((t: any) => t.text)}
-              </div>
-              <div>
-                {post.content.solution.translated.map((t: any) => t.text)}
-              </div>
-            </div>
-          );
-        })}
-        <VulDBImageCardContainer posts={posts.data} />
-        <VulDBDashboard posts={posts.data} /> {/* 취약점 DB & 실시간 Topic */}
-      </div>
       <VulDBImageCardContainer posts={posts.data} />
       <VulDBDashboard posts={posts.data} /> {/* 취약점 DB & 실시간 Topic */}
+      {translatedPosts.map((post: VulDBPost) => {
+        return (
+          <div key={post.id} className="rounded-md border border-slate-400 p-6">
+            <h2 className="text-2xl font-bold">
+              {post.title.translated} ({post.source})
+            </h2>
+            <Link
+              href={post.page_url}
+              className="float-right underline underline-offset-2"
+              target="_blank"
+            >
+              Cert/CC 페이지에서 보기
+            </Link>
+            <div className="mt-10 flex flex-col gap-16 p-3">
+              {isCertCCContentType(post.content) && (
+                <>
+                  <section>
+                    <h3 className="text-xl font-semibold">Overview</h3>
+                    <ul>
+                      {post.content.overview.translated.map((item) => {
+                        return <li key={item.id}>{item.text}</li>;
+                      })}
+                      {post.content.overview.original.map((item) => {
+                        return <li key={item.id}>{item.text}</li>;
+                      })}
+                    </ul>
+                  </section>
+                  <section>
+                    <h3 className="text-xl font-semibold">Description</h3>
+                    <ul>
+                      {post.content.description.translated.map((item) => {
+                        return <li key={item.id}>{item.text}</li>;
+                      })}
+                      {post.content.description.original.map((item) => {
+                        return <li key={item.id}>{item.text}</li>;
+                      })}
+                    </ul>
+                  </section>
+                  {post.content.impact.original.length > 0 && (
+                    <section>
+                      <h3 className="text-xl font-semibold">Impact</h3>
+                      <ul>
+                        {post.content.impact.translated.map((item) => {
+                          return <li key={item.id}>{item.text}</li>;
+                        })}
+                        {post.content.impact.original.map((item) => {
+                          return <li key={item.id}>{item.text}</li>;
+                        })}
+                      </ul>
+                    </section>
+                  )}
+
+                  {post.content.solution.original.length > 0 && (
+                    <section>
+                      <h3 className="text-xl font-semibold">Solution</h3>
+                      <ul>
+                        {post.content.solution.translated.map((item) => {
+                          return <li key={item.id}>{item.text}</li>;
+                        })}
+                        {post.content.solution.original.map((item) => {
+                          return <li key={item.id}>{item.text}</li>;
+                        })}
+                      </ul>
+                    </section>
+                  )}
+
+                  {post.content.cveIDs.length > 0 && (
+                    <section className="flex items-end gap-3">
+                      <h3 className="text-xl font-semibold">CVE IDs: </h3>
+                      <ul className="flex gap-5">
+                        {post.content.cveIDs.map((item) => {
+                          return (
+                            <li
+                              key={item}
+                              className="text-red-500 underline-offset-2 hover:underline"
+                            >
+                              <Link
+                                href={`https://www.cve.org/CVERecord?id=${item}`}
+                              >
+                                {item}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </section>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
