@@ -32,7 +32,7 @@ export const authConfig = {
       clientId: GITHUB_ID,
       clientSecret: GITHUB_SECRET,
       authorization: {
-        params: { scope: "repo" },
+        params: { scope: "repo user" },
       },
     }),
   ],
