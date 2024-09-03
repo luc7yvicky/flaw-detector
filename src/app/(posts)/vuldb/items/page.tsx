@@ -10,9 +10,18 @@ import {
   CardTitleWrapper,
 } from "@/components/ui/Card";
 import VulDBDashboard from "@/components/vulnerability-db/VulDBDashboard";
-import { VUL_DB_POSTS_API_URL } from "@/lib/const";
+import {
+  VUL_DB_POSTS_API_URL,
+  WEB_CRAWLING_CERT_CC_API_URL,
+} from "@/lib/const";
 import { cn, formatTimestampAsDateTime } from "@/lib/utils";
-import { VulDBPost } from "@/types/type";
+import {
+  CertCCContent,
+  CertCCLocalizedTextBlock,
+  CertCCTextBlock,
+  VulDBPost,
+} from "@/types/type";
+import { isCertCCContentType } from "@/types/typeGuards";
 import Link from "next/link";
 
 async function getAllVulDBPosts() {
@@ -121,11 +130,129 @@ function VulDBImageCardContainer({ posts }: { posts: VulDBPost[] }) {
   );
 }
 
+async function getGeneratedText(user_message: string) {
+  const res = await fetch("http://localhost:3000/api/generate", {
+    method: "POST",
+    body: JSON.stringify({
+      user_message,
+      temperature: 0.9,
+      top_p: 0.9,
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error(`생성 실패 (status code: ${res.status})`);
+  }
+
+  const data = await res.json();
+  return data;
+}
+
+async function getCertCCWebScrawlingData() {
+  const res = await fetch(WEB_CRAWLING_CERT_CC_API_URL, {
+    method: "GET",
+  });
+  if (!res.ok) {
+    console.log("res", res);
+  }
+  const data = await res.json();
+  return data;
+}
+
 export default async function VulDBPage() {
   const posts = await getAllVulDBPosts();
+  const certCCData = await getCertCCWebScrawlingData();
+
+  if (!posts || !certCCData) {
+    return <div>Error loading data</div>;
+  }
+
+  // console.log("certCCData", certCCData);
+
+  const translateText = async (originalText: string) => {
+    const res = await getGeneratedText(
+      `다음 텍스트를 번역해주세요. ${originalText}`,
+    );
+    return res.generated_text;
+  };
+
+  const translateContent = async (content: VulDBPost["content"]) => {
+    const translateSection = async (section: CertCCLocalizedTextBlock) => {
+      return Promise.all(
+        section.original.map(async (item: CertCCTextBlock) => ({
+          ...item,
+          text: await translateText(item.text),
+        })),
+      );
+    };
+
+    if (!isCertCCContentType(content)) {
+      return;
+    }
+
+    return {
+      overview: {
+        original: content.overview.original,
+        translated: await translateSection(content.overview),
+      },
+      description: {
+        original: content.description.original,
+        translated: await translateSection(content.description),
+      },
+      impact: {
+        original: content.impact.original,
+        translated: await translateSection(content.impact),
+      },
+      solution: {
+        original: content.solution.original,
+        translated: await translateSection(content.solution),
+      },
+      cveIDs: content.cveIDs,
+    };
+  };
+
+  const translatedPosts = await Promise.all(
+    certCCData.posts.map(async (post: VulDBPost) => {
+      const originalTitle = post.title.original;
+      const translatedTitle = await translateText(originalTitle);
+      const translatedContent = await translateContent(post.content);
+
+      return {
+        ...post,
+        title: { original: originalTitle, translated: translatedTitle },
+        content: translatedContent,
+      };
+    }),
+  );
 
   return (
     <div className="mx-auto mb-[1.188rem] mt-[1.688rem] flex w-[82.063rem] flex-col gap-[4.75rem]">
+      <div className="mx-auto mb-[1.188rem] mt-[1.688rem] flex w-[82.063rem] flex-col gap-[4.75rem]">
+        {translatedPosts.map((post) => {
+          return (
+            <div key={post.id}>
+              <h2>{post.title.translated}</h2>
+              <div>
+                {post.content.overview.translated.map((t: any) => {
+                  console.log(t);
+                  return t.text;
+                })}
+              </div>
+              <div>
+                {post.content.description.translated.map((t: any) => t.text)}
+              </div>
+              <div>
+                {post.content.impact.translated.map((t: any) => t.text)}
+              </div>
+              <div>
+                {post.content.solution.translated.map((t: any) => t.text)}
+              </div>
+            </div>
+          );
+        })}
+        <VulDBImageCardContainer posts={posts.data} />
+        <VulDBDashboard posts={posts.data} /> {/* 취약점 DB & 실시간 Topic */}
+      </div>
       <VulDBImageCardContainer posts={posts.data} />
       <VulDBDashboard posts={posts.data} /> {/* 취약점 DB & 실시간 Topic */}
     </div>
