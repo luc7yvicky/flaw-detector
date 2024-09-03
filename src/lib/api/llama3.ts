@@ -1,4 +1,30 @@
 import { LLAMA_AUTH_URL, LLAMA_PASSWORD, LLAMA_USERNAME } from "../const";
+import { getPromptConfig } from '@/lib/promptConfig';
+
+export async function generateLlm(config_name: string, current_message: string) {
+  const config = getPromptConfig(config_name);
+  const user_message = `${current_message}\n${config.systemPrompt}`;
+
+  const response = await fetch('/api/generate', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      user_message,
+      temperature: config.temperature,
+      top_p: config.top_p,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error('API 요청 실패');
+  }
+
+  const data = await response.json();
+  return data.generated_text;
+}
+
 
 export async function getAPItoken() {
   if (!LLAMA_AUTH_URL || !LLAMA_USERNAME || !LLAMA_PASSWORD) {

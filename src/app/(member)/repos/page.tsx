@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import Profile from "@/components/me/Profile";
 import RepoList from "@/components/me/RepoList";
 import Button from "@/components/ui/Button";
@@ -9,7 +10,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 export default async function ReposPage() {
-  const repos: RepoListData[] = await getRepoLists("joanshim");
+  const session = await auth();
+  const repos: RepoListData[] = await getRepoLists(session?.user.username);
   return (
     <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <div className="flex-col-center-center mt-[3.5rem] gap-y-5">
