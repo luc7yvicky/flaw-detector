@@ -61,7 +61,7 @@ export const RetryButton = () => {
     <Button
       variant="filled"
       shape="rounded"
-      className="rounded-[0.75rem] py-3 text-2xl font-medium leading-[2.1rem]"
+      className="w-full rounded-[0.75rem] py-3 text-2xl font-medium leading-[2.1rem]"
     >
       다시 시도하기
     </Button>
@@ -77,7 +77,7 @@ export const ViewResultsButton = () => {
       <Button
         variant="filled"
         shape="rounded"
-        className="rounded-[0.75rem] py-3 text-2xl font-medium leading-[2.1rem]"
+        className="w-full rounded-[0.75rem] py-3 text-2xl font-medium leading-[2.1rem]"
       >
         결과 보러가기
       </Button>

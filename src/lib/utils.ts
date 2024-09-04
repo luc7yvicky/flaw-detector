@@ -72,6 +72,7 @@ export const getLanguage = (filename: string) => {
   }
 };
 
+/* 폴더-특수 > 폴더-특수X -> 파일-특수 > 파일-특수X 순 정렬 */
 export const sortFilesAndDirs = (
   data: Array<{ name: string; type: "dir" | "file" | "submodule" | "symlink" }>,
 ): Array<{ name: string; type: "dir" | "file" | "submodule" | "symlink" }> => {
