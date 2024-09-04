@@ -28,6 +28,7 @@ export async function getAllPosts(): Promise<VulDBPost[]> {
         created_at: docSnapshot.data().created_at,
         updated_at: docSnapshot.data().updated_at || null,
         content: docSnapshot.data().content,
+        views: docSnapshot.data().views,
       };
 
       posts.push(post);

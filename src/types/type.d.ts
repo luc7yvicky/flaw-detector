@@ -70,4 +70,5 @@ export type VulDBPost = {
   created_at: { seconds: number; nanoseconds: number };
   updated_at?: { seconds: number; nanoseconds: number };
   content: CertCCContent | CnnvdContent;
+  views: number;
 };
