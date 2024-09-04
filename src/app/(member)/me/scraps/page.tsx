@@ -185,6 +185,38 @@ export default function ScrapsPage() {
   const [currPage, setCurrPage] = useState<number>(1);
   const [articles, setArticles] = useState<ArticleDetailProps[]>([]);
 
+  // 1. 필터링 적용
+  const [filterType, setFilterType] = useState<string>("");
+  const [sortType, setSortType] = useState<string>("");
+
+  useEffect(() => {
+    let filteredArticles = [...articles];
+
+    // 정렬
+    if (sortType) {
+      filteredArticles.sort((a, b) => {
+        switch (sortType) {
+          case "latest":
+            return (
+              new Date(b.createdAt || "").getTime() -
+              new Date(a.createdAt || "").getTime()
+            );
+          case "oldest":
+            return (
+              new Date(a.createdAt || "").getTime() -
+              new Date(b.createdAt || "").getTime()
+            );
+          case "name":
+            return a.title.localeCompare(b.title);
+          default:
+            return 0;
+        }
+      });
+    }
+
+    setArticles(filteredArticles);
+  }, [filterType, sortType, articles]);
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setArticles(
@@ -209,8 +241,8 @@ export default function ScrapsPage() {
             Library
           </h2>
           <div className="inline-flex gap-x-[0.563rem]">
-            <Dropdown type="type" />
-            <Dropdown type="sort" />
+            <Dropdown type="type" onSelectFilter={setFilterType} />
+            <Dropdown type="sort" onSelectFilter={setSortType} />
           </div>
         </div>
 
