@@ -47,7 +47,7 @@ const alertType = {
 };
 
 type AlertType = {
-  type: keyof typeof alertType;
+  status: keyof typeof alertType;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export const AlertIcon = ({ icon }: { icon: React.ReactNode }) => {
@@ -86,19 +86,19 @@ export const ViewResultsButton = () => {
 };
 
 export const AlertContent = ({
-  type,
+  status,
   title,
   description,
 }: {
-  type: keyof typeof alertType;
+  status: keyof typeof alertType;
   title: string;
   description: string | string[];
 }) => {
   const renderButton = () => {
-    if (type === "error") {
+    if (status === "error") {
       return <RetryButton />;
     }
-    if (type === "success") {
+    if (status === "success") {
       return <ViewResultsButton />;
     }
   };
@@ -131,8 +131,12 @@ export const AlertClose = ({
   );
 };
 
-export const Alert = ({ type = "onWait", className, ...props }: AlertType) => {
-  const { icon, title, description } = alertType[type];
+export const Alert = ({
+  status = "onWait",
+  className,
+  ...props
+}: AlertType) => {
+  const { icon, title, description } = alertType[status];
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -146,7 +150,11 @@ export const Alert = ({ type = "onWait", className, ...props }: AlertType) => {
           {...props}
         >
           <AlertIcon icon={icon} />
-          <AlertContent type={type} title={title} description={description} />
+          <AlertContent
+            status={status}
+            title={title}
+            description={description}
+          />
           <AlertClose setIsOpen={setIsOpen} />
         </div>
       )}
