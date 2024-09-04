@@ -228,6 +228,7 @@ export async function GET() {
           source: "CERT/CC",
           page_url: link,
           created_at: { seconds: Date.now() / 1000, nanoseconds: 0 },
+          views: 0,
           ...postData,
         });
         await postDetailPage.close();
