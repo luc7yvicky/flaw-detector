@@ -1,8 +1,7 @@
 import { auth } from "@/auth";
 import Profile from "@/components/me/Profile";
 import RepoList from "@/components/me/RepoList";
-import Button from "@/components/ui/Button";
-import Dropdown from "@/components/ui/Dropdown";
+import { IconCaretLeft } from "@/components/ui/Icons";
 import TitleBar from "@/components/ui/TitleBar";
 import { getRepoLists } from "@/lib/api/repositories";
 import { RepoListData } from "@/types/type";
@@ -30,34 +29,18 @@ export default async function ReposPage() {
 
       <div className="flex flex-col gap-y-20">
         <section className="flex flex-col gap-y-20">
-          <div className="flex-between-center h-[6.688rem] gap-4">
+          <div className="flex-between-center h-fit gap-4 rounded-[2.625rem] bg-neutral-5 p-8">
             <Profile />
             <Link href="/me">
-              <Button
-                variant="outlined"
-                className="flex-center-center px-5 py-4 text-2xl font-medium"
-              >
-                프로필 정보
-              </Button>
+              <IconCaretLeft className="fill-[rgba(52, 51, 48, 1)] size-12 rotate-180" />
             </Link>
           </div>
           <hr />
         </section>
 
-        <section className="flex flex-col gap-y-12">
-          <div className="inline-flex h-11 items-center justify-between">
-            <h2 className="text-[2rem] font-medium -tracking-[0.01em] text-gray-dark">
-              Library
-            </h2>
-            <div className="inline-flex gap-x-[0.563rem]">
-              <Dropdown type="type" />
-              <Dropdown type="sort" />
-            </div>
-          </div>
-          <Suspense fallback={<div>Loading repos...</div>}>
-            <RepoList initialRepos={repos} />
-          </Suspense>
-        </section>
+        <Suspense fallback={<div>Loading repos...</div>}>
+          <RepoList initialRepos={repos} />
+        </Suspense>
       </div>
     </div>
   );

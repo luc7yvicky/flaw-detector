@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Dispatch, SetStateAction, useState } from "react";
 import { IconCaretDown, IconCheck } from "./Icons";
 
 export type DropdownProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -37,15 +37,19 @@ function DropdownMenu({
   selectedIndex,
   setSelectedIndex,
   setIsOpen,
+  onChange,
 }: {
   options: Option[];
   selectedIndex: number;
   setSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onChange: (value: string) => void;
 }) {
   const onClickOption = (index: number) => {
-    setSelectedIndex(index);
+    const newIndex = index === selectedIndex ? -1 : index;
+    setSelectedIndex(newIndex);
     setIsOpen(false); // close dropdown
+    onChange(newIndex === -1 ? "-1" : options[index].value);
   };
 
   return (
@@ -54,31 +58,37 @@ function DropdownMenu({
         "absolute top-[3.25rem] z-10 w-full overflow-hidden rounded-lg bg-white shadow-[0_0.125rem_1rem_0_rgba(0,0,0,0.25)]",
       )}
       role="menu"
+      aria-label="menu"
     >
-      {options &&
-        options.map(({ id, name, value }, index) => (
-          <li
-            key={id}
-            className={cn(
-              "flex-center-center h-[2.438rem] w-full bg-white px-[0.6rem] py-[0.469rem] transition-all duration-300 first:rounded-t-lg last:rounded-b-lg",
-              selectedIndex === index
-                ? "cursor-default justify-between bg-purple-dark"
-                : "hover:bg-purple-light",
-              name.length > 3 && "px-[0.1rem]",
-            )}
-            onClick={() => onClickOption(index)}
-            value={value}
-            role="menuitem"
-          >
-            {selectedIndex === index && <IconCheck width={20} height={20} />}
-            {name}
-          </li>
-        ))}
+      {options?.map(({ id, name, value }, index) => (
+        <li
+          key={id}
+          className={cn(
+            "flex-center-center h-[2.438rem] w-full bg-white px-[0.6rem] py-[0.469rem] transition-all duration-300 first:rounded-t-lg last:rounded-b-lg",
+            selectedIndex === index
+              ? "cursor-default justify-between bg-purple-dark"
+              : "hover:bg-purple-light",
+            name.length > 3 && "px-[0.1rem]",
+          )}
+          onClick={() => onClickOption(index)}
+          value={value}
+          role="menu item"
+          aria-label="menu item"
+        >
+          {selectedIndex === index && <IconCheck width={20} height={20} />}
+          {name}
+        </li>
+      ))}
     </ul>
   );
 }
 
-export default function Dropdown({ type, className, ...props }: DropdownProps) {
+export default function Dropdown({
+  type,
+  className,
+  onSelectFilter,
+  ...props
+}: DropdownProps & { onSelectFilter: Dispatch<SetStateAction<string>> }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
 
@@ -105,6 +115,7 @@ export default function Dropdown({ type, className, ...props }: DropdownProps) {
           selectedIndex={selectedIndex}
           setSelectedIndex={setSelectedIndex}
           setIsOpen={setIsOpen}
+          onChange={onSelectFilter}
         />
       )}
     </div>
