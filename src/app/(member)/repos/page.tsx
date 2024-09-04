@@ -11,7 +11,8 @@ import { Suspense } from "react";
 
 export default async function ReposPage() {
   const session = await auth();
-  const repos: RepoListData[] = await getRepoLists(session?.user.username);
+  const repos: RepoListData[] = await getRepoLists(session?.user?.username);
+
   return (
     <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <div className="flex-col-center-center mt-[3.5rem] gap-y-5">

@@ -3,13 +3,13 @@
 import Image from "next/image";
 import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { IconArrow, IconKebabMenu } from "./Icons";
-import { forwardRef, useState } from "react";
+import { IconArrow } from "./Icons";
+import { forwardRef } from "react";
 
 const cardVariants = cva("relative flex flex-col w-full", {
   variants: {
     variant: {
-      default: "justify-between border hover:bg-primary-50",
+      default: "justify-between border hover:bg-purple-light",
       article: "justify-between border border-[#c3c3c3]",
       image: "justify-end hover:bg-opacity-70",
       service:
@@ -17,7 +17,7 @@ const cardVariants = cva("relative flex flex-col w-full", {
     },
     size: {
       default:
-        "h-[12.5rem] max-w-[19.375rem] rounded-xl border-primary-100 p-5",
+        "h-[14.063rem] max-w-[19.375rem] rounded-[1.25rem] border-primary-100 p-5",
       extended:
         "h-[13.563rem] max-w-[26.375rem] gap-6 rounded-lg border-[#c3c3c3] p-7 [&>*:nth-child(2)]:mt-[-1.25rem]",
       short: "h-[17.188rem] max-w-[25.875rem] gap-6 rounded-lg p-7",
@@ -79,41 +79,16 @@ function Card({ variant, size, className, ...props }: CardProps) {
   );
 }
 
-function CardHeader({
-  hasMenu = false,
-  className,
-  children,
-  ...props
-}: CardHeaderProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
+function CardHeader({ className, children, ...props }: CardHeaderProps) {
   return (
     <div
       className={cn(
-        "relative flex h-fit flex-wrap items-center gap-2",
-        hasMenu ? "justify-between" : "justify-start",
+        "flex-col-center-start relative h-fit flex-wrap items-center gap-2",
         className,
       )}
       {...props}
     >
       {children}
-      {hasMenu && <IconKebabMenu onClick={() => setIsOpen(!isOpen)} />}
-      {hasMenu && isOpen && (
-        <ul className="absolute right-0 top-8 z-50 flex cursor-default flex-col rounded-lg bg-white text-xl font-medium leading-7 text-gray-dark shadow-[0_0.25rem_0.75rem_0_rgba(0,0,0,0.08)]">
-          <li
-            className="px-5 py-3 first:rounded-t-lg last:rounded-b-lg hover:bg-purple-light"
-            onClick={() => console.log("삭제")}
-          >
-            삭제
-          </li>
-          <li
-            className="px-5 py-3 first:rounded-t-lg last:rounded-b-lg hover:bg-purple-light"
-            onClick={() => console.log("공유")}
-          >
-            공유
-          </li>
-        </ul>
-      )}
     </div>
   );
 }
@@ -142,15 +117,15 @@ function CardTitle({
   ...props
 }: CardTitleProps) {
   const textSize = {
-    big: "text-[1.75rem] leading-[2.45rem]",
-    small: "text-xl leading-[1.513rem]",
-    xsmall: "text-lg leading-[1.361rem]",
-    default: "text-2xl leading-9",
+    big: "text-[1.75rem] leading-[2.45rem]", // 28px
+    default: "text-2xl leading-9", // 24px
+    small: "text-xl leading-[1.513rem]", // 20px
+    xsmall: "text-lg leading-[1.361rem]", // 18px
   };
   const textWeight = {
-    bold: "font-semibold",
-    normal: "font-normal",
-    default: "font-medium",
+    bold: "font-semibold", // 600
+    default: "font-medium", // 500
+    normal: "font-normal", // 400
   };
   const textColor = color ? { color } : { color: "#3F3F3F" };
 

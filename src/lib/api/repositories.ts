@@ -66,6 +66,7 @@ export async function getRepoLists(username: string) {
       (repo: RepoListRawData): RepoListData => ({
         id: repo.id,
         repositoryName: repo.name,
+        detectedStatus: "notChecked",
       }),
     );
   } catch (error) {
