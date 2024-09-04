@@ -164,6 +164,34 @@ export async function GET() {
             )
             .map((link) => (link as HTMLAnchorElement).innerText);
 
+          const tableDataElements = document.querySelectorAll(
+            "#other-information + div td",
+          );
+          const lastUpdatedAt = Array.from(tableDataElements).find(
+            (el) => el.textContent && el.textContent.includes("UTC"),
+          );
+
+          /** 문자열(YYYY-MM-DD HH:MM UTC)에서 Firestore의 timestamp 형식으로 변환합니다. */
+          const formatStringToTimestamp = (
+            dateString: string,
+          ): {
+            seconds: number;
+            nanoseconds: number;
+          } => {
+            const date = new Date(dateString);
+            return {
+              seconds: Math.floor(date.getTime() / 1000),
+              nanoseconds: date.getMilliseconds() * 1000000,
+            };
+          };
+
+          let formattedLastUpdatedAt = { seconds: 0, nanoseconds: 0 };
+          if (lastUpdatedAt) {
+            formattedLastUpdatedAt = formatStringToTimestamp(
+              (lastUpdatedAt as HTMLElement).innerText,
+            );
+          }
+
           return {
             title: {
               original: postTitle
@@ -190,6 +218,7 @@ export async function GET() {
               },
               cveIDs: cveLinks,
             },
+            updated_at: lastUpdatedAt ? formattedLastUpdatedAt : null,
           };
         });
 
