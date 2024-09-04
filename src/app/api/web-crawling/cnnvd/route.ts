@@ -1,172 +1,241 @@
 import { getChromeExecutablePath } from "@/lib/api/chrome";
-import { handleError } from "@/lib/helpers";
+// import { handleError } from "@/lib/helpers";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
 import db from "../../../../../firebaseConfig";
 import { collection, doc, setDoc } from "firebase/firestore";
 
+type CNNVDData = {
+  id: string;
+  label: string;
+  source: string;
+  page_url: string;
+  title: {
+    original: string;
+    translated: string;
+  };
+  created_at: {
+    seconds: number;
+    nanoseconds: number;
+  };
+  content: {
+    overview: string;
+    introduction: string;
+    vulnDetail: string;
+    remediation: string;
+  };
+};
+
 export async function GET() {
-  try {
-    const executablePath = getChromeExecutablePath();
+  const executablePath = getChromeExecutablePath();
 
-    // Puppeteer로 브라우저 실행
-    const browser = await puppeteer.launch({
-      executablePath,
-      headless: false,
-    });
+  const browser = await puppeteer.launch({
+    executablePath,
+    headless: false,
+  });
+  const page = await browser.newPage();
 
-    console.log("Browser launched successfully");
+  const CNNVD_URL = "https://www.cnnvd.org.cn/home/warn";
+  await page.goto(CNNVD_URL, { waitUntil: "networkidle0", timeout: 60000 });
 
-    const page = await browser.newPage();
-    console.log("New page created");
+  // 크롤링 코드 작성
+  await page.waitForSelector("p.content-title", {
+    timeout: 10000,
+  });
 
-    // 크롤링할 사이트 URL로 이동
-    const url = "https://www.cnnvd.org.cn/home/warn";
-    console.log("Navigating to URL:", url);
-    await page.goto(url, { waitUntil: "networkidle0" });
-    console.log("Page navigation completed");
+  // 데이터를 크롤링할 배열 준비
+  const crawledData: CNNVDData[] = [];
 
-    // 크롤링 코드 작성
-    await page.waitForSelector("p.content-title", {
-      timeout: 10000,
-    });
-
+  async function crawlDetails(startIndex = 0) {
     const elements = await page.$$("p.content-title");
-    if (elements.length > 0) {
-      console.log(`Found ${elements.length} elements`);
 
-      //클릭 후 들어가서 데이터를 크롤링할 배열 준비
-      const crawledData = [];
+    if (elements.length === 0 || startIndex >= elements.length) {
+      return;
+    }
 
-      for (const [index] of Array.from(elements.entries())) {
-        console.log(`Attempting to click on element ${index + 1}`);
+    // const refreshedElement = elements[startIndex];
+    // 페이지 리로드 후 요소 다시 참조
+    const refreshedElement = (await page.$$("p.content-title"))[startIndex];
 
-        // 다시 요소를 선택
-        const refreshedElements = await page.$$("p.content-title");
-        const refreshedElement = refreshedElements[index];
+    // 요소가 존재하는지 확인
+    if (!refreshedElement) {
+      await crawlDetails(startIndex + 1); // 다음 요소로 넘어감
+      return;
+    }
 
-        // 요소가 존재하는지 확인
-        if (!refreshedElement) {
-          continue; // 다음 요소로 넘어감
+    await new Promise((r) => setTimeout(r, 2000));
+
+    // 클릭 이벤트 발생
+    await refreshedElement.click();
+    console.log(`Clicking on element at index: ${startIndex}`);
+
+    await new Promise((r) => setTimeout(r, 2000));
+
+    // 특정 요소 로드를 기다림
+    await page.waitForSelector("p.detail-title", {
+      visible: true,
+      timeout: 60000,
+    });
+
+    // 상세 페이지의 데이터 크롤링
+    const detailTitle = await page.$eval("p.detail-title", (el) =>
+      el.textContent?.trim(),
+    );
+
+    // CnnvdContent 추출
+    const content = await page.evaluate(() => {
+      const paragraphs = document.querySelectorAll(
+        "div.detail-content > p.MsoNormal, div.detail-content > pre, div.detail-content > font",
+      );
+      let overview = "";
+      let introduction = "";
+      let vulnDetail = "";
+      let remediation = "";
+
+      let section = "overview";
+      let skipNextP = false; //table 이후 나오는 p태그 스킵하기 위한 플래그
+
+      paragraphs.forEach((p) => {
+        const text = p.textContent?.trim() || "";
+
+        // <table class="MsoTableGrid">가 등장하면 그 이후의 <p> 태그 스킵
+        if (p.tagName === "TABLE" && p.classList.contains("MsoTableGrid")) {
+          skipNextP = true;
+          return;
         }
 
-        // 클릭 이벤트 발생
-        await refreshedElement.click();
-        console.log("Element clicked, waiting for selector");
+        if (skipNextP && p.className === "") {
+          // 테이블 바로 다음에 있는 클래스가 없는 <p> 태그는 무시
+          return;
+        } else if (p.className !== "") {
+          skipNextP = false; // 다시 <p class="MsoNormal">이므로 처리할 수 있도록 설정
+        }
 
-        // 특정 요소 로드를 기다림
-        await page.waitForSelector("p.detail-title", {
-          visible: true,
-          timeout: 60000,
-        });
-        console.log("Detail content loaded");
-
-        //상세 페이지의 데이터 크롤링
-        const detailTitle = await page.$eval("p.detail-title", (el) =>
-          el.textContent?.trim(),
-        );
-
-        // CnnvdContent 추출
-        const content = await page.evaluate(() => {
-          //모든 p태그 선택
-          const paragraphs = document.querySelectorAll(
-            "div.detail-content > p.MsoNormal",
-          );
-          let overview = "";
-          let introduction = "";
-          let vulnDetail = "";
-          let remediation = "";
-
-          let section = "overview";
-          let skipNextP = false; //table 이후 나오는 p태그 스킵하기 위한 플래그
-
-          paragraphs.forEach((p) => {
-            const text = p.textContent?.trim() || "";
-
-            // <table class="MsoTableGrid">가 등장하면 그 이후의 <p> 태그 스킵
-            if (p.tagName === "TABLE" && p.classList.contains("MsoTableGrid")) {
-              skipNextP = true;
-              return;
-            }
-
-            if (skipNextP && p.className === "") {
-              // 테이블 바로 다음에 있는 클래스가 없는 <p> 태그는 무시
-              return;
-            } else if (p.className !== "") {
-              skipNextP = false; // 다시 <p class="MsoNormal">이므로 처리할 수 있도록 설정
-            }
-
-            if (text.startsWith("一、")) {
-              section = "introduction";
-              introduction += text + "\n";
-              return;
-            } else if (text.startsWith("二、")) {
-              section = "vulnDetail";
-              vulnDetail += text + "\n"; // "二、"이 글자 포함
-              return;
-            } else if (text.startsWith("三、")) {
-              section = "remediation";
-              remediation += text + "\n"; // "三、"이 글자 포함
-              return;
-            }
-            if (section === "overview") {
-              overview += text + "\n";
-            } else if (section === "introduction") {
-              introduction += text + "\n";
-            } else if (section === "vulnDetail") {
-              vulnDetail += text + "\n";
-            } else if (section === "remediation") {
-              remediation += text + "\n";
-            }
-          });
-
-          return {
-            overview: overview.trim(),
-            introduction: introduction.trim(),
-            vulnDetail: vulnDetail.trim(),
-            remediation: remediation.trim(),
-          };
-        });
-
-        const timestamp = new Date();
-        const created_at = {
-          seconds: Math.floor(timestamp.getTime() / 1000),
-          nanoseconds: timestamp.getMilliseconds() * 1e6,
-        };
-
-        const docData = {
-          id: page.url(),
-          label: "취약성 경고", // 예시로 "취약성 경고" 사용
-          source: "CNNVD",
-          page_url: page.url(),
-          title: {
-            original: detailTitle || "",
-            translated: "", // 번역된 제목은 여기서 처리하거나 이후에 추가 가능
-          },
-          created_at,
-          content,
-        };
-
-        crawledData.push(docData);
-
-        // Firestore에 저장
-        const collectionRef = collection(db, "cnnvd-data");
-        const newDocRef = doc(collectionRef);
-        await setDoc(newDocRef, docData);
-
-        await page.goBack({ waitUntil: "networkidle0" });
-      }
-
-      await browser.close();
-      return NextResponse.json({
-        message: "Data saved to Firestore",
-        crawledData,
+        if (text.startsWith("一、")) {
+          section = "introduction";
+          introduction += text + "\n";
+          return;
+        } else if (text.startsWith("二、")) {
+          section = "vulnDetail";
+          vulnDetail += text + "\n";
+          return;
+        } else if (text.startsWith("三、")) {
+          section = "remediation";
+          remediation += text + "\n";
+          return;
+        }
+        if (section === "overview") {
+          overview += text + "\n";
+        } else if (section === "introduction") {
+          introduction += text + "\n";
+        } else if (section === "vulnDetail") {
+          vulnDetail += text + "\n";
+        } else if (section === "remediation") {
+          remediation += text + "\n";
+        }
       });
-    } else {
-      throw new Error("Element not found");
-    }
-  } catch (error) {
-    console.error("Error occurred:", error);
-    return handleError(error);
+
+      return {
+        overview: overview.trim(),
+        introduction: introduction.trim(),
+        vulnDetail: vulnDetail.trim(),
+        remediation: remediation.trim(),
+      };
+    });
+
+    // CNNVDData.push(docData);
+
+    // Firestore에 저장 따로 뺄 예정
+    const collectionRef = collection(db, "cnnvd-data");
+    const newDocRef = doc(collectionRef);
+    const timestamp = new Date();
+    const created_at = {
+      seconds: Math.floor(timestamp.getTime() / 1000),
+      nanoseconds: timestamp.getMilliseconds() * 1e6,
+    };
+
+    const docData = {
+      id: newDocRef.id,
+      label: "취약점 보고서",
+      source: "CNNVD",
+      page_url: page.url(),
+      title: {
+        original: detailTitle || "",
+        translated: "",
+      },
+      created_at,
+      content,
+    };
+
+    await setDoc(newDocRef, docData);
+
+    // await page.goto(CNNVD_URL, { waitUntil: "networkidle0" });
+    await page.waitForSelector("div.el-page-header__title", { timeout: 4000 });
+    await page.click("div.el-page-header__title");
+
+    // 목록 페이지가 완전히 로드되었는지 확인
+    await page.waitForSelector("p.content-title", { timeout: 60000 });
+
+    // 모든 작업이 완료된 후 재귀 호출로 다음 요소를 크롤링
+    await crawlDetails(startIndex + 1);
   }
+
+  //페이지네이션 처리
+  async function handlePagination() {
+    let hasNextPage = true;
+
+    while (hasNextPage) {
+      await crawlDetails(); // 현재 페이지 크롤링
+
+      // 다음 페이지로 이동
+      const nextPageButton = await page.$("li.number.active + li.number");
+      if (nextPageButton) {
+        console.log("Moving to the next page...");
+
+        await new Promise((r) => setTimeout(r, 2000));
+
+        // 클릭 전 페이지의 특정 요소를 저장
+        const previousContent = await page.content();
+
+        // 버튼 클릭 후 페이지 전환을 시도
+        // await nextPageButton.click();
+        await page.evaluate((el) => el.click(), nextPageButton);
+
+        await new Promise((r) => setTimeout(r, 2000));
+
+        // // 페이지가 완전히 로드될 때까지 기다림 (네트워크가 안정될 때까지)
+        // await page.waitForNavigation({ waitUntil: "networkidle0" });
+        // await page.waitForSelector("p.content-title", { timeout: 60000 });
+
+        // 새로운 콘텐츠가 로드될 때까지 대기
+        try {
+          await page.waitForFunction(
+            (prevContent) => document.body.innerHTML !== prevContent,
+            { timeout: 60000 },
+            previousContent,
+          );
+        } catch (error) {
+          console.error("Page did not navigate within the timeout period.");
+          hasNextPage = false;
+          continue;
+        }
+
+        await page.waitForSelector("p.content-title", { timeout: 60000 });
+
+        await crawlDetails();
+      } else {
+        console.log("No more pages to crawl.");
+        hasNextPage = false;
+      }
+    }
+  }
+
+  await handlePagination();
+
+  await browser.close();
+
+  return NextResponse.json({
+    message: "Data saved to Firestore",
+    crawledData,
+  });
 }
