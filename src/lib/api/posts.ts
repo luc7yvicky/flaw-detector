@@ -26,6 +26,7 @@ export async function getAllPosts(): Promise<VulDBPost[]> {
         page_url: docSnapshot.data().page_url,
         title: docSnapshot.data().title,
         created_at: docSnapshot.data().created_at,
+        updated_at: docSnapshot.data().updated_at || null,
         content: docSnapshot.data().content,
       };
 
@@ -52,6 +53,10 @@ export async function addPost(newPost: VulDBPost): Promise<VulDBPost> {
       ...newPost,
       id: newPostRef.id, // 새로운 post의 id를 자동 생성합니다.
     };
+
+    if (newPost.updated_at) {
+      postToSave["updated_at"] = newPost.updated_at;
+    }
 
     await setDoc(newPostRef, postToSave);
     return postToSave;

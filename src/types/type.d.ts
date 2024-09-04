@@ -60,13 +60,14 @@ export type CnnvdContent = { block_id: string; text: string }[];
 
 export type VulDBPost = {
   id: string;
-  label: "기타" | "취약성 보고서" | "취약성 알림" | "취약성 경고";
+  label: "기타" | "취약성 보고서" | "취약성 알림";
   source: "CERT/CC" | "CNNVD";
   page_url: string;
   title: {
     original: string;
     translated: string;
   };
-  created_at: { seconds: number; nanoseconds: number }; // firestore timestamp
+  created_at: { seconds: number; nanoseconds: number };
+  updated_at?: { seconds: number; nanoseconds: number };
   content: CertCCContent | CnnvdContent;
 };
