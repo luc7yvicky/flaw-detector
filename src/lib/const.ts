@@ -1,3 +1,6 @@
+export const BASE_URL = process.env.BASE_URL;
+export const PORT = process.env.PORT;
+
 export const LLAMA_AUTH_URL = process.env.LLAMA_AUTH_URL;
 export const LLAMA_API_URL = process.env.LLAMA_API_URL;
 export const LLAMA_USERNAME = process.env.LLAMA_USERNAME;
@@ -26,3 +29,5 @@ export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability"; // 임시 검색어
 export const VUL_DB_POSTS_API_URL = "http://localhost:3000/api/vuldb/posts";
 export const WEB_CRAWLING_CERT_CC_API_URL =
   "http://localhost:3000/api/web-crawling/cert-cc";
+
+export const SPECIAL_CHAR_FILE_DIR_REGEX = /^[._]/;
