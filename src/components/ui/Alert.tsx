@@ -47,7 +47,7 @@ const alertType = {
 };
 
 type AlertType = {
-  status: keyof typeof alertType;
+  status: keyof typeof alertType | null;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export const AlertIcon = ({ icon }: { icon: React.ReactNode }) => {
@@ -136,6 +136,7 @@ export const Alert = ({
   className,
   ...props
 }: AlertType) => {
+  if (!status) return null;
   const { icon, title, description } = alertType[status];
   const [isOpen, setIsOpen] = useState(true);
 
@@ -144,7 +145,7 @@ export const Alert = ({
       {isOpen && (
         <div
           className={cn(
-            "absolute inset-0 z-30 flex h-fit w-full max-w-[30.875rem] justify-between gap-x-[1.125rem] rounded-2xl p-8 shadow-[0_0.75rem_2.656rem_0_rgba(0,0,0,0.12)]",
+            "absolute right-0 top-0 z-30 flex h-fit w-full max-w-[30.875rem] justify-between gap-x-[1.125rem] rounded-2xl bg-white p-8 shadow-[0_0.75rem_2.656rem_0_rgba(0,0,0,0.12)]",
             className,
           )}
           {...props}
