@@ -4,6 +4,8 @@ import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
 import db from "../../../../../firebaseConfig";
 import { collection, doc, setDoc } from "firebase/firestore";
+import { addPost } from "@/lib/api/posts";
+import { CnnvdLocalizedTextBlock, CnnvdTextBlock } from "@/types/type";
 
 type CNNVDData = {
   id: string;
@@ -11,18 +13,19 @@ type CNNVDData = {
   source: string;
   page_url: string;
   title: {
-    original: string;
-    translated: string;
+    original: CnnvdTextBlock;
+    translated: [];
   };
   created_at: {
     seconds: number;
     nanoseconds: number;
   };
+  source_created_at: { seconds: number; nanoseconds: number };
   content: {
-    overview: string;
-    introduction: string;
-    vulnDetail: string;
-    remediation: string;
+    description: CnnvdLocalizedTextBlock;
+    introduction: CnnvdLocalizedTextBlock;
+    vulnDetail: CnnvdLocalizedTextBlock;
+    remediation: CnnvdLocalizedTextBlock;
   };
 };
 
@@ -36,7 +39,7 @@ export async function GET() {
   const page = await browser.newPage();
 
   const CNNVD_URL = "https://www.cnnvd.org.cn/home/warn";
-  await page.goto(CNNVD_URL, { waitUntil: "networkidle0", timeout: 60000 });
+  await page.goto(CNNVD_URL, { waitUntil: "networkidle0", timeout: 40000 });
 
   // 크롤링 코드 작성
   await page.waitForSelector("p.content-title", {
@@ -53,13 +56,11 @@ export async function GET() {
       return;
     }
 
-    // const refreshedElement = elements[startIndex];
     // 페이지 리로드 후 요소 다시 참조
     const refreshedElement = (await page.$$("p.content-title"))[startIndex];
 
-    // 요소가 존재하는지 확인
     if (!refreshedElement) {
-      await crawlDetails(startIndex + 1); // 다음 요소로 넘어감
+      await crawlDetails(startIndex + 1);
       return;
     }
 
@@ -68,10 +69,10 @@ export async function GET() {
     // 클릭 이벤트 발생
     await refreshedElement.click();
     console.log(`Clicking on element at index: ${startIndex}`);
+    // 확인용 추후 삭제
 
     await new Promise((r) => setTimeout(r, 2000));
 
-    // 특정 요소 로드를 기다림
     await page.waitForSelector("p.detail-title", {
       visible: true,
       timeout: 60000,
@@ -87,12 +88,12 @@ export async function GET() {
       const paragraphs = document.querySelectorAll(
         "div.detail-content > p.MsoNormal, div.detail-content > pre, div.detail-content > font",
       );
-      let overview = "";
+      let description = "";
       let introduction = "";
       let vulnDetail = "";
       let remediation = "";
 
-      let section = "overview";
+      let section = "description";
       let skipNextP = false; //table 이후 나오는 p태그 스킵하기 위한 플래그
 
       paragraphs.forEach((p) => {
@@ -124,8 +125,8 @@ export async function GET() {
           remediation += text + "\n";
           return;
         }
-        if (section === "overview") {
-          overview += text + "\n";
+        if (section === "description") {
+          description += text + "\n";
         } else if (section === "introduction") {
           introduction += text + "\n";
         } else if (section === "vulnDetail") {
@@ -136,45 +137,78 @@ export async function GET() {
       });
 
       return {
-        overview: overview.trim(),
+        description: description.trim(),
         introduction: introduction.trim(),
         vulnDetail: vulnDetail.trim(),
         remediation: remediation.trim(),
       };
     });
 
-    // CNNVDData.push(docData);
-
     // Firestore에 저장 따로 뺄 예정
-    const collectionRef = collection(db, "cnnvd-data");
-    const newDocRef = doc(collectionRef);
-    const timestamp = new Date();
-    const created_at = {
-      seconds: Math.floor(timestamp.getTime() / 1000),
-      nanoseconds: timestamp.getMilliseconds() * 1e6,
-    };
+    // const collectionRef = collection(db, "cnnvd-data");
+    // const newDocRef = doc(collectionRef);
+    // const timestamp = new Date();
+    // const created_at = {
+    //   seconds: Math.floor(timestamp.getTime() / 1000),
+    //   nanoseconds: timestamp.getMilliseconds() * 1e6,
+    // };
 
-    const docData = {
-      id: newDocRef.id,
-      label: "취약점 보고서",
-      source: "CNNVD",
+    // const docData = {
+    //   id: newDocRef.id,
+    //   label: "취약성 보고서",
+    //   source: "CNNVD",
+    //   page_url: page.url(),
+    //   title: {
+    //     original: detailTitle || "",
+    //     translated: "",
+    //   },
+    //   created_at,
+    //   content,
+    // };
+
+    // await setDoc(newDocRef, docData);
+
+    //firebase 데이터구조
+    const postData = {
+      id: "",
+      label: "취약성 보고서" as const,
+      source: "CNNVD" as const,
       page_url: page.url(),
       title: {
         original: detailTitle || "",
         translated: "",
       },
-      created_at,
-      content,
+      created_at: {
+        seconds: Math.floor(Date.now() / 1000),
+        nanoseconds: new Date().getMilliseconds() * 1e6,
+      },
+      content: {
+        description: {
+          original: content.description.trim(),
+          translated: "",
+        },
+        introduction: {
+          original: content.introduction.trim(),
+          translated: "",
+        },
+        vulnDetail: {
+          original: content.vulnDetail.trim(),
+          translated: "",
+        },
+        remediation: {
+          original: content.remediation.trim(),
+          translated: "",
+        },
+      },
     };
 
-    await setDoc(newDocRef, docData);
+    await addPost(postData);
 
-    // await page.goto(CNNVD_URL, { waitUntil: "networkidle0" });
-    await page.waitForSelector("div.el-page-header__title", { timeout: 4000 });
+    await page.waitForSelector("div.el-page-header__title", { timeout: 3000 });
     await page.click("div.el-page-header__title");
 
     // 목록 페이지가 완전히 로드되었는지 확인
-    await page.waitForSelector("p.content-title", { timeout: 60000 });
+    await page.waitForSelector("p.content-title", { timeout: 40000 });
 
     // 모든 작업이 완료된 후 재귀 호출로 다음 요소를 크롤링
     await crawlDetails(startIndex + 1);
@@ -202,10 +236,6 @@ export async function GET() {
         await page.evaluate((el) => el.click(), nextPageButton);
 
         await new Promise((r) => setTimeout(r, 2000));
-
-        // // 페이지가 완전히 로드될 때까지 기다림 (네트워크가 안정될 때까지)
-        // await page.waitForNavigation({ waitUntil: "networkidle0" });
-        // await page.waitForSelector("p.content-title", { timeout: 60000 });
 
         // 새로운 콘텐츠가 로드될 때까지 대기
         try {
