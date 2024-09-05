@@ -2,8 +2,6 @@ import { getChromeExecutablePath } from "@/lib/api/chrome";
 // import { handleError } from "@/lib/helpers";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
-import db from "../../../../../firebaseConfig";
-import { collection, doc, setDoc } from "firebase/firestore";
 import { CnnvdLocalizedTextBlock, CnnvdTextBlock } from "@/types/type";
 
 type CNNVDData = {

@@ -9,10 +9,5 @@ export const isCertCCContentType = (
 export const isCnnvdContentType = (
   content: CertCCContent | CnnvdContent,
 ): content is CnnvdContent => {
-  return (
-    "description" in content &&
-    typeof content.description === "object" &&
-    "original" in content.description &&
-    "translated" in content.description
-  );
+  return (content as CnnvdContent).description !== undefined;
 };
