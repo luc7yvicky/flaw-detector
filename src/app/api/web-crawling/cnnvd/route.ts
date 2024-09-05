@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
 import db from "../../../../../firebaseConfig";
 import { collection, doc, setDoc } from "firebase/firestore";
-import { addPost } from "@/lib/api/posts";
 import { CnnvdLocalizedTextBlock, CnnvdTextBlock } from "@/types/type";
 
 type CNNVDData = {
@@ -39,7 +38,7 @@ export async function GET() {
   const page = await browser.newPage();
 
   const CNNVD_URL = "https://www.cnnvd.org.cn/home/warn";
-  await page.goto(CNNVD_URL, { waitUntil: "networkidle0", timeout: 40000 });
+  await page.goto(CNNVD_URL, { waitUntil: "networkidle0", timeout: 80000 });
 
   // 크롤링 코드 작성
   await page.waitForSelector("p.content-title", {
@@ -143,71 +142,6 @@ export async function GET() {
         remediation: remediation.trim(),
       };
     });
-
-    // Firestore에 저장 따로 뺄 예정
-    // const collectionRef = collection(db, "cnnvd-data");
-    // const newDocRef = doc(collectionRef);
-    // const timestamp = new Date();
-    // const created_at = {
-    //   seconds: Math.floor(timestamp.getTime() / 1000),
-    //   nanoseconds: timestamp.getMilliseconds() * 1e6,
-    // };
-
-    // const docData = {
-    //   id: newDocRef.id,
-    //   label: "취약성 보고서",
-    //   source: "CNNVD",
-    //   page_url: page.url(),
-    //   title: {
-    //     original: detailTitle || "",
-    //     translated: "",
-    //   },
-    //   created_at,
-    //   content,
-    // };
-
-    // await setDoc(newDocRef, docData);
-
-    //firebase 데이터구조
-    const postData = {
-      id: "",
-      label: "취약성 보고서" as const,
-      source: "CNNVD" as const,
-      page_url: page.url(),
-      title: {
-        original: detailTitle || "",
-        translated: "",
-      },
-      created_at: {
-        seconds: Math.floor(Date.now() / 1000),
-        nanoseconds: new Date().getMilliseconds() * 1e6,
-      },
-      source_created_at: {
-        seconds: Math.floor(Date.now() / 1000),
-        nanoseconds: new Date().getMilliseconds() * 1e6,
-      },
-      content: {
-        description: {
-          original: content.description.trim(),
-          translated: "",
-        },
-        introduction: {
-          original: content.introduction.trim(),
-          translated: "",
-        },
-        vulnDetail: {
-          original: content.vulnDetail.trim(),
-          translated: "",
-        },
-        remediation: {
-          original: content.remediation.trim(),
-          translated: "",
-        },
-      },
-      views: 0,
-    };
-
-    await addPost(postData);
 
     await page.waitForSelector("div.el-page-header__title", { timeout: 3000 });
     await page.click("div.el-page-header__title");
