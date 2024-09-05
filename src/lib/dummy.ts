@@ -52,6 +52,7 @@ export const exampleCertCCVulDBPost: VulDBPost = {
   },
   created_at: Timestamp.fromDate(new Date("2023-09-01T12:34:56Z")),
   updated_at: Timestamp.fromDate(new Date("2024-09-01T12:34:56Z")),
+  source_created_at: Timestamp.fromDate(new Date("2024-09-01T12:34:56Z")),
   views: 0,
   content: {
     overview: {

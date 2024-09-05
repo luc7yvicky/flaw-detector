@@ -182,6 +182,10 @@ export async function GET() {
         seconds: Math.floor(Date.now() / 1000),
         nanoseconds: new Date().getMilliseconds() * 1e6,
       },
+      source_created_at: {
+        seconds: Math.floor(Date.now() / 1000),
+        nanoseconds: new Date().getMilliseconds() * 1e6,
+      },
       content: {
         description: {
           original: content.description.trim(),
@@ -200,6 +204,7 @@ export async function GET() {
           translated: "",
         },
       },
+      views: 0,
     };
 
     await addPost(postData);
