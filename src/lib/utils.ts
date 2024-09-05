@@ -1,5 +1,6 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { SPECIAL_CHAR_FILE_DIR_REGEX } from "./const";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -69,4 +70,83 @@ export const getLanguage = (filename: string) => {
     default:
       return "javascript";
   }
+};
+
+/* 폴더-특수 > 폴더-특수X -> 파일-특수 > 파일-특수X 순 정렬 */
+export const sortFilesAndDirs = (
+  data: Array<{ name: string; type: "dir" | "file" | "submodule" | "symlink" }>,
+): Array<{ name: string; type: "dir" | "file" | "submodule" | "symlink" }> => {
+  const sortedData = data.sort((a, b) => {
+    const aStartsWithSpecialChar = SPECIAL_CHAR_FILE_DIR_REGEX.test(a.name);
+    const bStartsWithSpecialChar = SPECIAL_CHAR_FILE_DIR_REGEX.test(b.name);
+
+    // 1. 폴더, 특수문자로 시작
+    if (
+      a.type === "dir" &&
+      aStartsWithSpecialChar &&
+      !(b.type === "dir" && bStartsWithSpecialChar)
+    ) {
+      return -1;
+    }
+    if (
+      !(a.type === "dir" && aStartsWithSpecialChar) &&
+      b.type === "dir" &&
+      bStartsWithSpecialChar
+    ) {
+      return 1;
+    }
+
+    // 2. 폴더, 특수문자로 시작 X
+    if (
+      a.type === "dir" &&
+      !aStartsWithSpecialChar &&
+      !(b.type === "dir" && !bStartsWithSpecialChar)
+    ) {
+      return -1;
+    }
+    if (
+      !(a.type === "dir" && !aStartsWithSpecialChar) &&
+      b.type === "dir" &&
+      !bStartsWithSpecialChar
+    ) {
+      return 1;
+    }
+
+    // 3. 파일, 특수문자로 시작
+    if (
+      a.type !== "dir" &&
+      aStartsWithSpecialChar &&
+      !(b.type !== "dir" && bStartsWithSpecialChar)
+    ) {
+      return -1;
+    }
+    if (
+      !(a.type !== "dir" && aStartsWithSpecialChar) &&
+      b.type !== "dir" &&
+      bStartsWithSpecialChar
+    ) {
+      return 1;
+    }
+
+    // 4. 파일, 특수문자 없음 X
+    if (
+      a.type !== "dir" &&
+      !aStartsWithSpecialChar &&
+      !(b.type !== "dir" && !bStartsWithSpecialChar)
+    ) {
+      return -1;
+    }
+    if (
+      !(a.type !== "dir" && !aStartsWithSpecialChar) &&
+      b.type !== "dir" &&
+      !bStartsWithSpecialChar
+    ) {
+      return 1;
+    }
+
+    // 나머지 경우는 원래 순서 유지
+    return 0;
+  });
+
+  return sortedData;
 };

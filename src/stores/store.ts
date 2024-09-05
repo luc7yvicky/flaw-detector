@@ -2,10 +2,12 @@ import { create } from "zustand";
 import { fetchCodes } from "@/lib/api/repositories";
 
 interface FileViewerState {
+  currentRepo: string;
   currentFile: string | null;
   fileContent: string | null;
   isLoading: boolean;
   error: string | null;
+  setCurrentRepo: (repo: string) => void;
   setCurrentFile: (file: string | null) => void;
   fetchFileContent: (
     owner: string,
@@ -16,10 +18,12 @@ interface FileViewerState {
 }
 
 export const useFileViewerStore = create<FileViewerState>((set) => ({
+  currentRepo: "",
   currentFile: null,
   fileContent: null,
   isLoading: false,
   error: null,
+  setCurrentRepo: (repo) => set({ currentRepo: repo }),
   setCurrentFile: (file) => set({ currentFile: file }),
   fetchFileContent: async (owner, repo, path) => {
     set({ isLoading: true, error: null });
