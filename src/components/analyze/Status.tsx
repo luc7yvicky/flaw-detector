@@ -9,7 +9,7 @@ function Status({
   return (
     <div
       className={cn(
-        "flex-center-center h-[4.063rem] w-full gap-x-5 rounded-lg border border-line-default p-5 text-[1.268rem] font-medium -tracking-[0.01rem]",
+        "w-full flex flex-col gap-4 text-[1.268rem] px-2 font-medium -tracking-[0.01rem]",
         className,
       )}
       {...props}
@@ -26,7 +26,7 @@ function StatusError({
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={cn("inline-flex items-center gap-x-[0.125rem]", className)}
+      className={cn("flex items-center gap-x-[0.125rem]", className)}
       {...props}
     >
       <IconClose
@@ -34,7 +34,8 @@ function StatusError({
         height={28}
         className="fill-accent-red stroke-accent-red stroke-[0.013rem]"
       />
-      <span>{children}</span>
+      <span>검출된 취약점</span>
+      <span className="ml-auto">{children}</span>
     </div>
   );
 }
@@ -45,12 +46,10 @@ function StatusWarning({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
-      className={cn("inline-flex items-center gap-x-2", className)}
-      {...props}
-    >
+    <div className={cn("flex items-center gap-x-2", className)} {...props}>
       <IconTriangle />
-      <span>{children}</span>
+      <span>수정 제안</span>
+      <span className="ml-auto">{children}</span>
     </div>
   );
 }
@@ -61,12 +60,10 @@ function StatusSuccess({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   return (
-    <div
-      className={cn("inline-flex items-center gap-x-2", className)}
-      {...props}
-    >
+    <div className={cn("flex items-center gap-x-2", className)} {...props}>
       <IconCircle />
-      <span>{children}</span>
+      <span>문제 없음</span>
+      <span className="ml-auto">{children}</span>
     </div>
   );
 }

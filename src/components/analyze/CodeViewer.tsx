@@ -31,7 +31,11 @@ export default function CodeViewer() {
       return `Error: ${error}`;
     }
 
-    return fileContent || "";
+    if (currentFile && fileContent) {
+      return `// ${currentFile}\n\n${fileContent}`;
+    }
+
+    return "";
   };
 
   if (!currentFile && !isLoading && !error) {
@@ -44,7 +48,7 @@ export default function CodeViewer() {
   }
 
   return (
-    <div className="w-full flex-col overflow-hidden rounded-lg border border-[#c3c3c3]">
+    <div className="w-full overflow-hidden rounded-lg border border-[#c3c3c3]">
       {/* <ProcessStatus status={status} /> */}
       <SyntaxHighlighter
         language={currentFile ? getLanguage(currentFile) : "text"}

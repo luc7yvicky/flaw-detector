@@ -1,11 +1,12 @@
 import { cn } from "@/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
 import { IconRoundedDoc } from "./Icons";
+import { useCallback } from "react";
 
 const modalVariants = cva("relative flex flex-col bg-white ", {
   variants: {
     variant: {
-      selectFile: "justify-center items-center ",
+      selectFile: "fixed justify-center items-center ",
       processing: "justify-center items-center",
       login:
         "justify-center items-center shadow-[0_0_1.55rem_rgba(0,0,0,0.25)]",
@@ -17,7 +18,7 @@ const modalVariants = cva("relative flex flex-col bg-white ", {
       medium:
         "w-[26.688rem] h-[24.063rem] top-[10rem] p-[3rem] gap-[3.313rem] rounded-[1.25rem]", //processing
       large:
-        "w-[42.875rem] h-[29.875rem] top-[10rem] p-[3rem] rounded-[1.25rem]", //selectFile
+        "w-[42.875rem] min-h-[29.875rem] p-[3rem] rounded-[1.25rem]", //selectFile
       extraLarge:
         "w-[61.563rem] h-[21.563rem] top-[10rem] p-[3.75rem] rounded-[2.5rem]", //inquirySubmitted
     },
@@ -54,7 +55,7 @@ type ListItemProps = {
 
 export function ListItem({ title, subtitle, date }: ListItemProps) {
   return (
-    <li className="flex h-11 w-full items-center justify-between p-[0.625rem]">
+    <li className="grid h-11 w-full grid-cols-[1fr_1fr_4rem] items-center justify-between border border-b p-[0.625rem] last:border-0">
       <div className="flex items-center">
         <IconRoundedDoc className="mr-[0.625rem]" />
         <div className="font-medium">{title}</div>
@@ -79,32 +80,19 @@ type ListProps = {
 
 export function List({ items }: ListProps) {
   return (
-    <>
-      <div className="mb-10">
-        {items.map((item, ulIndex) => (
-          <ul
-            key={ulIndex}
-            className={cn(
-              "h-11 w-[36.875rem] border border-b border-[#bcbcbc]",
-              {
-                "rounded-t-lg": ulIndex === 0 && items.length > 1, // 첫번째 행, 여러 행이 있을 경우
-                "rounded-b-lg":
-                  ulIndex === items.length - 1 && items.length > 1, // 마지막 행, 여러 행이 있을 경우
-                "rounded-lg": items.length === 1, // 행이 하나일 때 네 꼭지점을 둥글게
-              },
-            )}
-          >
-            <ListItem {...item} />
-          </ul>
-        ))}
-      </div>
-    </>
+    <ul className="max-h-[16rem] w-[36.875rem] overflow-hidden overflow-y-scroll rounded-lg border border-[#bcbcbc]">
+      {items.map((item, index) => (
+        <ListItem key={index} {...item} />
+      ))}
+    </ul>
   );
 }
 
 export type ModalProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof modalVariants> & {
     children?: React.ReactNode;
+    onClose?: () => void;
+    isOpen?: boolean;
   };
 
 export type ModalTitleProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -114,12 +102,32 @@ export type ModalTitleProps = React.HTMLAttributes<HTMLDivElement> & {
   isSingleLine?: boolean;
 };
 
-export function Modal({ variant, size, className, ...props }: ModalProps) {
+export function Modal({
+  variant,
+  size,
+  className,
+  onClose,
+  isOpen,
+  ...props
+}: ModalProps) {
+  const handleBackgroundClick = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      if (e.target === e.currentTarget) {
+        onClose?.();
+      }
+    },
+    [onClose],
+  );
+
+  if (!isOpen) return null;
   return (
     <div className="flex-center-center absolute inset-0 z-50">
       {/* 로그인 모달이 아닐 때만 어두운 배경 처리*/}
       {variant !== "login" && (
-        <div className="fixed inset-0 bg-black opacity-50"></div> // 어두운 배경 처리
+        <div
+          className="fixed inset-0 bg-black opacity-50"
+          onClick={handleBackgroundClick}
+        ></div> // 어두운 배경 처리
       )}
       <div
         className={cn(modalVariants({ variant, size }), className)}
