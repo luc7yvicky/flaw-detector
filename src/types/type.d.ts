@@ -32,7 +32,7 @@ export type RepoContentItem = {
   name: string;
   path: string;
   type: "file" | "dir";
-  processStatus?: "done" | "onProgress" | "onWait" | "error";
+  // processStatus?: "success" | "onCheck" | "onWait" | "error";
   expanded?: boolean;
   size?: number;
   loadingStatus: "initial" | "loading" | "loaded" | "error";
@@ -84,5 +84,7 @@ export type VulDBPost = {
   };
   source_created_at: { seconds: number; nanoseconds: number }; //원문 게시글 등록일
   created_at: { seconds: number; nanoseconds: number }; // firestore timestamp
+  updated_at?: { seconds: number; nanoseconds: number };
   content: CertCCContent | CnnvdContent;
+  views: number;
 };

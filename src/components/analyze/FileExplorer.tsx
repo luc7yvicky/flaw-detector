@@ -1,11 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-
 import FileList from "./FileList";
 import { RepoContentItem } from "@/types/type";
 import { expandFolder } from "@/lib/api/repositories";
-import { useFileViewerStore } from "@/stores/store";
+import { useFileViewerStore, useFileSelectionStore } from "@/stores/store";
 
 export default function FileExplorer({
   initialStructure,
@@ -20,9 +19,13 @@ export default function FileExplorer({
     useState<RepoContentItem[]>(initialStructure);
 
   const resetFileViewer = useFileViewerStore((state) => state.resetFileViewer);
+  const { selectAllFiles, deselectAllFiles, getSelectedFilesCount } =
+    useFileSelectionStore();
 
+  // 레포 이동시 초기화
   useEffect(() => {
     resetFileViewer();
+    deselectAllFiles();
   }, [resetFileViewer, repo]);
 
   const updateNestedStructure = useCallback(
@@ -90,10 +93,51 @@ export default function FileExplorer({
     [username, repo, updateNestedStructure],
   );
 
+  const getAllFiles = useCallback(
+    (items: RepoContentItem[]): RepoContentItem[] => {
+      return items.reduce((allFiles, item) => {
+        allFiles.push(item);
+        if (item.type === "dir" && item.items) {
+          allFiles.push(...getAllFiles(item.items));
+        }
+        return allFiles;
+      }, [] as RepoContentItem[]);
+    },
+    [],
+  );
+
+  const handleSelectAll = useCallback(() => {
+    const allFiles = getAllFiles(structure);
+    if (getSelectedFilesCount() === allFiles.length) {
+      deselectAllFiles();
+    } else {
+      selectAllFiles(allFiles);
+    }
+  }, [
+    structure,
+    selectAllFiles,
+    deselectAllFiles,
+    getSelectedFilesCount,
+    getAllFiles,
+  ]);
+
+  const isAllSelected = useCallback(() => {
+    const allFiles = getAllFiles(structure);
+    return getSelectedFilesCount() === allFiles.length;
+  }, [structure, getSelectedFilesCount, getAllFiles]);
+
   return (
     <div className="overflow-hidden rounded-lg border border-line-default">
-      <div className="flex items-center border-b border-line-default bg-purple-light p-5 text-xl">
-        Files
+      <div className="flex items-center border-b border-line-default bg-purple-light px-3 py-5 text-xl">
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            checked={isAllSelected()}
+            onChange={handleSelectAll}
+            className="mr-2 size-4 accent-primary-500"
+          />
+          <span>Files</span>
+        </div>
       </div>
       <FileList
         structure={structure}

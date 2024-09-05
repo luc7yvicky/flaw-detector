@@ -16,7 +16,7 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "px-4 py-2 font-semibold transition-colors duration-200 ease-in-out focus:outline-none hover:drop-shadow";
+    "px-4 py-2 font-semibold transition-colors duration-200 ease-in-out focus:outline-none hover:drop-shadow cursor:pointer disabled:cursor-not-allowed ";
 
   const variantStyles = {
     filled: "bg-primary-500 text-white",

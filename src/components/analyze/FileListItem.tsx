@@ -10,7 +10,11 @@ import {
   IconStar,
 } from "../ui/Icons";
 import FileList from "./FileList";
-import { useFileViewerStore } from "@/stores/store";
+import {
+  useFileProcessStore,
+  useFileSelectionStore,
+  useFileViewerStore,
+} from "@/stores/store";
 import { memo, useCallback, useMemo, useState } from "react";
 
 function FileListItem({
@@ -26,14 +30,20 @@ function FileListItem({
   username: string;
   repo: string;
 }) {
-  const { name, type, expanded, items, processStatus, path } = item;
+  const { name, type, expanded, items, path } = item;
   const fetchFileContent = useFileViewerStore(
     (state) => state.fetchFileContent,
   );
   const setCurrentFile = useFileViewerStore((state) => state.setCurrentFile);
   const currentFile = useFileViewerStore((state) => state.currentFile);
 
-  const [isSelected, setIsSelected] = useState(false);
+  const { toggleFileSelection, isFileSelected } = useFileSelectionStore();
+  const { getFileStatus } = useFileProcessStore();
+  const fileStatus = getFileStatus(item.path);
+
+  const handleCheckboxChange = () => {
+    toggleFileSelection(item.path, item.name);
+  };
 
   const handleBookmark = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -54,19 +64,19 @@ function FileListItem({
     [item, onToggle, username, repo],
   );
   const statusIcon = useMemo(() => {
-    switch (processStatus) {
-      case "done":
-        return <IconDone />;
-      case "onProgress":
-        return <IconOnProcess />;
+    switch (fileStatus) {
+      case "onCheck":
+        return <IconOnProcess className="animate-spin" />; // 처리 중임을 더 명확하게 표시
       case "onWait":
         return <IconOnWait color="fill-gray-default" />;
       case "error":
         return <IconError />;
+      case "success":
+        return <IconDone />;
       default:
         return null;
     }
-  }, [processStatus]);
+  }, [fileStatus]);
 
   const showNestedList = useMemo(
     () => type === "dir" && expanded && items && items.length > 0,
@@ -92,22 +102,30 @@ function FileListItem({
               className="mr-2 flex items-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <input type="checkbox" />
+              <input
+                type="checkbox"
+                checked={isFileSelected(item.path)}
+                onChange={handleCheckboxChange}
+                className={cn(
+                  "size-4 accent-primary-500",
+                  // type === "dir" && "invisible",
+                )}
+              />
             </div>
             <div className="mr-1 flex items-center">
               {type === "file" ? <IconDoc /> : <IconFolder />}
             </div>
             <span>{name}</span>
           </div>
-          <div className="flex-center-center invisible">
+          {/* <div className="flex-center-center invisible">
             <button
               className="group-hover/item:visible"
               onClick={handleBookmark}
             >
               <IconStar className="fill-primary-300" />
             </button>
-            {processStatus && statusIcon}
-          </div>
+          </div> */}
+          {fileStatus && statusIcon}
         </div>
       </li>
       {showNestedList && items && (
