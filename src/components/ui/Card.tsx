@@ -3,28 +3,28 @@
 import Image from "next/image";
 import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import { IconArrow, IconKebabMenu } from "./Icons";
-import { useState } from "react";
+import { IconArrow } from "./Icons";
+import { forwardRef } from "react";
 
-const cardVariants = cva("relative flex flex-col", {
+const cardVariants = cva("relative flex flex-col w-full", {
   variants: {
     variant: {
-      default: "justify-between border hover:bg-primary-50",
+      default: "justify-between border hover:bg-purple-light",
       article: "justify-between border border-[#c3c3c3]",
       image: "justify-end hover:bg-opacity-70",
       service:
-        "justify-center items-center shadow-[0_5rem_3.75rem_-2.5rem_rgba(0,0,0,0.25)]",
+        "justify-center items-center bg-white before:content-[''] before:absolute before:inset-0 before:shadow-[0_5rem_3.75rem_-2.5rem_rgba(0,0,0,0.25)] before:rounded-[2.5rem] before:z-30",
     },
     size: {
       default:
-        "h-[12.5rem] w-[19.375rem] rounded-xl border-primary-100 px-5 py-5",
+        "h-[14.063rem] max-w-[19.375rem] rounded-[1.25rem] border-primary-100 p-5",
       extended:
-        "h-[13.563rem] w-[26.375rem] gap-6 rounded-lg border-[#c3c3c3] px-7 py-7 [&>*:nth-child(2)]:mt-[-1.25rem]",
-      short: "h-[17.188rem] w-[25.875rem] gap-6 rounded-lg px-7 py-7",
-      long: "h-[16.125rem] w-[54.063rem] gap-6 rounded-lg px-7 py-7",
-      main: "h-[24.375rem] w-[39.063rem] rounded-[1.25rem] px-9 py-9",
-      sub: "h-[24.375rem] w-[19.75rem] rounded-[1.25rem] px-9 py-9",
-      service: "h-[28.829rem] w-[21.208rem] rounded-[2.5rem]",
+        "h-[13.563rem] max-w-[26.375rem] gap-6 rounded-lg border-[#c3c3c3] p-7 [&>*:nth-child(2)]:mt-[-1.25rem]",
+      short: "h-[17.188rem] max-w-[25.875rem] gap-6 rounded-lg p-7",
+      long: "h-[16.125rem] max-w-[54.063rem] gap-6 rounded-lg p-7",
+      main: "h-[24.375rem] max-w-[39.063rem] rounded-[1.25rem] p-9",
+      sub: "h-[24.375rem] max-w-[19.75rem] rounded-[1.25rem] p-9",
+      service: "h-[28.829rem] max-w-[21.208rem] rounded-[2.5rem]",
     },
   },
   defaultVariants: {
@@ -36,7 +36,7 @@ const cardVariants = cva("relative flex flex-col", {
 const cardContentVariants = cva("", {
   variants: {
     variant: {
-      default: "h-[3.688rem] w-full rounded-2xl px-5 py-5",
+      default: "h-[3.688rem] w-full rounded-2xl p-5",
       emoji: "flex-center-center mb-[2.344rem] mt-[1.694rem] h-fit w-full",
     },
     bgColor: {
@@ -79,41 +79,16 @@ function Card({ variant, size, className, ...props }: CardProps) {
   );
 }
 
-function CardHeader({
-  hasMenu = false,
-  className,
-  children,
-  ...props
-}: CardHeaderProps) {
-  const [isOpen, setIsOpen] = useState(false);
-
+function CardHeader({ className, children, ...props }: CardHeaderProps) {
   return (
     <div
       className={cn(
-        "relative flex h-fit flex-wrap items-center gap-2",
-        hasMenu ? "justify-between" : "justify-start",
+        "flex-col-center-start relative h-fit flex-wrap items-center gap-2",
         className,
       )}
       {...props}
     >
       {children}
-      {hasMenu && <IconKebabMenu onClick={() => setIsOpen(!isOpen)} />}
-      {hasMenu && isOpen && (
-        <ul className="absolute right-0 top-8 z-50 flex cursor-default flex-col rounded-lg bg-white text-xl font-medium leading-7 text-gray-dark shadow-[0_0.25rem_0.75rem_0_rgba(0,0,0,0.08)]">
-          <li
-            className="px-5 py-3 first:rounded-t-lg last:rounded-b-lg hover:bg-purple-light"
-            onClick={() => console.log("삭제")}
-          >
-            삭제
-          </li>
-          <li
-            className="px-5 py-3 first:rounded-t-lg last:rounded-b-lg hover:bg-purple-light"
-            onClick={() => console.log("공유")}
-          >
-            공유
-          </li>
-        </ul>
-      )}
     </div>
   );
 }
@@ -141,30 +116,25 @@ function CardTitle({
   children,
   ...props
 }: CardTitleProps) {
-  const textColor = color ? { color } : { color: "#3F3F3F" };
-  const getTextSize = (size: string) => {
-    switch (size) {
-      case "big":
-        return "text-[1.75rem] leading-[2.45rem]";
-      case "small":
-        return "text-xl leading-[1.513rem]";
-      case "xsmall":
-        return "text-lg leading-[1.361rem]";
-      default:
-        return "text-2xl leading-9";
-    }
+  const textSize = {
+    big: "text-[1.75rem] leading-[2.45rem]", // 28px
+    default: "text-2xl leading-9", // 24px
+    small: "text-xl leading-[1.513rem]", // 20px
+    xsmall: "text-lg leading-[1.361rem]", // 18px
   };
+  const textWeight = {
+    bold: "font-semibold", // 600
+    default: "font-medium", // 500
+    normal: "font-normal", // 400
+  };
+  const textColor = color ? { color } : { color: "#3F3F3F" };
 
   return (
     <p
       className={cn(
         "line-clamp-2 text-ellipsis tracking-[-0.01em]",
-        getTextSize(size),
-        weight === "bold"
-          ? "font-semibold"
-          : weight === "normal"
-            ? "font-normal"
-            : "font-medium",
+        textSize[size],
+        textWeight[weight],
         className,
       )}
       style={textColor}
@@ -183,12 +153,18 @@ function CardSubTitle({
   children,
   ...props
 }: CardTitleProps) {
+  const textSize = {
+    big: "text-xl",
+    small: "text-xs",
+    xsmall: "text-xs",
+    default: "text-base",
+  };
   const textColor = color ? { color } : { color: "text-gray-default" };
   return (
     <span
       className={cn(
         "flex items-center tracking-[-0.01em] text-gray-default",
-        size === "big" ? "text-xl" : size === "small" ? "text-xs" : "text-base",
+        textSize[size],
         isSingleLine && "basis-full",
         className,
       )}
@@ -241,16 +217,17 @@ function CardCoverImage({
   );
 }
 
-function CardLinkButton({
-  className,
-  ...props
-}: React.HTMLAttributes<HTMLAnchorElement>) {
+const CardLinkButton = forwardRef<
+  HTMLAnchorElement,
+  React.AnchorHTMLAttributes<HTMLAnchorElement>
+>(({ className, ...props }, ref) => {
   return (
     <a
       className={cn(
         "flex h-[4.25rem] w-[4.25rem] items-center justify-center rounded-[50%] bg-white opacity-70",
         className,
       )}
+      ref={ref}
       {...props}
     >
       <IconArrow
@@ -259,7 +236,8 @@ function CardLinkButton({
       />
     </a>
   );
-}
+});
+CardLinkButton.displayName = "CardLinkButton";
 
 function CardFooter({
   className,

@@ -1,9 +1,19 @@
-import Section1 from "@/components/landing/Section1";
+import LandingHeroSection from "@/components/landing/LandingHeroSection";
+import LandingFeatureSection from "@/components/landing/LandingFeatureSection";
+import LandingDemoSection from "@/components/landing/LandingDemoSection";
+import LandingServiceSection from "@/components/landing/LandingServiceSection";
+import CustomerService from "@/components/ui/CustomerService";
+import { auth } from "@/auth";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const session = await auth();
   return (
     <>
-      <Section1 />
+      <LandingHeroSection isLoggedIn={!!session} />
+      <LandingFeatureSection />
+      <LandingDemoSection />
+      <LandingServiceSection />
+      <CustomerService className="my-[6.5rem]" />
     </>
   );
 }

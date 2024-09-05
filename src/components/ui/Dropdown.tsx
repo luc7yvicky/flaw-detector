@@ -11,8 +11,8 @@ export type DropdownProps = React.HTMLAttributes<HTMLDivElement> & {
 export type Option = { id: string; name: string; value: string };
 
 const typeOptions: Option[] = [
-  { id: "0", name: "폴더순", value: "folder" },
-  { id: "1", name: "파일순", value: "file" },
+  { id: "0", name: "검사완료", value: "done" },
+  { id: "1", name: "검사중", value: "onProgress" },
 ];
 
 const sortOptions: Option[] = [
@@ -32,15 +32,55 @@ const getOptions = (type: string): Option[] => {
   }
 };
 
-export default function Dropdown({ type, className, ...props }: DropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-  const options = getOptions(type);
-
+function DropdownMenu({
+  options,
+  selectedIndex,
+  setSelectedIndex,
+  setIsOpen,
+}: {
+  options: Option[];
+  selectedIndex: number;
+  setSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
   const onClickOption = (index: number) => {
     setSelectedIndex(index);
     setIsOpen(false); // close dropdown
   };
+
+  return (
+    <ul
+      className={cn(
+        "absolute top-[3.25rem] z-10 w-full overflow-hidden rounded-lg bg-white shadow-[0_0.125rem_1rem_0_rgba(0,0,0,0.25)]",
+      )}
+      role="menu"
+    >
+      {options &&
+        options.map(({ id, name, value }, index) => (
+          <li
+            key={id}
+            className={cn(
+              "flex-center-center h-[2.438rem] w-full bg-white px-[0.6rem] py-[0.469rem] transition-all duration-300 first:rounded-t-lg last:rounded-b-lg",
+              selectedIndex === index
+                ? "cursor-default justify-between bg-purple-dark"
+                : "hover:bg-purple-light",
+              name.length > 3 && "px-[0.1rem]",
+            )}
+            onClick={() => onClickOption(index)}
+            value={value}
+            role="menuitem"
+          >
+            {selectedIndex === index && <IconCheck width={20} height={20} />}
+            {name}
+          </li>
+        ))}
+    </ul>
+  );
+}
+
+export default function Dropdown({ type, className, ...props }: DropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<number>(-1);
 
   return (
     <div
@@ -60,36 +100,13 @@ export default function Dropdown({ type, className, ...props }: DropdownProps) {
         <IconCaretDown />
       </button>
       {isOpen && (
-        <ul
-          className={cn(
-            "absolute top-[3.25rem] z-10 w-full overflow-hidden rounded-lg bg-white shadow-[0_0.125rem_1rem_0_rgba(0,0,0,0.25)]",
-          )}
-          role="menu"
-        >
-          {options &&
-            options.map(({ id, name, value }, index) => (
-              <li
-                key={id}
-                className={cn(
-                  "flex-center-center h-[2.438rem] w-full bg-white px-[0.6rem] py-[0.469rem] transition-all duration-300 first:rounded-t-lg last:rounded-b-lg",
-                  selectedIndex === index
-                    ? "cursor-default justify-between bg-purple-dark"
-                    : "hover:bg-purple-light",
-                  name.length > 3 && "px-[0.1rem]",
-                )}
-                onClick={() => onClickOption(index)}
-                value={value}
-                role="menuitem"
-              >
-                {selectedIndex === index && (
-                  <IconCheck width={20} height={20} />
-                )}
-                {name}
-              </li>
-            ))}
-        </ul>
+        <DropdownMenu
+          options={getOptions(type)}
+          selectedIndex={selectedIndex}
+          setSelectedIndex={setSelectedIndex}
+          setIsOpen={setIsOpen}
+        />
       )}
     </div>
   );
 }
-Dropdown.displayName = "Dropdown";

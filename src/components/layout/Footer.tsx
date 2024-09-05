@@ -52,8 +52,8 @@ export default function Footer() {
 
           <div className="h-[4.125rem]">
             <div className="flex gap-8 text-base font-medium leading-6 tracking-[-0.011em] text-gray-default underline underline-offset-2">
-              <Link href={"/doc/terms-of-service"}>서비스이용약관</Link>
-              <Link href={"/doc/privacy-policy"}>개인정보처리방침</Link>
+              <Link href={"/agreements"}>서비스이용약관</Link>
+              <Link href={"/ppa"}>개인정보처리방침</Link>
             </div>
             <p className="mt-4 text-right text-base font-medium leading-[1.125rem] text-gray-dark">
               ©Spacspace.All right reserved.
