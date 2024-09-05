@@ -101,7 +101,7 @@ export const startCertCCWebCrawling = async () => {
           while (currentElement && currentElement !== endElement) {
             if (tags.includes(currentElement.tagName)) {
               content.push({
-                id: uuidv4(),
+                id: "",
                 text: currentElement.textContent?.trim() || "",
               });
             }
@@ -219,6 +219,25 @@ export const startCertCCWebCrawling = async () => {
           updated_at: lastUpdatedAt ? formattedLastUpdatedAt : null,
         };
       });
+
+      postData.content.overview.original =
+        postData.content.overview.original.map((item) => ({
+          id: uuidv4(),
+          text: item.text,
+        }));
+      postData.content.description.original =
+        postData.content.description.original.map((item) => ({
+          id: uuidv4(),
+          text: item.text,
+        }));
+      postData.content.impact.original = postData.content.impact.original.map(
+        (item) => ({ id: uuidv4(), text: item.text }),
+      );
+      postData.content.solution.original =
+        postData.content.solution.original.map((item) => ({
+          id: uuidv4(),
+          text: item.text,
+        }));
 
       posts.push({
         label: "기타",
