@@ -19,11 +19,8 @@ export type ArticleDetailProps = {
 export type RepoListData = {
   id: number;
   repositoryName: string;
-  label?: string;
-  labelStatus?: string;
-  caption?: string;
   detectedStatus: "done" | "onProgress" | "notChecked";
-  createdAt?: string;
+  createdAt: string;
   detectedAt?: string;
   filename?: string;
 };
@@ -32,13 +29,15 @@ export type RepoContentItem = {
   name: string;
   path: string;
   type: "file" | "dir";
-  processStatus?: "done" | "onProgress" | "onWait" | "error";
+  // processStatus?: "success" | "onCheck" | "onWait" | "error";
   expanded?: boolean;
   size?: number;
   loadingStatus: "initial" | "loading" | "loaded" | "error";
   items?: RepoItem[];
   error?: string;
 };
+
+export type FileStatus = "onCheck" | "onWait" | "error" | "success" | null;
 
 export type CertCCTextBlock = { id: string; text: string };
 
@@ -61,13 +60,15 @@ export type CnnvdContent = { block_id: string; text: string }[];
 
 export type VulDBPost = {
   id: string;
-  label: "기타" | "취약성 보고서" | "취약성 알림" | "취약성 경고";
+  label: "기타" | "취약성 보고서" | "취약성 알림";
   source: "CERT/CC" | "CNNVD";
   page_url: string;
   title: {
     original: string;
     translated: string;
   };
-  created_at: { seconds: number; nanoseconds: number }; // firestore timestamp
+  created_at: { seconds: number; nanoseconds: number };
+  updated_at?: { seconds: number; nanoseconds: number };
   content: CertCCContent | CnnvdContent;
+  views: number;
 };

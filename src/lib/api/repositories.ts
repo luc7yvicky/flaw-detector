@@ -5,6 +5,7 @@ import { Octokit } from "@octokit/rest";
 type RepoListRawData = {
   id: number;
   name: string;
+  created_at?: string | null;
   // owner: {
   //   login: string;
   //   id: number;
@@ -66,6 +67,7 @@ export async function getRepoLists(username: string) {
       (repo: RepoListRawData): RepoListData => ({
         id: repo.id,
         repositoryName: repo.name,
+        createdAt: repo.created_at ?? "",
         detectedStatus: "notChecked",
       }),
     );
@@ -120,7 +122,8 @@ async function fetchRepoContents(
       throw new Error(`경로 ${path}에 대한 예상치 못한 응답입니다.`);
     }
 
-    return response.data.map(
+    // const sortedData = sortFilesAndDirs(response.data);
+    return response.data?.map(
       (item: any): RepoContentItem => ({
         name: item.name,
         path: item.path,
