@@ -6,53 +6,49 @@ import { generateLlm } from "@/lib/api/llama3";
 interface FileProcessState {
   fileStatuses: Map<string, FileStatus>;
   setFileStatus: (path: string, status: FileStatus) => void;
-  getFileStatus: (path: string) => FileStatus | undefined;
+  getFileStatus: (path: string) => FileStatus;
   resetFileStatuses: () => void;
+  processFiles: (
+    files: Array<{ path: string; name: string }>,
+    username: string,
+    repo: string,
+    action: string,
+  ) => Promise<void>;
 }
 
 export const useFileProcessStore = create<FileProcessState>((set, get) => ({
   fileStatuses: new Map(),
-  setFileStatus: (path, status) =>
-    set((state) => {
-      const newFileStatuses = new Map(state.fileStatuses);
-      newFileStatuses.set(path, status);
-      return { fileStatuses: newFileStatuses };
-    }),
+  setFileStatus: (path, status) => set((state) => {
+    const newFileStatuses = new Map(state.fileStatuses);
+    newFileStatuses.set(path, status);
+    return { fileStatuses: newFileStatuses };
+  }),
   getFileStatus: (path) => get().fileStatuses.get(path) ?? null,
   resetFileStatuses: () => set({ fileStatuses: new Map() }),
+  processFiles: (files, username, repo, action) => {
+    return new Promise<void>((resolve, reject) => {
+      const processFile = async (file: { path: string; name: string }) => {
+        try {
+          get().setFileStatus(file.path, "onCheck");
+          const content = await fetchCodes(username, repo, file.path);
+          const result = await generateLlm("analyze", content);
+          
+          // 파일 처리 성공
+          get().setFileStatus(file.path, "success");
+        } catch (error) {
+          // 파일 처리 실패
+          get().setFileStatus(file.path, "error");
+          console.error(`Error processing file ${file.name}:`, error);
+        }
+      };
+
+      Promise.all(files.map(processFile))
+        .then(() => resolve())
+        .catch(reject);
+    });
+  },
 }));
 
-// 파일 처리 함수
-export const processFiles = async (
-  files: Array<{ path: string; name: string }>,
-  username: string,
-  repo: string,
-  configName: string,
-) => {
-  const { setFileStatus } = useFileProcessStore.getState();
-  const { fetchFileContent } = useFileViewerStore.getState();
-
-  for (const file of files) {
-    setFileStatus(file.path, "onCheck");
-    try {
-      const content = await fetchFileContent(username, repo, file.path);
-
-      if (!content) {
-        throw new Error(`${file.path}의 파일 내용을 가져오지 못했습니다.`);
-      }
-
-      const result = await generateLlm(configName, content);
-
-      // TODO: 결과 처리 로직 구현
-      // 예: await saveResult(file.path, result);
-
-      setFileStatus(file.path, "success");
-    } catch (error) {
-      console.error(`Error processing file ${file.name}:`, error);
-      setFileStatus(file.path, "error");
-    }
-  }
-};
 
 interface FileSelectionState {
   selectedFiles: Map<string, string>; // path를 key로, 파일 이름을 value로 저장
@@ -116,13 +112,12 @@ interface FileViewerState {
   fileContent: string | null;
   isLoading: boolean;
   error: string | null;
-  contentPromise: Promise<string | null> | null;
   setCurrentFile: (file: string | null) => void;
   fetchFileContent: (
     owner: string,
     repo: string,
     path: string,
-  ) => Promise<string | null>;
+  ) => Promise<void>;
   resetFileViewer: () => void;
 }
 
@@ -131,28 +126,21 @@ export const useFileViewerStore = create<FileViewerState>((set) => ({
   fileContent: null,
   isLoading: false,
   error: null,
-  contentPromise: null,
   setCurrentFile: (file) => set({ currentFile: file }),
-  fetchFileContent: async (owner, repo, path) => {
+  fetchFileContent: (owner, repo, path) => {
     set({ isLoading: true, error: null });
 
-    const contentPromise = new Promise<string | null>(
-      async (resolve, reject) => {
-        try {
-          const content = await fetchCodes(owner, repo, path);
-          set({ fileContent: content, isLoading: false });
-          resolve(content);
-        } catch (error) {
-          const errorMessage =
-            error instanceof Error ? error.message : "Unknown error";
-          set({ error: errorMessage, isLoading: false });
-          reject(errorMessage);
-        }
-      },
-    );
-
-    set({ contentPromise });
-    return contentPromise;
+    return fetchCodes(owner, repo, path)
+      .then((content) => {
+        set({ fileContent: content, isLoading: false });
+      })
+      .catch((error) => {
+        set({
+          error: error instanceof Error ? error.message : "Unknown error",
+          isLoading: false,
+        });
+        throw error; // 에러를 다시 throw하여 호출자가 처리할 수 있게 함
+      });
   },
   resetFileViewer: () =>
     set({ currentFile: null, fileContent: null, error: null }),

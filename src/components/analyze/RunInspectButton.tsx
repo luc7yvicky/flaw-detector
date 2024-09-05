@@ -2,11 +2,7 @@
 
 import { useState } from "react";
 import Button from "@/components/ui/Button";
-import {
-  processFiles,
-  useFileProcessStore,
-  useFileSelectionStore,
-} from "@/stores/store";
+import { useFileProcessStore, useFileSelectionStore } from "@/stores/store";
 import { List, Modal, ModalTitle } from "../ui/Modal";
 
 export default function RunInspectButton({
@@ -17,12 +13,14 @@ export default function RunInspectButton({
   username: string;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isProcessing, setIsProcessing] = useState(false);
   const {
     getSelectedFilesCount,
     getSelectedFiles,
     initializeSelectedFilesStatus,
   } = useFileSelectionStore();
-  const { resetFileStatuses } = useFileProcessStore();
+  const { resetFileStatuses, processFiles, setFileStatus } =
+    useFileProcessStore();
   const selectedFilesCount = getSelectedFilesCount();
 
   const openModal = () => setIsModalOpen(true);
@@ -35,14 +33,18 @@ export default function RunInspectButton({
     }
 
     closeModal();
+    // setIsProcessing(true);
     resetFileStatuses();
     initializeSelectedFilesStatus();
     const selectedFiles = getSelectedFiles();
 
     try {
       await processFiles(selectedFiles, username, repo, "analyze");
+      console.log("모든 파일 처리가 완료되었습니다.");
     } catch (error) {
       console.error("파일 처리 중 오류 발생:", error);
+    } finally {
+      // setIsProcessing(false);
     }
   };
 
