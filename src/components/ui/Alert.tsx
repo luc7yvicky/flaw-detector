@@ -136,9 +136,13 @@ export const Alert = ({
   className,
   ...props
 }: AlertType) => {
-  if (!status) return null;
-  const { icon, title, description } = alertType[status];
   const [isOpen, setIsOpen] = useState(true);
+
+  if (!status) {
+    return null;
+  }
+  
+  const { icon, title, description } = alertType[status];
 
   return (
     <>
