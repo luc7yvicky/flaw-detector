@@ -5,4 +5,4 @@
 export const SCHEDULE_EXPRESSION = "every 5 minutes";
 
 export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability";
-export const WEB_CRAWLING_CERT_CC_URL = "https://www.kb.cert.org/vuls/";
+export const WEB_CRAWLING_CERT_CC_URL = "https://www.kb.cert.org/vuls/search/";

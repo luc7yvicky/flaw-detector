@@ -1,4 +1,5 @@
 import * as logger from "firebase-functions/logger";
+import { v4 as uuidv4 } from "uuid";
 import {
   WEB_CRAWLING_CERT_CC_URL,
   WEB_CRAWLING_SEARCH_KEYWORD,
@@ -11,22 +12,16 @@ export const startCertCCWebCrawling = async () => {
 
   const posts = [];
 
-  // CERT/CC 취약점 데이터베이스 페이지로 이동
   await page.goto(WEB_CRAWLING_CERT_CC_URL, {
     waitUntil: "domcontentloaded",
     timeout: 40000,
   });
 
-  // 페이지 검색창에 크롤링할 키워드 입력
-  await page.type("input[name='searchbar']", WEB_CRAWLING_SEARCH_KEYWORD);
+  // 크롤링 키워드 입력
+  await page.type("input[name='wordSearch']", WEB_CRAWLING_SEARCH_KEYWORD);
+  logger.info(`검색 키워드 입력: ${WEB_CRAWLING_SEARCH_KEYWORD}`);
 
-  // 검색 버튼 클릭
-  const searchButtonSelector = "input[name='searchbar'] + button";
-  await page.waitForSelector(searchButtonSelector);
-  await page.click(searchButtonSelector);
-
-  // 검색 결과 페이지 로딩 대기
-  await page.waitForNavigation({ waitUntil: "networkidle2" });
+  await new Promise((r) => setTimeout(r, 3000));
 
   // 최신 게시글을 가져오기 위해 checkbox 클릭
   const Checkbox2024Selector = "input[type='checkbox'][value='2024']";
@@ -34,6 +29,8 @@ export const startCertCCWebCrawling = async () => {
 
   await page.waitForSelector(Checkbox2024Selector);
   await page.waitForSelector(Checkbox2023Selector);
+
+  logger.info("체크박스를 클릭합니다.");
 
   // 체크박스 상태 확인 및 초기화
   const is2024Checked = await page.$eval(
@@ -44,6 +41,8 @@ export const startCertCCWebCrawling = async () => {
     await page.click(Checkbox2024Selector);
   }
   await page.click(Checkbox2024Selector);
+
+  await new Promise((r) => setTimeout(r, 2000));
 
   const is2023Checked = await page.$eval(
     Checkbox2023Selector,
@@ -56,6 +55,8 @@ export const startCertCCWebCrawling = async () => {
 
   await new Promise((r) => setTimeout(r, 3000));
 
+  logger.info("체크박스 설정 완료");
+
   // 페이지네이션을 고려하여 게시글 링크 수집
   let hasNextPage = true;
 
@@ -67,12 +68,16 @@ export const startCertCCWebCrawling = async () => {
       return links.map((link) => (link as HTMLAnchorElement).href);
     });
 
+    logger.info(`링크 수집 로그입니다. ${postLinks.length} `);
+
     // 각 게시물 링크를 방문하여 내용 크롤링
     for (let link of postLinks) {
       const postDetailPage = await browser.newPage();
-      await postDetailPage.goto(link, { waitUntil: "networkidle2" });
-
-      const uuid = crypto.randomUUID(); // 변경 예정
+      await page.setDefaultNavigationTimeout(0);
+      await postDetailPage.goto(link, {
+        timeout: 0,
+        waitUntil: "domcontentloaded",
+      });
 
       const postData = await postDetailPage.evaluate(() => {
         function extractContentBetweenElements(
@@ -96,7 +101,7 @@ export const startCertCCWebCrawling = async () => {
           while (currentElement && currentElement !== endElement) {
             if (tags.includes(currentElement.tagName)) {
               content.push({
-                id: crypto.randomUUID(),
+                id: uuidv4(),
                 text: currentElement.textContent?.trim() || "",
               });
             }
@@ -216,7 +221,6 @@ export const startCertCCWebCrawling = async () => {
       });
 
       posts.push({
-        id: uuid,
         label: "기타",
         source: "CERT/CC",
         page_url: link,
@@ -226,7 +230,7 @@ export const startCertCCWebCrawling = async () => {
       });
 
       logger.info(
-        `크롤링 포스트 데이터 로그입니다. ${JSON.stringify(postData)}`,
+        `크롤링된 게시물 데이터: ${JSON.stringify(postData, null, 2)}`,
       );
 
       await postDetailPage.close();
@@ -234,23 +238,25 @@ export const startCertCCWebCrawling = async () => {
 
     const nextPageButton = await page.$("li.pagination-next > a");
     if (nextPageButton) {
-      await new Promise((r) => setTimeout(r, 2000));
+      logger.info("다음 버튼을 클릭합니다.");
 
-      await nextPageButton.click();
+      try {
+        await Promise.all([nextPageButton.click(), page.waitForNavigation()]);
 
-      await page.waitForNavigation({
-        waitUntil: "domcontentloaded",
-        timeout: 40000,
-      });
+        logger.info("다음 페이지로 이동합니다.");
+      } catch (error: any) {
+        logger.error(`페이지 네비게이션 오류: ${error.message}`);
+        console.error("Navigation error:", error.message);
+      }
+
       await new Promise((r) => setTimeout(r, 2000));
     } else {
       hasNextPage = false;
+      logger.info("더 이상 페이지가 없습니다.");
     }
   }
 
-  // logger.info(
-  //   `전체 크롤링 데이터 로그입니다. ${JSON.stringify(posts, null, 2)}`,
-  // );
+  logger.info(`크롤링 완료. 총 ${posts.length}개의 게시물을 수집했습니다.`);
 
   await browser.close();
 };
