@@ -48,6 +48,16 @@ export const formatTimestampAsDateTime = (timestamp: {
   return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
 };
 
+/** ISO 8601 형식(YYYY-MM-DDtHH:mm:ss)에서 문자열('YY.MM.DD')로 변환합니다. */
+export const formatDatetimeToYYMMDD = (datetime: string) => {
+  const date = new Date(datetime);
+  const YY = date.getFullYear().toString().slice(2);
+  const MM = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${YY}.${MM}.${day}`;
+};
+
 /* 선택한 파일의 확장자로 작성 언어를 리턴하여 코드 하이라이터의 속성으로 사용합니다*/
 export const getLanguage = (filename: string) => {
   const extension = filename.split(".").pop()?.toLowerCase();
