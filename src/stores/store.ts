@@ -18,37 +18,38 @@ interface FileProcessState {
 
 export const useFileProcessStore = create<FileProcessState>((set, get) => ({
   fileStatuses: new Map(),
-  setFileStatus: (path, status) => set((state) => {
-    const newFileStatuses = new Map(state.fileStatuses);
-    newFileStatuses.set(path, status);
-    return { fileStatuses: newFileStatuses };
-  }),
+  setFileStatus: (path, status) =>
+    set((state) => {
+      const newFileStatuses = new Map(state.fileStatuses);
+      newFileStatuses.set(path, status);
+      return { fileStatuses: newFileStatuses };
+    }),
   getFileStatus: (path) => get().fileStatuses.get(path) ?? null,
   resetFileStatuses: () => set({ fileStatuses: new Map() }),
-  processFiles: (files, username, repo, action) => {
-    return new Promise<void>((resolve, reject) => {
-      const processFile = async (file: { path: string; name: string }) => {
-        try {
-          get().setFileStatus(file.path, "onCheck");
-          const content = await fetchCodes(username, repo, file.path);
-          const result = await generateLlm("analyze", content);
-          
-          // 파일 처리 성공
-          get().setFileStatus(file.path, "success");
-        } catch (error) {
-          // 파일 처리 실패
-          get().setFileStatus(file.path, "error");
-          console.error(`Error processing file ${file.name}:`, error);
-        }
-      };
+  processFiles: async (files, username, repo, action) => {
+    const processFile = async (file: { path: string; name: string }) => {
+      try {
+        get().setFileStatus(file.path, "onCheck");
+        const content = await fetchCodes(username, repo, file.path);
 
-      Promise.all(files.map(processFile))
-        .then(() => resolve())
-        .catch(reject);
-    });
+        // LLM 분석 수행
+        const result = await generateLlm("analyze", content);
+        // TODO: result 처리 (alert)
+        console.log(`File ${file.name} analysis result:`, result);
+
+        get().setFileStatus(file.path, "success");
+      } catch (error) {
+        get().setFileStatus(file.path, "error");
+        console.error(`Error processing file ${file.name}:`, error);
+      }
+    };
+
+    // 파일을 순차적으로 처리
+    for (const file of files) {
+      await processFile(file);
+    }
   },
 }));
-
 
 interface FileSelectionState {
   selectedFiles: Map<string, string>; // path를 key로, 파일 이름을 value로 저장

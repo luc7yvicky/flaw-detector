@@ -19,7 +19,6 @@ export default function FileExplorer({
     useState<RepoContentItem[]>(initialStructure);
 
   const resetFileViewer = useFileViewerStore((state) => state.resetFileViewer);
-  const setCurrentRepo = useFileViewerStore((state) => state.setCurrentRepo);
   const { selectAllFiles, deselectAllFiles, getSelectedFilesCount } =
     useFileSelectionStore();
 
