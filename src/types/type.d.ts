@@ -19,11 +19,8 @@ export type ArticleDetailProps = {
 export type RepoListData = {
   id: number;
   repositoryName: string;
-  label?: string;
-  labelStatus?: string;
-  caption?: string;
   detectedStatus: "done" | "onProgress" | "notChecked";
-  createdAt?: string;
+  createdAt: string;
   detectedAt?: string;
   filename?: string;
 };
