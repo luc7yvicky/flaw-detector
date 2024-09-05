@@ -32,13 +32,15 @@ export type RepoContentItem = {
   name: string;
   path: string;
   type: "file" | "dir";
-  processStatus?: "done" | "onProgress" | "onWait" | "error";
+  // processStatus?: "success" | "onCheck" | "onWait" | "error";
   expanded?: boolean;
   size?: number;
   loadingStatus: "initial" | "loading" | "loaded" | "error";
   items?: RepoItem[];
   error?: string;
 };
+
+export type FileStatus = "onCheck" | "onWait" | "error" | "success" | null;
 
 export type CertCCTextBlock = { id: string; text: string };
 
