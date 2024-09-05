@@ -37,6 +37,8 @@ export type RepoContentItem = {
   error?: string;
 };
 
+export type FileStatus = "onCheck" | "onWait" | "error" | "success" | null;
+
 export type CertCCCTextBlock = { id: string; text: string };
 
 export type CnnvdTextBlock = {
