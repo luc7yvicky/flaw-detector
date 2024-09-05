@@ -21,7 +21,7 @@ export const FIREBASE_MEASUREMENT_ID = process.env.FIREBASE_MEASUREMENT_ID;
 
 export const ITEMS_PER_DB_PAGE = 5;
 export const ITEMS_PER_MY_PAGE = 12;
-export const DB_PAGES_PER_GROUP = 10;
+export const PAGES_PER_GROUP = 10;
 
 export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability"; // 임시 검색어
 
