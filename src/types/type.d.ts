@@ -39,13 +39,13 @@ export type RepoContentItem = {
 
 export type FileStatus = "onCheck" | "onWait" | "error" | "success" | null;
 
-export type CertCCCTextBlock = { id: string; text: string };
+export type CertCCTextBlock = { id: string; text: string };
 
 export type CnnvdTextBlock = {
   text: string;
 };
 
-export type CertCCCLocalizedTextBlock = {
+export type CertCCLocalizedTextBlock = {
   original: TextBlock[];
   translated: TextBlock[];
 };
@@ -57,10 +57,10 @@ export type CnnvdLocalizedTextBlock = {
 
 // CERT/CC 게시글 내용
 export type CertCCContent = {
-  overview: CertCCCLocalizedTextBlock;
-  description: CertCCCLocalizedTextBlock;
-  impact: CertCCCLocalizedTextBlock;
-  solution: CertCCCLocalizedTextBlock;
+  overview: CertCCLocalizedTextBlock;
+  description: CertCCLocalizedTextBlock;
+  impact: CertCCLocalizedTextBlock;
+  solution: CertCCLocalizedTextBlock;
   cveIDs: string[];
 };
 
