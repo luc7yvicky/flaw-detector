@@ -192,6 +192,14 @@ export async function GET() {
             );
           }
 
+          const sourceCreatedAt = document.querySelector("#datefirstpublished");
+          let formattedSourceCreatedAt = { seconds: 0, nanoseconds: 0 };
+          if (sourceCreatedAt) {
+            formattedSourceCreatedAt = formatStringToTimestamp(
+              (sourceCreatedAt as HTMLElement).innerText,
+            );
+          }
+
           return {
             title: {
               original: postTitle
@@ -219,6 +227,9 @@ export async function GET() {
               cveIDs: cveLinks,
             },
             source_updated_at: lastUpdatedAt ? formattedLastUpdatedAt : null,
+            source_created_at: sourceCreatedAt
+              ? formattedSourceCreatedAt
+              : null,
           };
         });
 
