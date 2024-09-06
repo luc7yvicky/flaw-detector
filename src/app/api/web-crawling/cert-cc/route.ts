@@ -218,7 +218,7 @@ export async function GET() {
               },
               cveIDs: cveLinks,
             },
-            updated_at: lastUpdatedAt ? formattedLastUpdatedAt : null,
+            source_updated_at: lastUpdatedAt ? formattedLastUpdatedAt : null,
           };
         });
 
