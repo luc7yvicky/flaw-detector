@@ -1,5 +1,5 @@
 import { addPost, getAllPosts } from "@/lib/api/posts";
-import { VulDBPost } from "@/types/type";
+import { VulDBPost } from "@/types/post";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
