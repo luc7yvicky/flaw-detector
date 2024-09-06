@@ -1,5 +1,4 @@
 import { getChromeExecutablePath } from "@/lib/api/chrome";
-// import { handleError } from "@/lib/helpers";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
 import { CnnvdLocalizedTextBlock, CnnvdTextBlock } from "@/types/type";
@@ -65,8 +64,7 @@ export async function GET() {
 
     // 클릭 이벤트 발생
     await refreshedElement.click();
-    console.log(`Clicking on element at index: ${startIndex}`);
-    // 확인용 추후 삭제
+    // console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
 
     await new Promise((r) => setTimeout(r, 2000));
 
@@ -169,7 +167,6 @@ export async function GET() {
         const previousContent = await page.content();
 
         // 버튼 클릭 후 페이지 전환을 시도
-        // await nextPageButton.click();
         await page.evaluate((el) => el.click(), nextPageButton);
 
         await new Promise((r) => setTimeout(r, 2000));
