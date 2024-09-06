@@ -127,13 +127,14 @@ export async function getPostById(postId: string) {
  * Firestore에서 post의 created_at을 기준으로 정렬된 최신 posts를 가져옵니다.
  */
 export async function getLatestPosts(
+  currentPostId: string,
   maxLimit: number = 6,
 ): Promise<VulDBPost[]> {
   try {
     const q = query(
       collection(db, "posts"),
       orderBy("created_at", "desc"),
-      limit(maxLimit),
+      limit(maxLimit + 1), // 중복되는 경우의 수를 고려하여 7개를 가져옴
     );
 
     const querySnapshot = await getDocs(q);
@@ -153,7 +154,9 @@ export async function getLatestPosts(
         views: doc.data().views,
       };
 
-      posts.push(post);
+      if (post.id !== currentPostId) {
+        posts.push(post);
+      }
     });
 
     return posts;
