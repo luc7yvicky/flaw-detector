@@ -16,12 +16,10 @@ export default async function VulnerabilityDBDetailPage({
   const post = (await getPostById(postId)) as VulDBPost;
 
   return (
-    <>
-      <div className="mb-[8.596rem] grid place-items-center">
-        <ArticleDetail post={post} />
-        {/* <VulnerabilityGrid /> */}
-        <SimilarInfoPosts currentPostId={postId} />
-      </div>
-    </>
+    <div className="mb-[8.596rem] mt-[2.063rem] flex flex-col items-center gap-[3.75rem]">
+      <ArticleDetail post={post} />
+      {/* <VulnerabilityGrid /> */}
+      <SimilarInfoPosts currentPostId={postId} />
+    </div>
   );
 }
