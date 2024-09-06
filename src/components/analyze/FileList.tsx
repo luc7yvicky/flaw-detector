@@ -1,6 +1,5 @@
-import { RepoContentItem } from "@/types/type";
+import { RepoContentItem } from "@/types/repo";
 import FileListItem from "./FileListItem";
-import { useState } from "react";
 
 export default function FileList({
   structure,
@@ -16,7 +15,7 @@ export default function FileList({
   repo: string;
 }) {
   return (
-    <ul className="scrollbar-hide max-h-[calc(100dvh-12rem)] overflow-y-scroll">
+    <ul className="max-h-[calc(100dvh-12rem)] overflow-y-scroll scrollbar-hide">
       {structure.map((item) => (
         <FileListItem
           key={item.path}
