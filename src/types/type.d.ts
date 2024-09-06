@@ -46,8 +46,8 @@ export type CnnvdTextBlock = {
 };
 
 export type CertCCLocalizedTextBlock = {
-  original: TextBlock[];
-  translated: TextBlock[];
+  original: CertCCTextBlock[];
+  translated: CertCCTextBlock[];
 };
 
 export type CnnvdLocalizedTextBlock = {
