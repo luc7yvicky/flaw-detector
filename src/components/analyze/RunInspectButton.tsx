@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Button from "@/components/ui/Button";
-import { useFileProcessStore, useFileSelectionStore } from "@/stores/store";
 import { List, Modal, ModalTitle } from "../ui/Modal";
+import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
+import { useFileProcessStore } from "@/stores/useFileProcessStore";
 
 export default function RunInspectButton({
   repo,

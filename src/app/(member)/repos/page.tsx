@@ -4,7 +4,7 @@ import RepoList from "@/components/me/RepoList";
 import { IconCaretLeft } from "@/components/ui/Icons";
 import TitleBar from "@/components/ui/TitleBar";
 import { getRepoLists } from "@/lib/api/repositories";
-import { RepoListData } from "@/types/type";
+import { RepoListData } from "@/types/repo";
 import Link from "next/link";
 import { Suspense } from "react";
 

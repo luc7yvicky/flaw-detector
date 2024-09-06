@@ -1,4 +1,4 @@
-import { VulDBPost } from "@/types/type";
+import { VulDBPost } from "@/types/post";
 import { Timestamp } from "firebase/firestore";
 
 export const exampleCode = `import SectionBusinessForever from "@/components/section-business-forever";

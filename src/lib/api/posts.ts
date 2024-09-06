@@ -1,4 +1,4 @@
-import { VulDBPost } from "@/types/type";
+import { VulDBPost } from "@/types/post";
 import { collection, doc, getDocs, setDoc } from "firebase/firestore";
 import db from "../../../firebaseConfig";
 
