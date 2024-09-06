@@ -1,4 +1,4 @@
-export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
+export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL!;
 
 export const LLAMA_AUTH_URL = process.env.LLAMA_AUTH_URL;
 export const LLAMA_API_URL = process.env.LLAMA_API_URL;

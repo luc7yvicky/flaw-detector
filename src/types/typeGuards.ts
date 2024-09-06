@@ -1,4 +1,4 @@
-import { CertCCContent, CnnvdContent } from "./type";
+import { CertCCContent, CnnvdContent } from "./post";
 
 export const isCertCCContentType = (
   content: CertCCContent | CnnvdContent,

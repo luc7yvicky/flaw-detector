@@ -2,8 +2,8 @@
 
 import Repo from "@/components/me/Repo";
 import { ITEMS_PER_MY_PAGE, PAGES_PER_GROUP } from "@/lib/const";
-import { RepoListData } from "@/types/type";
-import { useEffect, useState } from "react";
+import { RepoListData } from "@/types/repo";
+import { useMemo, useState } from "react";
 import Dropdown from "../ui/Dropdown";
 import Pagination from "../ui/Pagination";
 
@@ -12,25 +12,21 @@ export default function RepoList({
 }: {
   initialRepos: RepoListData[];
 }) {
-  const [repos, setRepos] = useState<RepoListData[]>(initialRepos);
-
   // 1. 필터링 적용
   const [filterType, setFilterType] = useState<string>("");
   const [sortType, setSortType] = useState<string>("");
 
-  useEffect(() => {
-    let filteredRepos = [...initialRepos];
+  const filteredAndSortedRepos = useMemo(() => {
+    let result = [...initialRepos];
 
     // 검사 여부 필터링
     if (filterType && filterType !== "-1") {
-      filteredRepos = filteredRepos.filter(
-        (repo) => repo.detectedStatus === filterType,
-      );
+      result = result.filter((repo) => repo.detectedStatus === filterType);
     }
 
     // 정렬
     if (sortType) {
-      filteredRepos.sort((a, b) => {
+      result.sort((a, b) => {
         switch (sortType) {
           case "latest":
             return (
@@ -50,19 +46,21 @@ export default function RepoList({
       });
     }
 
-    setRepos(filteredRepos);
+    return result;
   }, [filterType, sortType, initialRepos]);
 
   // 2. 페이징 적용
   const [currPage, setCurrPage] = useState(1);
-  const totalPages = Math.ceil(repos.length / ITEMS_PER_MY_PAGE);
+  const totalPages = Math.ceil(
+    filteredAndSortedRepos?.length / ITEMS_PER_MY_PAGE,
+  );
   const currentGroup = Math.ceil(currPage / PAGES_PER_GROUP);
   const startPage = (currentGroup - 1) * PAGES_PER_GROUP + 1;
   const endPage = Math.min(startPage + PAGES_PER_GROUP - 1, totalPages);
 
   const startIndex = (currPage - 1) * ITEMS_PER_MY_PAGE;
   const endIndex = startIndex + ITEMS_PER_MY_PAGE;
-  const currentRepos = repos.slice(startIndex, endIndex);
+  const currentRepos = filteredAndSortedRepos?.slice(startIndex, endIndex);
 
   return (
     <section className="flex flex-col gap-y-12">

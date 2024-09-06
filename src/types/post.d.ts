@@ -16,29 +16,6 @@ export type ArticleDetailProps = {
   showLabel?: boolean;
 } & ArticleListItem;
 
-export type RepoListData = {
-  id: number;
-  repositoryName: string;
-  detectedStatus: "done" | "onProgress" | "notChecked";
-  createdAt: string;
-  detectedAt?: string;
-  filename?: string;
-};
-
-export type RepoContentItem = {
-  name: string;
-  path: string;
-  type: "file" | "dir";
-  // processStatus?: "success" | "onCheck" | "onWait" | "error";
-  expanded?: boolean;
-  size?: number;
-  loadingStatus: "initial" | "loading" | "loaded" | "error";
-  items?: RepoItem[];
-  error?: string;
-};
-
-export type FileStatus = "onCheck" | "onWait" | "error" | "success" | null;
-
 export type CertCCTextBlock = { id: string; text: string };
 
 export type CertCCLocalizedTextBlock = {

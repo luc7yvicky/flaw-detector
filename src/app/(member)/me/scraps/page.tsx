@@ -5,9 +5,9 @@ import Dropdown from "@/components/ui/Dropdown";
 import Pagination from "@/components/ui/Pagination";
 import TitleBar from "@/components/ui/TitleBar";
 import { ITEMS_PER_MY_PAGE, PAGES_PER_GROUP } from "@/lib/const";
-import { ArticleDetailProps } from "@/types/type";
+import { ArticleDetailProps } from "@/types/post";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 
 const dummyClippingArticles: ArticleDetailProps[] = [
   {
@@ -181,20 +181,16 @@ const dummyClippingArticles: ArticleDetailProps[] = [
 ];
 
 export default function ScrapsPage() {
-  const [articles, setArticles] = useState<ArticleDetailProps[]>(
-    dummyClippingArticles,
-  );
-
   // 1. 필터링 적용
-  const [filterType, setFilterType] = useState<string>("");
+  // const [filterType, setFilterType] = useState<string>(""); // 구현 예정
   const [sortType, setSortType] = useState<string>("");
 
-  useEffect(() => {
-    let filteredArticles = [...articles];
+  const articles = useMemo(() => {
+    let initialArticles = [...dummyClippingArticles];
 
     // 정렬
     if (sortType) {
-      filteredArticles.sort((a, b) => {
+      initialArticles.sort((a, b) => {
         switch (sortType) {
           case "latest":
             return (
@@ -214,8 +210,8 @@ export default function ScrapsPage() {
       });
     }
 
-    setArticles(filteredArticles);
-  }, [filterType, sortType, articles]);
+    return initialArticles;
+  }, [sortType]);
 
   // 2. 페이징 적용
   const [currPage, setCurrPage] = useState<number>(1);
@@ -226,7 +222,7 @@ export default function ScrapsPage() {
 
   const startIndex = (currPage - 1) * ITEMS_PER_MY_PAGE;
   const endIndex = startIndex + ITEMS_PER_MY_PAGE;
-  const currentArticles = dummyClippingArticles.slice(startIndex, endIndex);
+  const currentArticles = articles.slice(startIndex, endIndex);
 
   return (
     <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
@@ -242,7 +238,7 @@ export default function ScrapsPage() {
             Library
           </h2>
           <div className="inline-flex gap-x-[0.563rem]">
-            <Dropdown type="type" onSelectFilter={setFilterType} />
+            {/* <Dropdown type="type" onSelectFilter={setFilterType} /> */}
             <Dropdown type="sort" onSelectFilter={setSortType} />
           </div>
         </div>
