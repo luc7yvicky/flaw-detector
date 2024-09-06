@@ -190,6 +190,14 @@ export const startCertCCWebCrawling = async () => {
           );
         }
 
+        const sourceCreatedAt = document.querySelector("#datefirstpublished");
+        let formattedSourceCreatedAt = { seconds: 0, nanoseconds: 0 };
+        if (sourceCreatedAt) {
+          formattedSourceCreatedAt = formatStringToTimestamp(
+            (sourceCreatedAt as HTMLElement).innerText,
+          );
+        }
+
         return {
           title: {
             original: postTitle
@@ -216,7 +224,8 @@ export const startCertCCWebCrawling = async () => {
             },
             cveIDs: cveLinks,
           },
-          updated_at: lastUpdatedAt ? formattedLastUpdatedAt : null,
+          source_updated_at: lastUpdatedAt ? formattedLastUpdatedAt : null,
+          source_created_at: sourceCreatedAt ? formattedSourceCreatedAt : null,
         };
       });
 
@@ -248,9 +257,7 @@ export const startCertCCWebCrawling = async () => {
         ...postData,
       });
 
-      logger.info(
-        `크롤링된 게시물 데이터: ${JSON.stringify(postData, null, 2)}`,
-      );
+      logger.info(`크롤링된 게시물 데이터: ${JSON.stringify(posts, null, 2)}`);
 
       await postDetailPage.close();
     }

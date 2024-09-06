@@ -13,7 +13,8 @@ export const examplePost: VulDBPost = {
       "CERT/CC 소스에 대한 테스트 게시물입니다. 충분한 경직화가 없어 여러 SMTP 서비스가 스푸핑 공격에 취약합니다.",
   },
   created_at: Timestamp.fromDate(new Date("2023-09-01T12:34:56Z")),
-  updated_at: Timestamp.fromDate(new Date("2024-09-01T12:34:56Z")),
+  source_updated_at: Timestamp.fromDate(new Date("2024-09-01T12:34:56Z")),
+  source_created_at: Timestamp.fromDate(new Date("2023-09-01T12:34:56Z")),
   views: 0,
   content: {
     overview: {

@@ -25,7 +25,8 @@ export type VulDBPost = {
     translated: string;
   };
   created_at: { seconds: number; nanoseconds: number };
-  updated_at?: { seconds: number; nanoseconds: number };
+  source_updated_at?: { seconds: number; nanoseconds: number };
+  source_created_at: { seconds: number; nanoseconds: number };
   content: CertCCContent | CnnvdContent;
   views: number;
 };
