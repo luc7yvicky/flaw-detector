@@ -37,18 +37,28 @@ export async function GET() {
   const CNNVD_URL = "https://www.cnnvd.org.cn/home/warn";
   await page.goto(CNNVD_URL, { waitUntil: "networkidle0", timeout: 80000 });
 
-  // 크롤링 코드 작성
   await page.waitForSelector("p.content-title", {
     timeout: 10000,
   });
 
-  // 데이터를 크롤링할 배열 준비
   const crawledData: CNNVDData[] = [];
 
   async function crawlDetails(startIndex = 0) {
     const elements = await page.$$("p.content-title");
 
     if (elements.length === 0 || startIndex >= elements.length) {
+      return;
+    }
+
+    const dateText = await page.$eval(
+      "div.content-detail",
+      (el) => el.textContent?.trim() || "",
+    );
+
+    const year = dateText?.split("-")[0];
+
+    if (!["2024", "2023", "2022"].includes(year)) {
+      console.log(`크롤링 종료: ${year}년도의 게시물은 크롤링 하지 않음.`);
       return;
     }
 
@@ -60,9 +70,8 @@ export async function GET() {
       return;
     }
 
-    await new Promise((r) => setTimeout(r, 2000));
+    await new Promise((r) => setTimeout(r, 2000)); //빌드시간 단축을 위해 임시 주석처리
 
-    // 클릭 이벤트 발생
     await refreshedElement.click();
     // console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
 
@@ -132,18 +141,38 @@ export async function GET() {
       });
 
       return {
-        description: description.trim(),
-        introduction: introduction.trim(),
-        vulnDetail: vulnDetail.trim(),
-        remediation: remediation.trim(),
+        description: { original: description.trim(), translated: "" },
+        introduction: { original: introduction.trim(), translated: "" },
+        vulnDetail: { original: vulnDetail.trim(), translated: "" },
+        remediation: { original: remediation.trim(), translated: "" },
       };
     });
 
     await page.waitForSelector("div.el-page-header__title", { timeout: 3000 });
     await page.click("div.el-page-header__title");
 
-    // 목록 페이지가 완전히 로드되었는지 확인
-    await page.waitForSelector("p.content-title", { timeout: 40000 });
+    // // 목록 페이지가 완전히 로드되었는지 확인
+    // await page.waitForSelector("p.content-title", { timeout: 40000 });
+
+    crawledData.push({
+      id: crypto.randomUUID(),
+      label: "CNNVD",
+      source: "CNNVD",
+      page_url: await page.url(),
+      title: {
+        original: { text: detailTitle || "제목을 찾을 수 없습니다." },
+        translated: [],
+      },
+      created_at: {
+        seconds: Math.floor(new Date().getTime() / 1000),
+        nanoseconds: 0,
+      },
+      source_created_at: {
+        seconds: dateText ? new Date(dateText).getTime() / 1000 : 0,
+        nanoseconds: 0,
+      },
+      content: content,
+    });
 
     // 모든 작업이 완료된 후 재귀 호출로 다음 요소를 크롤링
     await crawlDetails(startIndex + 1);
@@ -195,7 +224,6 @@ export async function GET() {
   }
 
   await handlePagination();
-
   await browser.close();
 
   return NextResponse.json({
