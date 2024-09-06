@@ -17,8 +17,7 @@ const modalVariants = cva("relative flex flex-col bg-white ", {
         "w-[21.313rem] h-[13.125rem] top-[15.375rem] p-[2.5rem_3.75rem] rounded-[1.25rem]", //login
       medium:
         "w-[26.688rem] h-[24.063rem] top-[10rem] p-[3rem] gap-[3.313rem] rounded-[1.25rem]", //processing
-      large:
-        "w-[42.875rem] min-h-[29.875rem] p-[3rem] rounded-[1.25rem]", //selectFile
+      large: "w-[42.875rem] min-h-[29.875rem] p-[3rem] rounded-[1.25rem]", //selectFile
       extraLarge:
         "w-[61.563rem] h-[21.563rem] top-[10rem] p-[3.75rem] rounded-[2.5rem]", //inquirySubmitted
     },
@@ -121,13 +120,19 @@ export function Modal({
 
   if (!isOpen) return null;
   return (
-    <div className="flex-center-center absolute inset-0 z-50">
+    <div
+      className={cn(
+        "flex-center-center inset-0 z-50",
+        variant === "login" ? "absolute" : "fixed",
+      )}
+    >
       {/* 로그인 모달이 아닐 때만 어두운 배경 처리*/}
       {variant !== "login" && (
+        // 어두운 배경 처리
         <div
           className="fixed inset-0 bg-black opacity-50"
           onClick={handleBackgroundClick}
-        ></div> // 어두운 배경 처리
+        />
       )}
       <div
         className={cn(modalVariants({ variant, size }), className)}

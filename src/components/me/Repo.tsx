@@ -1,5 +1,5 @@
 import { cn, formatDatetimeToYYMMDD } from "@/lib/utils";
-import { RepoListData } from "@/types/type";
+import { RepoListData } from "@/types/repo";
 import Link from "next/link";
 import Button from "../ui/Button";
 import {

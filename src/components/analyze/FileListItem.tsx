@@ -1,5 +1,9 @@
 import { cn } from "@/lib/utils";
-import { RepoContentItem } from "@/types/type";
+import { useFileProcessStore } from "@/stores/useFileProcessStore";
+import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
+import { useFileViewerStore } from "@/stores/useFileViewerStore";
+import { RepoContentItem } from "@/types/repo";
+import { memo, useCallback, useMemo } from "react";
 import {
   IconDoc,
   IconDone,
@@ -7,15 +11,8 @@ import {
   IconFolder,
   IconOnProcess,
   IconOnWait,
-  IconStar,
 } from "../ui/Icons";
 import FileList from "./FileList";
-import {
-  useFileProcessStore,
-  useFileSelectionStore,
-  useFileViewerStore,
-} from "@/stores/store";
-import { memo, useCallback, useMemo, useState } from "react";
 
 function FileListItem({
   item,

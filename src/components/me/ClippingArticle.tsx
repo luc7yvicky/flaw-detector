@@ -1,4 +1,4 @@
-import { ArticleDetailProps } from "@/types/type";
+import { ArticleDetailProps } from "@/types/post";
 import { Card, CardHeader, CardSubTitle, CardTitle } from "../ui/Card";
 import { Label } from "../ui/Label";
 

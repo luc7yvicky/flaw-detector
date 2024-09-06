@@ -1,5 +1,5 @@
 import { OCTOKIT_TOKEN } from "@/lib/const";
-import { RepoContentItem, RepoListData } from "@/types/type";
+import { RepoContentItem, RepoListData } from "@/types/repo";
 import { Octokit } from "@octokit/rest";
 
 type RepoListRawData = {
