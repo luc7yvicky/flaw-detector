@@ -76,6 +76,41 @@ export const getLanguage = (filename: string) => {
       return "css";
     case "json":
       return "json";
+    case "java":
+      return "java";
+    case "c":
+      return "c";
+    case "cpp":
+    case "cxx":
+    case "cc":
+    case "c++":
+      return "cpp";
+    case "cs":
+      return "csharp";
+    case "rb":
+      return "ruby";
+    case "php":
+      return "php";
+    case "go":
+      return "go";
+    case "rs":
+      return "rust";
+    case "swift":
+      return "swift";
+    case "kt":
+    case "kts":
+      return "kotlin";
+    case "r":
+      return "r";
+    case "sh":
+      return "bash";
+    case "xml":
+      return "xml";
+    case "yml":
+    case "yaml":
+      return "yaml";
+    case "sql":
+      return "sql";
     // 확장자-언어 추가 가능
     default:
       return "javascript";
