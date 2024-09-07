@@ -1,5 +1,5 @@
 import { VulDBPostWithChip } from "@/types/post";
-import create from "zustand";
+import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 /**  필요한 필드(id와 chip만)를 추출하는 함수 */
@@ -24,7 +24,18 @@ export const useVulDBPostsStore = create<VulDBPostsState>()(
     }),
     {
       name: "vuldb-posts-store",
-      getStorage: () => localStorage,
+      storage: {
+        getItem: (name) => {
+          const value = localStorage.getItem(name);
+          return value ? JSON.parse(value) : null;
+        },
+        setItem: (name, value) => {
+          localStorage.setItem(name, JSON.stringify(value));
+        },
+        removeItem: (name) => {
+          localStorage.removeItem(name);
+        },
+      },
     },
   ),
 );
