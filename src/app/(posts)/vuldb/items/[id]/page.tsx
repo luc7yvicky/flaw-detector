@@ -1,6 +1,6 @@
 import ArticleDetail from "@/components/vulnerability-db/ArticleDetail";
 import SimilarInfoPosts from "@/components/vulnerability-db/SimilarInfoPosts";
-import { getPostById, increasePostViews } from "@/lib/api/posts";
+import { getAllPosts, getPostById, increasePostViews } from "@/lib/api/posts";
 import { redirectIfNotLoggedIn } from "@/lib/redirect";
 import { VulDBPost } from "@/types/post";
 
@@ -14,12 +14,13 @@ export default async function VulnerabilityDBDetailPage({
   const postId = params.id;
   await increasePostViews(postId);
   const post = (await getPostById(postId)) as VulDBPost;
+  const posts = await getAllPosts();
 
   return (
     <div className="mb-[8.596rem] mt-[2.063rem] flex flex-col items-center gap-[3.75rem]">
       <ArticleDetail post={post} />
       {/* <VulnerabilityGrid /> */}
-      <SimilarInfoPosts currentPostId={postId} />
+      <SimilarInfoPosts posts={posts} postId={postId} />
     </div>
   );
 }
