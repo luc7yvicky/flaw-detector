@@ -2,7 +2,14 @@ import { getChromeExecutablePath } from "@/lib/api/chrome";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
 import { CnnvdLocalizedTextBlock, CnnvdTextBlock } from "@/types/post";
-import { collection, doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import db from "../../../../../firebaseConfig";
 
 type CNNVDData = {
@@ -27,6 +34,19 @@ type CNNVDData = {
     remediation: CnnvdLocalizedTextBlock;
   };
 };
+// Firestore에서 특정 source_created_at이 이미 저장되어 있는지 확인하는 함수
+async function checkIfDataExistsBySourceCreatedAt(
+  timestamp: number,
+): Promise<boolean> {
+  const collectionRef = collection(db, "cnnvd-data");
+  const q = query(
+    collectionRef,
+    where("source_created_at.seconds", "==", timestamp),
+  ); // source_created_at 기준으로 검색
+  const querySnapshot = await getDocs(q);
+
+  return !querySnapshot.empty; // 이미 데이터가 있으면 true 반환
+}
 
 export async function GET() {
   const executablePath = getChromeExecutablePath();
@@ -102,10 +122,37 @@ export async function GET() {
     console.log(`Crawled Title: ${detailTitle || "제목을 찾을 수 없습니다."}`);
     console.log(`날짜 : ${detailSubtitle || "날짜를 찾을 수 없습니다."} `);
 
-    // 디테일 페이지의 subtitle에서 날짜 추출
-    const sourceCreatedAtTimestamp = detailSubtitle
-      ? new Date(detailSubtitle).getTime() / 1000
-      : 0;
+    // // 디테일 페이지의 subtitle에서 날짜 추출
+    // const sourceCreatedAtTimestamp = detailSubtitle
+    //   ? new Date(detailSubtitle).getTime() / 1000
+    //   : 0;
+
+    // '发布时间：' 접두어 제거 후 날짜만 추출
+    let sourceCreatedAtTimestamp = 0;
+    if (detailSubtitle && detailSubtitle.includes("发布时间：")) {
+      const dateString = detailSubtitle.replace("发布时间：", "").trim(); // '发布时间：' 제거
+      const parsedDate = new Date(dateString); // 날짜 객체로 변환
+      if (!isNaN(parsedDate.getTime())) {
+        sourceCreatedAtTimestamp = parsedDate.getTime() / 1000; // 유효한 날짜라면 초 단위로 변환
+      } else {
+        console.error("Invalid date format:", dateString);
+      }
+    } else {
+      console.error("No valid date found in detailSubtitle");
+    }
+
+    // source_created_at 기준으로 Firestore에 이미 저장되어 있는지 확인
+    const exists = await checkIfDataExistsBySourceCreatedAt(
+      sourceCreatedAtTimestamp,
+    );
+    if (exists) {
+      console.log(
+        `Data already exists for source_created_at: ${sourceCreatedAtTimestamp}`,
+      );
+      return; // 이미 존재하면 크롤링 중단
+    }
+
+    console.log(`Parsed Timestamp: ${sourceCreatedAtTimestamp}`);
 
     // CnnvdContent 추출
     const content = await page.evaluate(() => {
@@ -175,7 +222,7 @@ export async function GET() {
       id: crypto.randomUUID(),
       label: "취약성 보고서",
       source: "CNNVD",
-      page_url: await page.url(),
+      page_url: CNNVD_URL,
       views: 0,
       title: {
         original: { text: detailTitle || "제목을 찾을 수 없습니다." },
@@ -196,8 +243,8 @@ export async function GET() {
 
     // Firestore에 저장
     const collectionRef = collection(db, "cnnvd-data");
-    const newDocRef = doc(collectionRef); // 새 문서 생성
-    await setDoc(newDocRef, newCrawledData); // Firestore에 저장
+    const newDocRef = doc(collectionRef);
+    await setDoc(newDocRef, newCrawledData);
 
     // 모든 작업이 완료된 후 재귀 호출로 다음 요소를 크롤링
     await crawlDetails(startIndex + 1);
