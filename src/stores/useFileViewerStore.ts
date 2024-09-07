@@ -1,4 +1,5 @@
 import { fetchCodes } from "@/lib/api/repositories";
+import { getLanguage } from "@/lib/utils";
 import { create } from "zustand";
 
 interface FileViewerState {
@@ -7,6 +8,7 @@ interface FileViewerState {
   fileContent: string | null;
   isLoading: boolean;
   error: string | null;
+  language: string;
   setCurrentRepo: (repo: string) => void;
   setCurrentFile: (file: string | null) => void;
   fetchFileContent: (
@@ -23,22 +25,33 @@ export const useFileViewerStore = create<FileViewerState>((set) => ({
   fileContent: null,
   isLoading: false,
   error: null,
+  language: "text",
   setCurrentRepo: (repo) => set({ currentRepo: repo }),
   setCurrentFile: (file) => set({ currentFile: file }),
-  fetchFileContent: (owner, repo, path) => {
+  fetchFileContent: async (owner, repo, path) => {
     set({ isLoading: true, error: null });
 
-    return fetchCodes(owner, repo, path)
-      .then((content) => {
-        set({ fileContent: content, isLoading: false });
-      })
-      .catch((error) => {
-        set({
-          error: error instanceof Error ? error.message : "Unknown error",
-          isLoading: false,
-        });
-        throw error; // 에러를 다시 throw하여 호출자가 처리할 수 있게 함
+        // 이미지 파일 예외처리
+    const language = getLanguage(path);
+    set({ language });
+    if (language === "image") {
+      set({
+        fileContent: "이미지 파일입니다.",
+        isLoading: false,
       });
+      return;
+    }
+
+    try {
+      const content = await fetchCodes(owner, repo, path);
+      set({ fileContent: content, isLoading: false });
+    } catch (error) {
+      set({
+        error: error instanceof Error ? error.message : "Unknown error",
+        isLoading: false,
+      });
+      throw error;
+    }
   },
   resetFileViewer: () =>
     set({ currentFile: null, fileContent: null, error: null }),

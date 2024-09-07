@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn, getLanguage } from "@/lib/utils";
 import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
@@ -38,15 +38,19 @@ function FileListItem({
   const { getFileStatus } = useFileProcessStore();
   const fileStatus = getFileStatus(item.path);
 
+  const isImage = useMemo(() => getLanguage(name) === "image", [name]);
+
   const handleCheckboxChange = () => {
-    toggleFileSelection(item.path, item.name);
+    if (!isImage) {
+      toggleFileSelection(item.path, item.name);
+    }
   };
 
-  const handleBookmark = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.stopPropagation();
-    // TODO: 북마크 로직 구현
-    console.log(`Bookmarked: ${name}`);
-  };
+  // const handleBookmark = (e: React.MouseEvent<HTMLButtonElement>) => {
+  //   e.stopPropagation();
+  //   // TODO: 북마크 로직 구현
+  //   console.log(`Bookmarked: ${name}`);
+  // };
 
   const handleItemClick = useCallback(
     async (e: React.MouseEvent<HTMLLIElement>) => {
@@ -103,6 +107,7 @@ function FileListItem({
                 type="checkbox"
                 checked={isFileSelected(item.path)}
                 onChange={handleCheckboxChange}
+                disabled={isImage}
                 className={cn(
                   "size-4 accent-primary-500",
                   // type === "dir" && "invisible",
