@@ -16,6 +16,9 @@ importers:
       "@tanstack/react-query":
         specifier: ^5.51.23
         version: 5.51.23(react@18.3.1)
+      "@tanstack/react-query-devtools":
+        specifier: ^5.55.0
+        version: 5.55.0(@tanstack/react-query@5.51.23(react@18.3.1))(react@18.3.1)
       "@types/react-syntax-highlighter":
         specifier: ^15.5.13
         version: 15.5.13
@@ -1032,6 +1035,21 @@ packages:
       {
         integrity: sha512-POQxm42IUp6n89kKWF4IZi18v3fxQWFRolvBA6phNVmA8psdfB1MvDnGacCJdS+EOX12w/CyHM62z//rHmYmvw==,
       }
+
+  "@tanstack/query-devtools@5.54.0":
+    resolution:
+      {
+        integrity: sha512-B8Sa6mh7/4m2fyk2/YnUXeOZ1/us7G/C/i1It8YcCbieXc8vf1AdSYjR+mZIoJeKOKLqA741hZqfj8d4F1NCVg==,
+      }
+
+  "@tanstack/react-query-devtools@5.55.0":
+    resolution:
+      {
+        integrity: sha512-omUloSS7Ru+LNmXeK56ygtAgMXMR5M74v8kn4lRjMkjT/aTJHWGI2yJh0I1EE1a8tjwXyviqy+qWfJaeqQcTIA==,
+      }
+    peerDependencies:
+      "@tanstack/react-query": ^5.55.0
+      react: ^18 || ^19
 
   "@tanstack/react-query@5.51.23":
     resolution:
@@ -7648,6 +7666,14 @@ snapshots:
       tslib: 2.6.3
 
   "@tanstack/query-core@5.51.21": {}
+
+  "@tanstack/query-devtools@5.54.0": {}
+
+  "@tanstack/react-query-devtools@5.55.0(@tanstack/react-query@5.51.23(react@18.3.1))(react@18.3.1)":
+    dependencies:
+      "@tanstack/query-devtools": 5.54.0
+      "@tanstack/react-query": 5.51.23(react@18.3.1)
+      react: 18.3.1
 
   "@tanstack/react-query@5.51.23(react@18.3.1)":
     dependencies:
