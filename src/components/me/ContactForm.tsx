@@ -1,13 +1,30 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Input } from "../ui/Input";
-import { TextArea } from "../ui/TextArea";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import Button from "../ui/Button";
+import { Input } from "../ui/Input";
+import {
+  Modal,
+  ModalDescription,
+  ModalTitle,
+  ModalTitleWrapper,
+} from "../ui/Modal";
+import { TextArea } from "../ui/TextArea";
+
+type RequestState = "idle" | "loading" | "success" | "error";
 
 export default function ContactForm() {
+  const router = useRouter();
+  const [invalidField, setInvalidField] = useState<
+    "name" | "email" | "message" | null
+  >(null);
+  const [requestState, setRequestState] = useState<RequestState>("idle");
+
   const onSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    setRequestState("loading");
     const formData = new FormData(event.currentTarget);
 
     try {
@@ -19,11 +36,30 @@ export default function ContactForm() {
       if (!res.ok) {
         throw new Error(`response status: ${res.status}`);
       }
-      const data = await res.json();
-      alert(data.message);
-    } catch (err) {
-      console.error(err);
-      alert("Error, please try resubmitting the form");
+
+      const { message } = await res.json();
+
+      switch (message) {
+        case "INVALID NAME":
+          setInvalidField("name");
+          setRequestState("idle");
+          break;
+        case "INVALID EMAIL":
+          setInvalidField("email");
+          setRequestState("idle");
+          break;
+        case "INVALID MESSAGE":
+          setInvalidField("message");
+          setRequestState("idle");
+          break;
+        case "SUCCESS":
+          setInvalidField(null);
+          setRequestState("success");
+          break;
+      }
+    } catch (error) {
+      console.error(error);
+      setRequestState("error");
     }
   };
 
@@ -49,6 +85,7 @@ export default function ContactForm() {
           Name
         </label>
         <Input
+          isErrored={invalidField === "name"}
           id="name"
           name="name"
           placeholder="이름을 적어주세요."
@@ -63,6 +100,7 @@ export default function ContactForm() {
           Email
         </label>
         <Input
+          isErrored={invalidField === "email"}
           id="email"
           name="email"
           type="email"
@@ -80,13 +118,43 @@ export default function ContactForm() {
           Message
         </label>
         <TextArea
+          isErrored={invalidField === "message"}
           id="message"
           name="message"
           placeholder="내용을 적어주세요."
           className="mt-2 h-52"
         />
       </div>
-      <Button className="py-[0.813rem] text-lg">문의 보내기</Button>
+      <Button type="submit" className="py-[0.813rem] text-lg">
+        {requestState === "loading" ? "전송 중..." : "문의 보내기"}
+      </Button>
+
+      {/* Modal for SUCCESS */}
+      <Modal
+        variant="inquirySubmitted"
+        size="extraLarge"
+        isOpen={requestState === "success"}
+        className="top-0 border border-primary-500"
+      >
+        <ModalTitleWrapper variant="inquirySubmitted">
+          <ModalTitle size="big" weight="bold">
+            문의를 보냈어요!
+          </ModalTitle>
+          <ModalDescription size="big" className="font-medium text-[#8F8F8F]">
+            문의를 성공적으로 전송했어요. 빠른 시일 내에 답변해드릴게요.
+          </ModalDescription>
+        </ModalTitleWrapper>
+        <Button
+          type="button"
+          onClick={() => {
+            setRequestState("idle");
+            router.push("/");
+          }}
+          className="mt-14 h-14 w-[20.938rem] rounded-2xl text-[1.25rem] tracking-[-0.011em]"
+        >
+          홈으로 가기
+        </Button>
+      </Modal>
     </form>
   );
 }
