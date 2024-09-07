@@ -50,12 +50,29 @@ export default async function VulDBPage() {
     }
 
     const postsWithChips = applyChips(posts);
+    // 최신 게시물을 created_at 기준으로 정렬 + 동일한 created_at일 경우 id 기준 정렬
+    const sortedPostsByDate = postsWithChips.sort((a, b) => {
+      const dateA = new Timestamp(
+        a.created_at.seconds,
+        a.created_at.nanoseconds,
+      ).toDate();
+      const dateB = new Timestamp(
+        b.created_at.seconds,
+        b.created_at.nanoseconds,
+      ).toDate();
+
+      // created_at이 같다면 id로 정렬
+      return dateB.getTime() === dateA.getTime()
+        ? a.id.localeCompare(b.id)
+        : dateB.getTime() - dateA.getTime();
+    });
+
+    const top3RecentPosts = sortedPostsByDate.slice(0, 3);
 
     return (
       <div className="mx-auto mb-[1.188rem] mt-[1.688rem] flex w-[82.063rem] flex-col gap-[4.75rem]">
-        <VulDBImageCardContainer posts={posts} />
-        <VulDBDashboard posts={postsWithChips} />
-        {/* 취약점 DB & 실시간 Topic */}
+        <VulDBImageCardContainer posts={top3RecentPosts} />
+        <VulDBDashboard posts={sortedPostsByDate} />
       </div>
     );
   } catch (error) {
