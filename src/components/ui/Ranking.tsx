@@ -34,7 +34,7 @@ export const Ranking: React.FC<RankingProps> = ({ className, ...props }) => {
   return (
     <ul
       className={cn(
-        "h-[36.25rem] w-[21.625rem] rounded-lg border border-line-default p-5",
+        "h-[36.25rem] w-full rounded-lg border border-line-default p-5",
         className,
       )}
       {...props}
