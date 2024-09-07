@@ -2,12 +2,15 @@ import { getChromeExecutablePath } from "@/lib/api/chrome";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
 import { CnnvdLocalizedTextBlock, CnnvdTextBlock } from "@/types/post";
+import { collection, doc, setDoc } from "firebase/firestore";
+import db from "../../../../../firebaseConfig";
 
 type CNNVDData = {
   id: string;
   label: string;
   source: string;
   page_url: string;
+  views: number;
   title: {
     original: CnnvdTextBlock;
     translated: [];
@@ -42,30 +45,30 @@ export async function GET() {
   });
 
   const crawledData: CNNVDData[] = [];
-  let shouldStopCrawling = false;
+  // let shouldStopCrawling = false;
 
   async function crawlDetails(startIndex = 0) {
-    if (shouldStopCrawling) {
-      return;
-    }
+    // if (shouldStopCrawling) {
+    //   return;
+    // }
     const elements = await page.$$("p.content-title");
 
     if (elements.length === 0 || startIndex >= elements.length) {
       return;
     }
 
-    const dateText = await page.$eval(
-      "div.content-detail",
-      (el) => el.textContent?.trim() || "",
-    );
+    // const dateText = await page.$eval(
+    //   "div.content-detail",
+    //   (el) => el.textContent?.trim() || "",
+    // );
 
-    const year = dateText?.split("-")[0];
+    // const year = dateText?.split("-")[0];
 
-    if (year === "2023") {
-      console.log(`크롤링 종료: ${year}년도의 게시물은 크롤링 하지 않음.`);
-      shouldStopCrawling = true;
-      return;
-    }
+    // if (year === "2023") {
+    //   console.log(`크롤링 종료: ${year}년도의 게시물은 크롤링 하지 않음.`);
+    //   shouldStopCrawling = true;
+    //   return;
+    // }
 
     // 페이지 리로드 후 요소 다시 참조
     const refreshedElement = (await page.$$("p.content-title"))[startIndex];
@@ -98,6 +101,11 @@ export async function GET() {
 
     console.log(`Crawled Title: ${detailTitle || "제목을 찾을 수 없습니다."}`);
     console.log(`날짜 : ${detailSubtitle || "날짜를 찾을 수 없습니다."} `);
+
+    // 디테일 페이지의 subtitle에서 날짜 추출
+    const sourceCreatedAtTimestamp = detailSubtitle
+      ? new Date(detailSubtitle).getTime() / 1000
+      : 0;
 
     // CnnvdContent 추출
     const content = await page.evaluate(() => {
@@ -163,25 +171,33 @@ export async function GET() {
     await page.waitForSelector("div.el-page-header__title", { timeout: 3000 });
     await page.click("div.el-page-header__title");
 
-    crawledData.push({
+    const newCrawledData: CNNVDData = {
       id: crypto.randomUUID(),
-      label: "CNNVD",
+      label: "취약성 보고서",
       source: "CNNVD",
       page_url: await page.url(),
+      views: 0,
       title: {
         original: { text: detailTitle || "제목을 찾을 수 없습니다." },
         translated: [],
       },
       created_at: {
-        seconds: Math.floor(new Date().getTime() / 1000),
+        seconds: 0,
         nanoseconds: 0,
       },
       source_created_at: {
-        seconds: dateText ? new Date(dateText).getTime() / 1000 : 0,
+        seconds: sourceCreatedAtTimestamp,
         nanoseconds: 0,
       },
       content: content,
-    });
+    };
+
+    crawledData.push(newCrawledData);
+
+    // Firestore에 저장
+    const collectionRef = collection(db, "cnnvd-data");
+    const newDocRef = doc(collectionRef); // 새 문서 생성
+    await setDoc(newDocRef, newCrawledData); // Firestore에 저장
 
     // 모든 작업이 완료된 후 재귀 호출로 다음 요소를 크롤링
     await crawlDetails(startIndex + 1);
@@ -191,13 +207,8 @@ export async function GET() {
   async function handlePagination() {
     let hasNextPage = true;
 
-    while (hasNextPage && !shouldStopCrawling) {
+    while (hasNextPage) {
       await crawlDetails(); // 현재 페이지 크롤링
-
-      if (shouldStopCrawling) {
-        console.log("크롤링이 중지되었습니다.");
-        break;
-      }
 
       // 다음 페이지로 이동
       const nextPageButton = await page.$("li.number.active + li.number");
