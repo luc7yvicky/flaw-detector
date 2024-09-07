@@ -34,6 +34,7 @@ type CNNVDData = {
     remediation: CnnvdLocalizedTextBlock;
   };
 };
+
 // Firestore에서 특정 source_created_at이 이미 저장되어 있는지 확인하는 함수
 async function checkIfDataExistsBySourceCreatedAt(
   timestamp: number,
@@ -65,30 +66,13 @@ export async function GET() {
   });
 
   const crawledData: CNNVDData[] = [];
-  // let shouldStopCrawling = false;
 
   async function crawlDetails(startIndex = 0) {
-    // if (shouldStopCrawling) {
-    //   return;
-    // }
     const elements = await page.$$("p.content-title");
 
     if (elements.length === 0 || startIndex >= elements.length) {
       return;
     }
-
-    // const dateText = await page.$eval(
-    //   "div.content-detail",
-    //   (el) => el.textContent?.trim() || "",
-    // );
-
-    // const year = dateText?.split("-")[0];
-
-    // if (year === "2023") {
-    //   console.log(`크롤링 종료: ${year}년도의 게시물은 크롤링 하지 않음.`);
-    //   shouldStopCrawling = true;
-    //   return;
-    // }
 
     // 페이지 리로드 후 요소 다시 참조
     const refreshedElement = (await page.$$("p.content-title"))[startIndex];
@@ -101,7 +85,7 @@ export async function GET() {
     await new Promise((r) => setTimeout(r, 2000));
 
     await refreshedElement.click();
-    console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
+    // console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
 
     await new Promise((r) => setTimeout(r, 2000));
 
@@ -122,15 +106,10 @@ export async function GET() {
     console.log(`Crawled Title: ${detailTitle || "제목을 찾을 수 없습니다."}`);
     console.log(`날짜 : ${detailSubtitle || "날짜를 찾을 수 없습니다."} `);
 
-    // // 디테일 페이지의 subtitle에서 날짜 추출
-    // const sourceCreatedAtTimestamp = detailSubtitle
-    //   ? new Date(detailSubtitle).getTime() / 1000
-    //   : 0;
-
-    // '发布时间：' 접두어 제거 후 날짜만 추출
+    //날짜만 추출
     let sourceCreatedAtTimestamp = 0;
     if (detailSubtitle && detailSubtitle.includes("发布时间：")) {
-      const dateString = detailSubtitle.replace("发布时间：", "").trim(); // '发布时间：' 제거
+      const dateString = detailSubtitle.replace("发布时间：", "").trim();
       const parsedDate = new Date(dateString); // 날짜 객체로 변환
       if (!isNaN(parsedDate.getTime())) {
         sourceCreatedAtTimestamp = parsedDate.getTime() / 1000; // 유효한 날짜라면 초 단위로 변환
@@ -260,7 +239,7 @@ export async function GET() {
       // 다음 페이지로 이동
       const nextPageButton = await page.$("li.number.active + li.number");
       if (nextPageButton) {
-        console.log("Moving to the next page..."); //확인 로그 (추후삭제예정)
+        // console.log("Moving to the next page..."); //확인 로그 (추후삭제예정)
 
         await new Promise((r) => setTimeout(r, 2000));
 
@@ -269,7 +248,6 @@ export async function GET() {
 
         // 버튼 클릭 후 페이지 전환을 시도
         await page.evaluate((el) => el.click(), nextPageButton);
-
         await new Promise((r) => setTimeout(r, 2000));
 
         // 새로운 콘텐츠가 로드될 때까지 대기
