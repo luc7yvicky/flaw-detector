@@ -17,22 +17,16 @@ export async function GET() {
     const posts = [];
 
     // CERT/CC 취약점 정보 페이지로 이동
-    const VULS_URL = "https://www.kb.cert.org/vuls/";
+    const VULS_URL = "https://www.kb.cert.org/vuls/search/";
     await page.goto(VULS_URL, {
       waitUntil: "domcontentloaded",
       timeout: 40000,
     });
 
-    // 페이지 검색창에 크롤링할 키워드 입력
-    await page.type("input[name='searchbar']", WEB_CRAWLING_SEARCH_KEYWORD);
+    // 크롤링 키워드 입력
+    await page.type("input[name='wordSearch']", WEB_CRAWLING_SEARCH_KEYWORD);
 
-    // 검색 버튼 클릭
-    const searchButtonSelector = "input[name='searchbar'] + button";
-    await page.waitForSelector(searchButtonSelector);
-    await page.click(searchButtonSelector);
-
-    // 검색 결과 페이지 로딩 대기
-    await page.waitForNavigation({ waitUntil: "networkidle2" });
+    await new Promise((r) => setTimeout(r, 3000));
 
     // 최신 게시글을 가져오기 위해 checkbox 클릭
     const Checkbox2024Selector = "input[type='checkbox'][value='2024']";
@@ -50,6 +44,8 @@ export async function GET() {
       await page.click(Checkbox2024Selector);
     }
     await page.click(Checkbox2024Selector);
+
+    await new Promise((r) => setTimeout(r, 1000));
 
     const is2023Checked = await page.$eval(
       Checkbox2023Selector,
@@ -192,6 +188,14 @@ export async function GET() {
             );
           }
 
+          const sourceCreatedAt = document.querySelector("#datefirstpublished");
+          let formattedSourceCreatedAt = { seconds: 0, nanoseconds: 0 };
+          if (sourceCreatedAt) {
+            formattedSourceCreatedAt = formatStringToTimestamp(
+              (sourceCreatedAt as HTMLElement).innerText,
+            );
+          }
+
           return {
             title: {
               original: postTitle
@@ -218,7 +222,10 @@ export async function GET() {
               },
               cveIDs: cveLinks,
             },
-            updated_at: lastUpdatedAt ? formattedLastUpdatedAt : null,
+            source_updated_at: lastUpdatedAt ? formattedLastUpdatedAt : null,
+            source_created_at: sourceCreatedAt
+              ? formattedSourceCreatedAt
+              : null,
           };
         });
 

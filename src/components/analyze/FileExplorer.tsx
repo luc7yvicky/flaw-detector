@@ -1,10 +1,11 @@
 "use client";
 
+import { expandFolder } from "@/lib/api/repositories";
+import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
+import { useFileViewerStore } from "@/stores/useFileViewerStore";
+import { RepoContentItem } from "@/types/repo";
 import { useCallback, useEffect, useState } from "react";
 import FileList from "./FileList";
-import { RepoContentItem } from "@/types/type";
-import { expandFolder } from "@/lib/api/repositories";
-import { useFileViewerStore, useFileSelectionStore } from "@/stores/store";
 
 export default function FileExplorer({
   initialStructure,
@@ -19,12 +20,14 @@ export default function FileExplorer({
     useState<RepoContentItem[]>(initialStructure);
 
   const resetFileViewer = useFileViewerStore((state) => state.resetFileViewer);
+  const setCurrentRepo = useFileViewerStore((state) => state.setCurrentRepo);
   const { selectAllFiles, deselectAllFiles, getSelectedFilesCount } =
     useFileSelectionStore();
 
   // 레포 이동시 초기화
   useEffect(() => {
     resetFileViewer();
+    setCurrentRepo(repo);
     deselectAllFiles();
   }, [resetFileViewer, repo]);
 
