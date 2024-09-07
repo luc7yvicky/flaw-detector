@@ -1,7 +1,4 @@
-"use client";
-
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 
 export type RankingProps = React.HTMLAttributes<HTMLUListElement> & {};
 
@@ -19,22 +16,10 @@ const topics = [
 ];
 
 export const Ranking: React.FC<RankingProps> = ({ className, ...props }) => {
-  const [highlightedTopic, setHighlightedTopic] = useState<number>(0);
-
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setHighlightedTopic(
-        (prevIndex: number) => (prevIndex + 1) % topics.length,
-      );
-    }, 5000); // 5초마다 highlightedTopic 변경 (임시)
-
-    return () => clearInterval(intervalId);
-  }, []);
-
   return (
     <ul
       className={cn(
-        "h-[36.25rem] w-full rounded-lg border border-line-default p-5",
+        "h-[36.25rem] w-full rounded-[1.25rem] border border-[#CFCFCF] px-9 py-5",
         className,
       )}
       {...props}
@@ -43,9 +28,8 @@ export const Ranking: React.FC<RankingProps> = ({ className, ...props }) => {
         <li
           key={index}
           className={cn(
-            "border-b border-line-light py-4 pl-1 text-lg font-medium leading-[21.78px] tracking-[-0.01em]",
+            "border-b border-line-light py-4 text-lg font-medium leading-[1.361rem] tracking-[-0.01em]",
             index === topics.length - 1 && "border-none",
-            index === highlightedTopic && "text-primary-500",
           )}
         >
           {index + 1}. {topic}
