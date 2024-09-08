@@ -82,7 +82,7 @@ export async function GET() {
     await new Promise((r) => setTimeout(r, 2000));
 
     await refreshedElement.click();
-    console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
+    // console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
 
     await new Promise((r) => setTimeout(r, 2000));
 
@@ -100,8 +100,9 @@ export async function GET() {
       el.textContent?.trim(),
     );
 
-    console.log(`Crawled Title: ${detailTitle || "제목을 찾을 수 없습니다."}`);
-    console.log(`날짜 : ${detailSubtitle || "날짜를 찾을 수 없습니다."} `);
+    // 크롤링 요소확인 로그 (추후 삭제 예정)
+    // console.log(`Crawled Title: ${detailTitle || "제목을 찾을 수 없습니다."}`);
+    // console.log(`날짜 : ${detailSubtitle || "날짜를 찾을 수 없습니다."} `);
 
     //날짜만 추출
     let sourceCreatedAtTimestamp = 0;
@@ -284,7 +285,7 @@ export async function GET() {
           continue;
         }
 
-        // 새 페이지가 로드된 후 다시 요소 처리 시작
+        // 새 페이지 로드 후 다시 요소 처리 시작
         await page.waitForSelector("p.content-title", { timeout: 120000 });
       } else {
         console.log("No more pages to crawl.");
