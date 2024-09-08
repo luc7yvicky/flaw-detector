@@ -1,6 +1,9 @@
+import { SearchKeyword } from "@/lib/api/searchKeywords";
 import { cn } from "@/lib/utils";
 
-export type RankingProps = React.HTMLAttributes<HTMLUListElement> & {};
+export type RankingProps = React.HTMLAttributes<HTMLUListElement> & {
+  topSearchKeywords: SearchKeyword[];
+};
 
 const dummySearchKeywords: string[] = [
   "유닛테스트",
@@ -15,24 +18,33 @@ const dummySearchKeywords: string[] = [
   "클린 코어",
 ];
 
-const renderTopics = (topics: string[], haveSearchKeywords: boolean) => {
-  return topics.map((topic, index) => (
-    <li
-      key={index}
-      className={cn(
-        "border-b border-line-light py-4 text-lg font-medium leading-[1.361rem] tracking-[-0.01em]",
-        index === topics.length - 1 && "border-none",
-        !haveSearchKeywords && "select-none blur-md",
-      )}
-    >
-      {index + 1}. {topic}
-    </li>
-  ));
+const renderTopics = (
+  topics: string[] | SearchKeyword[],
+  haveSearchKeywords: boolean,
+) => {
+  return topics.map((topic, index) => {
+    const topicName = typeof topic === "string" ? topic : topic.keyword;
+
+    return (
+      <li
+        key={topicName}
+        className={cn(
+          "border-b border-line-light py-4 text-lg font-medium leading-[1.361rem] tracking-[-0.01em]",
+          index === topics.length - 1 && "border-none",
+          !haveSearchKeywords && "select-none blur-md",
+        )}
+      >
+        {index + 1}. {topicName}
+      </li>
+    );
+  });
 };
 
-export const Ranking: React.FC<RankingProps> = ({ className, ...props }) => {
-  const searchKeywords: string[] = [];
-
+export const Ranking: React.FC<RankingProps> = ({
+  className,
+  topSearchKeywords,
+  ...props
+}) => {
   return (
     <ul
       className={cn(
@@ -41,8 +53,8 @@ export const Ranking: React.FC<RankingProps> = ({ className, ...props }) => {
       )}
       {...props}
     >
-      {searchKeywords.length > 0 ? (
-        renderTopics(searchKeywords, true)
+      {topSearchKeywords.length > 0 ? (
+        renderTopics(topSearchKeywords, true)
       ) : (
         <>
           {renderTopics(dummySearchKeywords, false)}
