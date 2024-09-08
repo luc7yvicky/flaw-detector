@@ -6,14 +6,7 @@ import {
   CnnvdTextBlock,
   VulDBPost,
 } from "@/types/post";
-import {
-  collection,
-  doc,
-  setDoc,
-  getDocs,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import db from "../../../../../firebaseConfig";
 import { addPost } from "@/lib/api/posts";
 
@@ -40,18 +33,18 @@ type CNNVDData = {
   };
 };
 
-// Firestore에서 특정 source_created_at이 이미 저장되어 있는지 확인하는 함수
+// Firestore에 데이터가 이미 저장되어 있는지 확인
 async function checkIfDataExistsBySourceCreatedAt(
   timestamp: number,
 ): Promise<boolean> {
-  const collectionRef = collection(db, "posts"); //@@@
+  const collectionRef = collection(db, "posts");
   const q = query(
     collectionRef,
     where("source_created_at.seconds", "==", timestamp),
-  ); // source_created_at 기준으로 검색
+  );
   const querySnapshot = await getDocs(q);
 
-  return !querySnapshot.empty; // 이미 데이터가 있으면 true 반환
+  return !querySnapshot.empty; // 동일한 데이터가 있으면 true
 }
 
 export async function GET() {
@@ -72,25 +65,24 @@ export async function GET() {
 
   const crawledData: CNNVDData[] = [];
 
-  async function crawlDetails(startIndex = 0) {
+  async function crawlDetails(startIndex: number) {
     const elements = await page.$$("p.content-title");
 
-    if (elements.length === 0 || startIndex >= elements.length) {
-      return;
+    if (startIndex >= elements.length) {
+      return "done"; // 페이지의 모든 요소가 처리되면 'done' 반환
     }
 
     // 페이지 리로드 후 요소 다시 참조
-    const refreshedElement = (await page.$$("p.content-title"))[startIndex];
+    const refreshedElement = elements[startIndex];
 
     if (!refreshedElement) {
-      await crawlDetails(startIndex + 1);
-      return;
+      return "done";
     }
 
     await new Promise((r) => setTimeout(r, 2000));
 
     await refreshedElement.click();
-    // console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
+    console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
 
     await new Promise((r) => setTimeout(r, 2000));
 
@@ -115,17 +107,21 @@ export async function GET() {
     let sourceCreatedAtTimestamp = 0;
     if (detailSubtitle && detailSubtitle.includes("发布时间：")) {
       const dateString = detailSubtitle.replace("发布时间：", "").trim();
-      const parsedDate = new Date(dateString); // 날짜 객체로 변환
+      const parsedDate = new Date(dateString);
       if (!isNaN(parsedDate.getTime())) {
-        sourceCreatedAtTimestamp = parsedDate.getTime() / 1000; // 유효한 날짜라면 초 단위로 변환
+        sourceCreatedAtTimestamp = parsedDate.getTime() / 1000;
       } else {
         console.error("Invalid date format:", dateString);
       }
-    } else {
-      console.error("No valid date found in detailSubtitle");
     }
 
-    // source_created_at 기준으로 Firestore에 이미 저장되어 있는지 확인
+    const sourceYear = new Date(sourceCreatedAtTimestamp * 1000).getFullYear();
+    if (sourceYear !== 2023 && sourceYear !== 2024) {
+      console.log(`Data from year ${sourceYear}, stopping the crawl.`);
+      return false; // 2023년, 2024년이 아닌 연도일 경우 중단
+    }
+
+    // Firestore에 이미 저장되어 있는지 확인
     const exists = await checkIfDataExistsBySourceCreatedAt(
       sourceCreatedAtTimestamp,
     );
@@ -133,7 +129,7 @@ export async function GET() {
       console.log(
         `Data already exists for source_created_at: ${sourceCreatedAtTimestamp}`,
       );
-      return; // 이미 존재하면 크롤링 중단
+      return true; // 이미 존재하면 건너뛰고 다음으로
     }
 
     console.log(`Parsed Timestamp: ${sourceCreatedAtTimestamp}`);
@@ -204,13 +200,13 @@ export async function GET() {
 
     const newCrawledData: VulDBPost = {
       id: crypto.randomUUID(),
-      label: "취약성 보고서", // VulDBPost에 맞는 값
-      source: "CNNVD", // 고정된 값 (CNNVD 데이터임을 나타냄)
+      label: "취약성 보고서",
+      source: "CNNVD",
       page_url: CNNVD_URL,
       views: 0,
       title: {
-        original: detailTitle || "제목을 찾을 수 없습니다.", // string으로 바로 설정
-        translated: "", // 번역된 제목이 없으면 빈 문자열로 설정
+        original: detailTitle || "제목을 찾을 수 없습니다.",
+        translated: "",
       },
       created_at: {
         seconds: 0,
@@ -222,7 +218,7 @@ export async function GET() {
       },
       content: {
         description: {
-          original: content.description.original, // string 타입으로 맞춤
+          original: content.description.original,
           translated: content.description.translated,
         },
         introduction: {
@@ -237,46 +233,45 @@ export async function GET() {
           original: content.remediation.original,
           translated: content.remediation.translated,
         },
-      }, // content 그대로 유지
+      },
     };
-
-    // Firestore에 저장
     await addPost(newCrawledData);
-
-    // crawledData.push(newCrawledData);
-
-    // // Firestore에 저장
-    // const collectionRef = collection(db, "cnnvd-data");
-    // const newDocRef = doc(collectionRef);
-    // await setDoc(newDocRef, newCrawledData);
-    // await addPost(newCrawledData);
-
-    // 모든 작업이 완료된 후 재귀 호출로 다음 요소를 크롤링
-    await crawlDetails(startIndex + 1);
+    return true; // 크롤링 계속 진행
   }
 
-  //페이지네이션 처리
   async function handlePagination() {
     let hasNextPage = true;
 
     while (hasNextPage) {
-      await crawlDetails(); // 현재 페이지 크롤링
+      let startIndex = 0;
+      let hasMoreItems = true;
 
-      // 다음 페이지로 이동
+      // 현재 페이지의 모든 요소를 처리
+      while (hasMoreItems) {
+        const result = await crawlDetails(startIndex);
+        if (!result) {
+          console.log(
+            "Encountered a year outside 2023 or 2024, stopping crawl.",
+          );
+          hasMoreItems = false; // 2024년, 2023년이 아닌 연도 발견 시 중단
+        } else if (result === "done") {
+          console.log("All elements on the current page have been processed.");
+          break; // 현재 페이지의 모든 요소가 처리되면 루프 종료
+        } else {
+          startIndex++;
+        }
+      }
+
       const nextPageButton = await page.$("li.number.active + li.number");
       if (nextPageButton) {
-        // console.log("Moving to the next page..."); //확인 로그 (추후삭제예정)
-
+        console.log("Moving to the next page...");
         await new Promise((r) => setTimeout(r, 2000));
 
-        // 클릭 전 페이지의 특정 요소를 저장
         const previousContent = await page.content();
 
-        // 버튼 클릭 후 페이지 전환을 시도
         await page.evaluate((el) => el.click(), nextPageButton);
         await new Promise((r) => setTimeout(r, 2000));
 
-        // 새로운 콘텐츠가 로드될 때까지 대기
         try {
           await page.waitForFunction(
             (prevContent) => document.body.innerHTML !== prevContent,
@@ -289,9 +284,8 @@ export async function GET() {
           continue;
         }
 
+        // 새 페이지가 로드된 후 다시 요소 처리 시작
         await page.waitForSelector("p.content-title", { timeout: 120000 });
-
-        await crawlDetails();
       } else {
         console.log("No more pages to crawl.");
         hasNextPage = false;
