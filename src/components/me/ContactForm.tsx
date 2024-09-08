@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../ui/Button";
 import { Input } from "../ui/Input";
 import {
@@ -24,6 +24,32 @@ export default function ContactForm() {
   >(null);
   const [requestState, setRequestState] = useState<RequestState>("idle");
 
+  const [formData, setFormData] = useState({
+    name: session?.user?.name || "",
+    email: session?.user?.email || "",
+    message: "",
+  });
+
+  useEffect(() => {
+    if (session?.user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: session.user.name || "",
+        email: session.user.email || "",
+      }));
+    }
+  }, [session]);
+
+  const onChangeInputAndTextArea = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const onSubmitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setRequestState("loading");
@@ -39,9 +65,9 @@ export default function ContactForm() {
         throw new Error(`response status: ${res.status}`);
       }
 
-      const { message } = await res.json();
+      const { message: responseMessage } = await res.json();
 
-      switch (message) {
+      switch (responseMessage) {
         case "INVALID NAME":
           setInvalidField("name");
           setRequestState("idle");
@@ -57,6 +83,12 @@ export default function ContactForm() {
         case "SUCCESS":
           setInvalidField(null);
           setRequestState("success");
+
+          setFormData({
+            name: session?.user?.name || "",
+            email: session?.user?.email || "",
+            message: "",
+          });
           break;
       }
     } catch (error) {
@@ -92,7 +124,8 @@ export default function ContactForm() {
           name="name"
           placeholder="이름을 적어주세요."
           className="mt-2"
-          value={session?.user?.name}
+          value={formData.name}
+          onChange={onChangeInputAndTextArea}
         />
       </div>
       <div>
@@ -109,8 +142,9 @@ export default function ContactForm() {
           type="email"
           autoComplete="email"
           placeholder="올바른 이메일을 적어주세요."
-          value={session?.user?.email}
           className="mt-2"
+          value={formData.email}
+          onChange={onChangeInputAndTextArea}
         />
       </div>
       <div>
@@ -126,6 +160,8 @@ export default function ContactForm() {
           name="message"
           placeholder="내용을 적어주세요."
           className="mt-2 h-52"
+          value={formData.message}
+          onChange={onChangeInputAndTextArea}
         />
       </div>
       <Button type="submit" className="py-[0.813rem] text-lg">
