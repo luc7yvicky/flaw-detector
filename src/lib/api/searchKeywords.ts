@@ -1,4 +1,10 @@
-import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import {
+  collection,
+  orderBy,
+  limit,
+  query,
+  onSnapshot,
+} from "firebase/firestore";
 import db from "../../../firebaseConfig";
 
 export type SearchKeyword = {
@@ -6,26 +12,32 @@ export type SearchKeyword = {
   searchCounts: number;
 };
 
-export async function fetchSearchKeywords() {
+export function fetchSearchKeywords(
+  onKeywordsUpdate: (keywords: SearchKeyword[]) => void,
+) {
   const q = query(
     collection(db, "searchKeywords"),
     orderBy("searchCounts", "desc"),
     limit(10),
   );
-  const querySnapshot = await getDocs(q);
 
-  if (querySnapshot.empty) {
-    return [];
-  }
+  const unsubscribe = onSnapshot(q, (querySnapshot) => {
+    if (querySnapshot.empty) {
+      onKeywordsUpdate([]);
+      return;
+    }
 
-  const topSearchKeywords: SearchKeyword[] = [];
+    const topSearchKeywords: SearchKeyword[] = [];
 
-  querySnapshot.forEach((doc) => {
-    topSearchKeywords.push({
-      keyword: doc.id,
-      searchCounts: doc.data()["searchCounts"],
+    querySnapshot.forEach((doc) => {
+      topSearchKeywords.push({
+        keyword: doc.id,
+        searchCounts: doc.data()["searchCounts"],
+      });
     });
+
+    onKeywordsUpdate(topSearchKeywords);
   });
 
-  return topSearchKeywords;
+  return unsubscribe;
 }

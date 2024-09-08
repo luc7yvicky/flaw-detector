@@ -29,7 +29,7 @@ const renderTopics = (
       <li
         key={topicName}
         className={cn(
-          "border-b border-line-light py-4 text-lg font-medium leading-[1.361rem] tracking-[-0.01em]",
+          "animate-fadeIn border-b border-line-light py-4 text-lg font-medium leading-[1.361rem] tracking-[-0.01em]",
           index === topics.length - 1 && "border-none",
           !haveSearchKeywords && "select-none blur-md",
         )}
