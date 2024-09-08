@@ -1,3 +1,4 @@
+import RealTimeTopic from "@/components/vulnerability-db/RealTimeTopic";
 import VulDBDashboard from "@/components/vulnerability-db/VulDBDashboard";
 import VulDBImageCardContainer from "@/components/vulnerability-db/VulDBImageCardContainer";
 import { getAllPosts } from "@/lib/api/posts";
@@ -70,9 +71,12 @@ export default async function VulDBPage() {
     const top3RecentPosts = sortedPostsByDate.slice(0, 3);
 
     return (
-      <div className="mx-auto mb-[1.188rem] mt-[1.688rem] flex w-[82.063rem] flex-col gap-[4.75rem]">
+      <div className="relative mx-auto mb-[1.188rem] mt-[1.688rem] flex min-h-[2445px] w-[82.063rem] flex-col gap-[4.75rem]">
         <VulDBImageCardContainer posts={top3RecentPosts} />
-        <VulDBDashboard posts={sortedPostsByDate} />
+        <div className="flex justify-between">
+          <VulDBDashboard posts={sortedPostsByDate} />
+          <RealTimeTopic />
+        </div>
       </div>
     );
   } catch (error) {
