@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 export type TextAreaProps =
   React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
@@ -19,6 +19,12 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
         setIsValid(false);
       }
     };
+
+    useEffect(() => {
+      if (isErrored) {
+        setIsValid(false);
+      }
+    }, [isErrored]);
 
     return (
       <textarea

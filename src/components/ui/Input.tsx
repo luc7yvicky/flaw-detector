@@ -19,6 +19,12 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
       }
     };
 
+    useEffect(() => {
+      if (isErrored) {
+        setIsValid(false);
+      }
+    }, [isErrored]);
+
     return (
       <input
         type={type}
