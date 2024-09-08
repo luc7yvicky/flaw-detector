@@ -1,7 +1,9 @@
+import { cn } from "@/lib/utils";
 import React from "react";
 import { IconCaretLeft } from "./Icons";
 
 export type PaginationProps = {
+  className?: string;
   currentPage: number;
   totalPages: number;
   startPage: number;
@@ -10,6 +12,7 @@ export type PaginationProps = {
 };
 
 const Pagination: React.FC<PaginationProps> = ({
+  className,
   currentPage,
   totalPages,
   startPage,
@@ -22,7 +25,7 @@ const Pagination: React.FC<PaginationProps> = ({
   );
 
   return (
-    <div className="flex items-center gap-[0.625rem]">
+    <div className={cn("flex items-center gap-[0.625rem]", className)}>
       {/* Render Previous Page button only if there's a previous page */}
       {currentPage > 1 && (
         <button
