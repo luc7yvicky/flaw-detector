@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { SessionProvider } from "next-auth/react";
 import ContactForm from "../me/ContactForm";
 
 export default function CustomerService({ className }: { className?: string }) {
@@ -39,7 +40,9 @@ export default function CustomerService({ className }: { className?: string }) {
           </li>
         </ul>
       </div>
-      <ContactForm />
+      <SessionProvider>
+        <ContactForm />
+      </SessionProvider>
     </section>
   );
 }

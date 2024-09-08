@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const name = formData.get("name");
-  const email = formData.get("email") || process.env.NODEMAILER_SENDER;
+  const email = formData.get("email");
   const message = formData.get("message");
 
   // 유효성 검사 (name: 2자 이상, email: email형식, message: 5자 이상)

@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Button from "../ui/Button";
@@ -16,6 +17,7 @@ import { TextArea } from "../ui/TextArea";
 type RequestState = "idle" | "loading" | "success" | "error";
 
 export default function ContactForm() {
+  const { data: session } = useSession();
   const router = useRouter();
   const [invalidField, setInvalidField] = useState<
     "name" | "email" | "message" | null
@@ -90,6 +92,7 @@ export default function ContactForm() {
           name="name"
           placeholder="이름을 적어주세요."
           className="mt-2"
+          value={session?.user?.name}
         />
       </div>
       <div>
@@ -105,8 +108,8 @@ export default function ContactForm() {
           name="email"
           type="email"
           autoComplete="email"
-          placeholder="justin@floatfactory.kr"
-          disabled
+          placeholder="올바른 이메일을 적어주세요."
+          value={session?.user?.email}
           className="mt-2"
         />
       </div>
