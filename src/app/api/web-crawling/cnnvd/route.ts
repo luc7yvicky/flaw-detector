@@ -125,7 +125,7 @@ export async function GET() {
     // CnnvdContent 추출
     const content = await page.evaluate(() => {
       const paragraphs = document.querySelectorAll(
-        "div.detail-content > p.MsoNormal, div.detail-content > pre, div.detail-content > font",
+        "div.detail-content > p.MsoNormal, div.detail-content > pre, div.detail-content > font, div.detail-content > p.\\32,  div.detail-content > h2, div.detail-content > p.MsoNormalCxSpFirst",
       );
       let description = "";
       let introduction = "";
