@@ -69,7 +69,7 @@ export async function GET() {
     const elements = await page.$$("p.content-title");
 
     if (startIndex >= elements.length) {
-      return "done"; // 페이지의 모든 요소가 처리되면 'done' 반환
+      return "done";
     }
 
     // 페이지 리로드 후 요소 다시 참조
@@ -80,10 +80,7 @@ export async function GET() {
     }
 
     await new Promise((r) => setTimeout(r, 2000));
-
     await refreshedElement.click();
-    // console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
-
     await new Promise((r) => setTimeout(r, 2000));
 
     await page.waitForSelector("p.detail-title", {
@@ -100,10 +97,6 @@ export async function GET() {
       el.textContent?.trim(),
     );
 
-    // 크롤링 요소확인 로그 (추후 삭제 예정)
-    // console.log(`Crawled Title: ${detailTitle || "제목을 찾을 수 없습니다."}`);
-    // console.log(`날짜 : ${detailSubtitle || "날짜를 찾을 수 없습니다."} `);
-
     //날짜만 추출
     let sourceCreatedAtTimestamp = 0;
     if (detailSubtitle && detailSubtitle.includes("发布时间：")) {
@@ -118,8 +111,7 @@ export async function GET() {
 
     const sourceYear = new Date(sourceCreatedAtTimestamp * 1000).getFullYear();
     if (sourceYear !== 2023 && sourceYear !== 2024) {
-      console.log(`Data from year ${sourceYear}, stopping the crawl.`);
-      return false; // 2023년, 2024년이 아닌 연도일 경우 중단
+      return false;
     }
 
     // Firestore에 이미 저장되어 있는지 확인
@@ -127,13 +119,8 @@ export async function GET() {
       sourceCreatedAtTimestamp,
     );
     if (exists) {
-      console.log(
-        `Data already exists for source_created_at: ${sourceCreatedAtTimestamp}`,
-      );
-      return true; // 이미 존재하면 건너뛰고 다음으로
+      return true;
     }
-
-    console.log(`Parsed Timestamp: ${sourceCreatedAtTimestamp}`);
 
     // CnnvdContent 추출
     const content = await page.evaluate(() => {
@@ -146,22 +133,20 @@ export async function GET() {
       let remediation = "";
 
       let section = "description";
-      let skipNextP = false; //table 이후 나오는 p태그 스킵하기 위한 플래그
+      let skipNextP = false;
 
       paragraphs.forEach((p) => {
         const text = p.textContent?.trim() || "";
 
-        // <table class="MsoTableGrid">가 등장하면 그 이후의 <p> 태그 스킵
         if (p.tagName === "TABLE" && p.classList.contains("MsoTableGrid")) {
           skipNextP = true;
           return;
         }
 
         if (skipNextP && p.className === "") {
-          // 테이블 바로 다음에 있는 클래스가 없는 <p> 태그는 무시
           return;
         } else if (p.className !== "") {
-          skipNextP = false; // 다시 <p class="MsoNormal">이므로 처리할 수 있도록 설정
+          skipNextP = false;
         }
 
         if (text.startsWith("一、")) {
@@ -251,12 +236,8 @@ export async function GET() {
       while (hasMoreItems) {
         const result = await crawlDetails(startIndex);
         if (!result) {
-          console.log(
-            "Encountered a year outside 2023 or 2024, stopping crawl.",
-          );
           hasMoreItems = false; // 2024년, 2023년이 아닌 연도 발견 시 중단
         } else if (result === "done") {
-          console.log("All elements on the current page have been processed.");
           break; // 현재 페이지의 모든 요소가 처리되면 루프 종료
         } else {
           startIndex++;
@@ -265,7 +246,6 @@ export async function GET() {
 
       const nextPageButton = await page.$("li.number.active + li.number");
       if (nextPageButton) {
-        console.log("Moving to the next page...");
         await new Promise((r) => setTimeout(r, 2000));
 
         const previousContent = await page.content();
@@ -280,7 +260,6 @@ export async function GET() {
             previousContent,
           );
         } catch (error) {
-          console.error("Page did not navigate within the timeout period.");
           hasNextPage = false;
           continue;
         }
@@ -288,7 +267,6 @@ export async function GET() {
         // 새 페이지 로드 후 다시 요소 처리 시작
         await page.waitForSelector("p.content-title", { timeout: 120000 });
       } else {
-        console.log("No more pages to crawl.");
         hasNextPage = false;
       }
     }
