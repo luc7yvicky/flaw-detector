@@ -19,11 +19,17 @@ export const FIREBASE_MESSAGING_SENDER_ID =
 export const FIREBASE_APP_ID = process.env.FIREBASE_APP_ID;
 export const FIREBASE_MEASUREMENT_ID = process.env.FIREBASE_MEASUREMENT_ID;
 
+export const NODEMAILER_HOST = process.env.NODEMAILER_HOST;
+export const NODEMAILER_PORT = process.env.NODEMAILER_PORT;
+export const NODEMAILER_SENDER = process.env.NODEMAILER_SENDER;
+export const NODEMAILER_AUTH_USER = process.env.NODEMAILER_AUTH_USER;
+export const NODEMAILER_AUTH_PASS = process.env.NODEMAILER_AUTH_PASS;
+
 export const ITEMS_PER_DB_PAGE = 5;
 export const ITEMS_PER_MY_PAGE = 12;
 export const PAGES_PER_GROUP = 10;
 
-export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability"; // 임시 검색어
+export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability";
 
 export const WEB_CRAWLING_CERT_CC_API_URL = `${BASE_URL}/api/web-crawling/cert-cc`;
 
