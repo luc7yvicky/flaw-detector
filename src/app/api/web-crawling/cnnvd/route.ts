@@ -1,7 +1,11 @@
 import { getChromeExecutablePath } from "@/lib/api/chrome";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
-import { CnnvdLocalizedTextBlock, CnnvdTextBlock } from "@/types/post";
+import {
+  CnnvdLocalizedTextBlock,
+  CnnvdTextBlock,
+  VulDBPost,
+} from "@/types/post";
 import {
   collection,
   doc,
@@ -11,11 +15,12 @@ import {
   where,
 } from "firebase/firestore";
 import db from "../../../../../firebaseConfig";
+import { addPost } from "@/lib/api/posts";
 
 type CNNVDData = {
   id: string;
-  label: string;
-  source: string;
+  label: "기타" | "취약성 보고서" | "취약성 알림";
+  source: "CNNVD";
   page_url: string;
   views: number;
   title: {
@@ -39,7 +44,7 @@ type CNNVDData = {
 async function checkIfDataExistsBySourceCreatedAt(
   timestamp: number,
 ): Promise<boolean> {
-  const collectionRef = collection(db, "cnnvd-data");
+  const collectionRef = collection(db, "posts"); //@@@
   const q = query(
     collectionRef,
     where("source_created_at.seconds", "==", timestamp),
@@ -197,15 +202,15 @@ export async function GET() {
     await page.waitForSelector("div.el-page-header__title", { timeout: 3000 });
     await page.click("div.el-page-header__title");
 
-    const newCrawledData: CNNVDData = {
+    const newCrawledData: VulDBPost = {
       id: crypto.randomUUID(),
-      label: "취약성 보고서",
-      source: "CNNVD",
+      label: "취약성 보고서", // VulDBPost에 맞는 값
+      source: "CNNVD", // 고정된 값 (CNNVD 데이터임을 나타냄)
       page_url: CNNVD_URL,
       views: 0,
       title: {
-        original: { text: detailTitle || "제목을 찾을 수 없습니다." },
-        translated: [],
+        original: detailTitle || "제목을 찾을 수 없습니다.", // string으로 바로 설정
+        translated: "", // 번역된 제목이 없으면 빈 문자열로 설정
       },
       created_at: {
         seconds: 0,
@@ -215,15 +220,36 @@ export async function GET() {
         seconds: sourceCreatedAtTimestamp,
         nanoseconds: 0,
       },
-      content: content,
+      content: {
+        description: {
+          original: content.description.original, // string 타입으로 맞춤
+          translated: content.description.translated,
+        },
+        introduction: {
+          original: content.introduction.original,
+          translated: content.introduction.translated,
+        },
+        vulnDetail: {
+          original: content.vulnDetail.original,
+          translated: content.vulnDetail.translated,
+        },
+        remediation: {
+          original: content.remediation.original,
+          translated: content.remediation.translated,
+        },
+      }, // content 그대로 유지
     };
 
-    crawledData.push(newCrawledData);
-
     // Firestore에 저장
-    const collectionRef = collection(db, "cnnvd-data");
-    const newDocRef = doc(collectionRef);
-    await setDoc(newDocRef, newCrawledData);
+    await addPost(newCrawledData);
+
+    // crawledData.push(newCrawledData);
+
+    // // Firestore에 저장
+    // const collectionRef = collection(db, "cnnvd-data");
+    // const newDocRef = doc(collectionRef);
+    // await setDoc(newDocRef, newCrawledData);
+    // await addPost(newCrawledData);
 
     // 모든 작업이 완료된 후 재귀 호출로 다음 요소를 크롤링
     await crawlDetails(startIndex + 1);
