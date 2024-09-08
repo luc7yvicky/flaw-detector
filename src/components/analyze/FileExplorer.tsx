@@ -145,7 +145,7 @@ export default function FileExplorer({
       <FileList
         structure={structure}
         onToggle={handleToggle}
-        isNested={false}
+        depth={0}
         username={username}
         repo={repo}
       />

@@ -4,13 +4,13 @@ import FileListItem from "./FileListItem";
 export default function FileList({
   structure,
   onToggle,
-  isNested = false,
+  depth = 0,
   username,
   repo,
 }: {
   structure: RepoContentItem[];
   onToggle: (item: RepoContentItem) => void;
-  isNested: boolean;
+  depth?: number;
   username: string;
   repo: string;
 }) {
@@ -21,7 +21,7 @@ export default function FileList({
           key={item.path}
           item={item}
           onToggle={onToggle}
-          isNested={isNested}
+          depth={depth}
           username={username}
           repo={repo}
         />

@@ -5,6 +5,7 @@ import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { RepoContentItem } from "@/types/repo";
 import { memo, useCallback, useMemo } from "react";
 import {
+  IconCaretLeft,
   IconDoc,
   IconDone,
   IconError,
@@ -17,13 +18,13 @@ import FileList from "./FileList";
 function FileListItem({
   item,
   onToggle,
-  isNested,
+  depth,
   username,
   repo,
 }: {
   item: RepoContentItem;
   onToggle: (item: RepoContentItem) => void;
-  isNested: boolean;
+  depth: number;
   username: string;
   repo: string;
 }) {
@@ -86,47 +87,67 @@ function FileListItem({
 
   const isActive = type === "file" && path === currentFile;
 
+  // 깊이에 따른 padding 및 indicator (동적생성 이슈로 인라인스타일 지정)
+  const BASE_PADDING = 10;
+  const PADDING_INCREMENT = 20;
+
+  const depthIndicators = useMemo(() => {
+    return Array(depth)
+      .fill(0)
+      .map((_, index) => (
+        <span
+          key={index}
+          className="absolute bottom-0 top-0 inline-block h-full w-px bg-gray-300"
+          style={{
+            left: `${6 + BASE_PADDING + index * PADDING_INCREMENT}px`,
+          }}
+        />
+      ));
+  }, [depth]);
+
   return (
     <>
       <li
+        title={name}
         className={cn(
-          "group/item flex cursor-pointer border-t border-line-default px-3 py-2 hover:bg-purple-light",
-          isNested && "pl-6",
-          // expanded && type === "dir" && "bg-purple-50",
+          "group/item relative my-[-1px] flex w-full cursor-pointer border-y border-line-default p-2.5 last:border-b-0 hover:bg-purple-light",
           isActive && "bg-primary-50",
         )}
+        style={{ paddingLeft: `${BASE_PADDING + depth * PADDING_INCREMENT}px` }}
         onClick={handleItemClick}
       >
+        {depthIndicators}
         <div className="flex w-full justify-between">
           <div className="flex w-full">
             <div
               className="mr-2 flex items-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <input
-                type="checkbox"
-                checked={isFileSelected(item.path)}
-                onChange={handleCheckboxChange}
-                disabled={isImage}
-                className={cn(
-                  "size-4 accent-primary-500",
-                  // type === "dir" && "invisible",
-                )}
-              />
+              {type === "dir" ? (
+                <IconCaretLeft
+                  className={cn(
+                    "inline-block size-4 rotate-180 fill-black",
+                    expanded && "-rotate-90",
+                  )}
+                />
+              ) : (
+                <input
+                  type="checkbox"
+                  checked={isFileSelected(item.path)}
+                  onChange={handleCheckboxChange}
+                  disabled={isImage}
+                  className={cn(
+                    "size-4 accent-primary-500",
+                    isImage && "cursor-not-allowed opacity-50",
+                  )}
+                />
+              )}
             </div>
             <div className="mr-1 flex items-center">
               {type === "file" ? <IconDoc /> : <IconFolder />}
             </div>
-            <span>{name}</span>
+            <div className="truncate">{name}</div>
           </div>
-          {/* <div className="flex-center-center invisible">
-            <button
-              className="group-hover/item:visible"
-              onClick={handleBookmark}
-            >
-              <IconStar className="fill-primary-300" />
-            </button>
-          </div> */}
           {fileStatus && statusIcon}
         </div>
       </li>
@@ -134,7 +155,7 @@ function FileListItem({
         <FileList
           structure={items}
           onToggle={onToggle}
-          isNested
+          depth={depth + 1}
           username={username}
           repo={repo}
         />
