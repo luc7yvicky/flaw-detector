@@ -1,23 +1,33 @@
 "use client";
 
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
-
 import { getLanguage } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { Alert } from "../ui/Alert";
 import { IconMagnifierWithPlus } from "../ui/Icons";
 import { useFileProcessStore } from "@/stores/useFileProcessStore";
+import { useFileContent } from "@/lib/queries/UseFileContent";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
   { ssr: false },
 );
 
-export default function CodeViewer() {
-  const { currentFile, fileContent, isLoading, error } = useFileViewerStore();
+interface CodeViewerProps {
+  username: string;
+  repo: string;
+}
+
+export default function CodeViewer({ username, repo }: CodeViewerProps) {
+  const { currentFile, setCurrentFile, setCurrentRepo } = useFileViewerStore();
+  const {
+    data: fileContent,
+    isLoading,
+    error,
+  } = useFileContent(username, repo, currentFile);
   const fileStatuses = useFileProcessStore((state) => state.fileStatuses);
-  const status = Array.from(fileStatuses.values())[0];
+  const status = currentFile ? fileStatuses.get(currentFile) : null;
 
   const [highlighterStyle, setHighlighterStyle] = useState({});
   const [hasAlertBeenSet, setHasAlertBeenSet] = useState(false);
@@ -28,6 +38,11 @@ export default function CodeViewer() {
       (mod) => setHighlighterStyle(mod.default),
     );
   }, []);
+
+  useEffect(() => {
+    setCurrentFile(null);
+    setCurrentRepo(repo);
+  }, [repo, setCurrentFile, setCurrentRepo]);
 
   useEffect(() => {
     if (status && !hasAlertBeenSet) {
@@ -78,7 +93,7 @@ export default function CodeViewer() {
       >
         {renderContent()}
       </SyntaxHighlighter>
-      {isAlertOpen && <Alert status={status} />}
+      {/* {isAlertOpen && <Alert status={status} />} */}
     </div>
   );
 }

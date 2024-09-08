@@ -6,6 +6,7 @@ import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { RepoContentItem } from "@/types/repo";
 import { useCallback, useEffect, useState } from "react";
 import FileList from "./FileList";
+import { useExpandFolder } from "@/lib/queries/useExpandFolder";
 
 export default function FileExplorer({
   initialStructure,
@@ -16,20 +17,40 @@ export default function FileExplorer({
   username: string;
   repo: string;
 }) {
-  const [structure, setStructure] =
-    useState<RepoContentItem[]>(initialStructure);
-
+  const [currentFolder, setCurrentFolder] = useState<RepoContentItem | null>(
+    null,
+  );
+  const { data, isLoading, error } = useExpandFolder(
+    username,
+    repo,
+    currentFolder,
+  );
   const resetFileViewer = useFileViewerStore((state) => state.resetFileViewer);
   const setCurrentRepo = useFileViewerStore((state) => state.setCurrentRepo);
   const { selectAllFiles, deselectAllFiles, getSelectedFilesCount } =
     useFileSelectionStore();
 
+  const [structure, setStructure] =
+    useState<RepoContentItem[]>(initialStructure);
+
   // 레포 이동시 초기화
+  // useEffect(() => {
+  //   resetFileViewer();
+  //   setCurrentRepo(repo);
+  //   deselectAllFiles();
+  // }, [resetFileViewer, repo]);
+
   useEffect(() => {
-    resetFileViewer();
-    setCurrentRepo(repo);
-    deselectAllFiles();
-  }, [resetFileViewer, repo]);
+    if (data) {
+      setStructure((prevStructure) =>
+        updateNestedStructure(prevStructure, {
+          ...data,
+          expanded: true, 
+        }),
+      );
+      setCurrentFolder(null); 
+    }
+  }, [data]);
 
   const updateNestedStructure = useCallback(
     (
@@ -38,7 +59,7 @@ export default function FileExplorer({
     ): RepoContentItem[] => {
       return items.map((item) => {
         if (item.path === updatedItem.path) {
-          return updatedItem;
+          return { ...item, ...updatedItem };
         }
         if (item.type === "dir" && item.items) {
           return {
@@ -52,49 +73,26 @@ export default function FileExplorer({
     [],
   );
 
-  const handleToggle = useCallback(
-    async (item: RepoContentItem) => {
-      if (item.type !== "dir") return;
-      if (item.loadingStatus !== "loaded") {
-        try {
-          setStructure((prevStructure) =>
-            updateNestedStructure(prevStructure, {
-              ...item,
-              loadingStatus: "loading",
-            }),
-          );
-          const expandedFolder = await expandFolder(username, repo, item);
-          setStructure((prevStructure) =>
-            updateNestedStructure(prevStructure, {
-              ...expandedFolder,
-              expanded: true,
-              loadingStatus: "loaded",
-            }),
-          );
-        } catch (error) {
-          console.error("하위 콘텐츠를 읽어오는 데 실패했습니다:", error);
-          setStructure((prevStructure) =>
-            updateNestedStructure(prevStructure, {
-              ...item,
-              loadingStatus: "error",
-              error:
-                error instanceof Error
-                  ? error.message
-                  : "알 수 없는 에러가 발생했습니다.",
-            }),
-          );
-        }
-      } else {
-        setStructure((prevStructure) =>
-          updateNestedStructure(prevStructure, {
-            ...item,
-            expanded: !item.expanded,
-          }),
-        );
-      }
-    },
-    [username, repo, updateNestedStructure],
-  );
+  const handleToggle = useCallback((item: RepoContentItem) => {
+    if (item.type !== "dir") return;
+
+    if (item.loadingStatus !== "loaded") {
+      setCurrentFolder(item);
+      setStructure((prevStructure) =>
+        updateNestedStructure(prevStructure, {
+          ...item,
+          loadingStatus: "loading",
+        }),
+      );
+    } else {
+      setStructure((prevStructure) =>
+        updateNestedStructure(prevStructure, {
+          ...item,
+          expanded: !item.expanded,
+        }),
+      );
+    }
+  }, []);
 
   const getAllFiles = useCallback(
     (items: RepoContentItem[]): RepoContentItem[] => {
