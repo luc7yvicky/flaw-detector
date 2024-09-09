@@ -85,6 +85,14 @@ export const getLanguage = (filename: string) => {
       return "css";
     case "json":
       return "json";
+    case "png":
+    case "jpg":
+    case "jpeg":
+    case "gif":
+    case "bmp":
+    case "tiff":
+    case "svg":
+      return "image";
     // 확장자-언어 추가 가능
     default:
       return "javascript";

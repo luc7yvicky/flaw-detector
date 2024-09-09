@@ -1,23 +1,36 @@
 "use client";
 
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
-
 import { getLanguage } from "@/lib/utils";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { Alert } from "../ui/Alert";
 import { IconMagnifierWithPlus } from "../ui/Icons";
 import { useFileProcessStore } from "@/stores/useFileProcessStore";
+import { useFileContent } from "@/lib/queries/useFileContent";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
   { ssr: false },
 );
 
-export default function CodeViewer() {
-  const { currentFile, fileContent, isLoading, error } = useFileViewerStore();
-  const fileStatuses = useFileProcessStore((state) => state.fileStatuses);
-  const status = Array.from(fileStatuses.values())[0];
+interface CodeViewerProps {
+  username: string;
+  repo: string;
+}
+
+export default function CodeViewer({ username, repo }: CodeViewerProps) {
+  const { currentFile, setCurrentFile, setCurrentRepo } = useFileViewerStore();
+  const { data, isLoading, error } = useFileContent(
+    username,
+    repo,
+    currentFile,
+  );
+
+  useEffect(() => {
+    setCurrentFile(null);
+    setCurrentRepo(repo);
+  }, [repo, setCurrentFile, setCurrentRepo]);
 
   const [highlighterStyle, setHighlighterStyle] = useState({});
   const [hasAlertBeenSet, setHasAlertBeenSet] = useState(false);
@@ -30,11 +43,16 @@ export default function CodeViewer() {
   }, []);
 
   useEffect(() => {
-    if (status && !hasAlertBeenSet) {
-      setIsAlertOpen(true);
-      setHasAlertBeenSet(true);
-    }
-  }, [status, hasAlertBeenSet]);
+    setCurrentFile(null);
+    setCurrentRepo(repo);
+  }, [repo, setCurrentFile, setCurrentRepo]);
+
+  // useEffect(() => {
+  //   if (status && !hasAlertBeenSet) {
+  //     setIsAlertOpen(true);
+  //     setHasAlertBeenSet(true);
+  //   }
+  // }, [status, hasAlertBeenSet]);
 
   const renderContent = (): string => {
     if (isLoading) {
@@ -42,17 +60,21 @@ export default function CodeViewer() {
     }
 
     if (error) {
-      return `Error: ${error}`;
+      return `Error: ${error instanceof Error ? error.message : "Unknown error"}`;
     }
 
-    if (currentFile && fileContent) {
-      return `// ${currentFile}\n\n${fileContent}`;
+    if (data) {
+      if (data.type === "image") {
+        return `// ${data.path}\n\n${data.message}`;
+      } else if (data.type === "code") {
+        return `// ${data.path}\n\n${data.content}`;
+      }
     }
 
     return "";
   };
 
-  if (!currentFile && !isLoading && !error) {
+  if (!data && !isLoading && !error) {
     return (
       <div className="flex-center-center h-full flex-col gap-8 rounded-lg border border-[#c3c3c3]">
         <IconMagnifierWithPlus />
@@ -65,7 +87,7 @@ export default function CodeViewer() {
     <div className="relative w-full overflow-hidden rounded-lg border border-[#c3c3c3]">
       {/* <ProcessStatus status={status} /> */}
       <SyntaxHighlighter
-        language={currentFile ? getLanguage(currentFile) : "text"}
+        language={data?.type === "code" ? data.language : "text"}
         style={highlighterStyle}
         // showLineNumbers
         wrapLines
@@ -78,7 +100,7 @@ export default function CodeViewer() {
       >
         {renderContent()}
       </SyntaxHighlighter>
-      {isAlertOpen && <Alert status={status} />}
+      {/* {isAlertOpen && <Alert status={status} />} */}
     </div>
   );
 }
