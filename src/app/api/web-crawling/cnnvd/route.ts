@@ -10,6 +10,40 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import db from "../../../../../firebaseConfig";
 import { addPost } from "@/lib/api/posts";
 
+async function getGeneratedText(user_message: string) {
+  const LOCAL_LLAMA_API_URL = "http://localhost:3000/api/generate";
+  // console.log("Sending request to 라마 API with message:", user_message); 추후 삭제 예정
+  const res = await fetch(LOCAL_LLAMA_API_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      user_message,
+      temperature: 0.9,
+      top_p: 0.9,
+    }),
+  });
+
+  if (!res.ok) {
+    console.error("LLaMA API request failed:", res.statusText);
+    return null;
+  }
+
+  const data = await res.json();
+  // console.log("LLaMA API response:", data); 추후 삭제 예정
+  return data.generated_text;
+}
+
+const translateText = async (originalText: string) => {
+  if (!originalText) return "";
+  const res = await getGeneratedText(
+    `다음 텍스트를 한국어로 번역해주세요. "近日"과 url은 제외하고 이어서 번역해주세요. ${originalText}`,
+  );
+  if (!res) {
+    console.error("Translation failed, received undefined");
+    return "";
+  }
+  return res;
+};
+
 type CNNVDData = {
   id: string;
   label: "기타" | "취약성 보고서" | "취약성 알림";
@@ -63,7 +97,7 @@ export async function GET() {
     timeout: 20000,
   });
 
-  const crawledData: CNNVDData[] = [];
+  const crawledData: VulDBPost[] = [];
 
   async function crawlDetails(startIndex: number) {
     const elements = await page.$$("p.content-title");
@@ -76,11 +110,13 @@ export async function GET() {
     const refreshedElement = elements[startIndex];
 
     if (!refreshedElement) {
+      console.log("인덱스", startIndex, "에 해당하는 요소를 찾을 수 없습니다.");
       return "done";
     }
 
     await new Promise((r) => setTimeout(r, 2000));
     await refreshedElement.click();
+    // console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
     await new Promise((r) => setTimeout(r, 2000));
 
     await page.waitForSelector("p.detail-title", {
@@ -96,6 +132,10 @@ export async function GET() {
     const detailSubtitle = await page.$eval("div.detail-subtitle", (el) =>
       el.textContent?.trim(),
     );
+
+    // 크롤링 요소확인 로그 (추후 삭제 예정)
+    console.log(`Crawled Title: ${detailTitle || "제목을 찾을 수 없습니다."}`);
+    console.log(`날짜 : ${detailSubtitle || "날짜를 찾을 수 없습니다."} `);
 
     //날짜만 추출
     let sourceCreatedAtTimestamp = 0;
@@ -192,7 +232,7 @@ export async function GET() {
       views: 0,
       title: {
         original: detailTitle || "제목을 찾을 수 없습니다.",
-        translated: "",
+        translated: (await translateText(detailTitle || "")) || "",
       },
       created_at: {
         seconds: 0,
@@ -205,22 +245,49 @@ export async function GET() {
       content: {
         description: {
           original: content.description.original,
-          translated: content.description.translated,
+          translated: (await translateText(content.description.original)) || "",
         },
         introduction: {
           original: content.introduction.original,
-          translated: content.introduction.translated,
+          translated:
+            (await translateText(content.introduction.original)) || "",
         },
         vulnDetail: {
           original: content.vulnDetail.original,
-          translated: content.vulnDetail.translated,
+          translated: (await translateText(content.vulnDetail.original)) || "",
         },
         remediation: {
           original: content.remediation.original,
-          translated: content.remediation.translated,
+          translated: (await translateText(content.remediation.original)) || "",
         },
       },
     };
+
+    // 번역하기 전 번역 결과를 콘솔로 확인
+    // const translatedTitle = await translateText(detailTitle || "");
+    // console.log("Translated Title:", translatedTitle);
+
+    // const translatedDescription = await translateText(
+    //   content.description.original,
+    // );
+    // console.log("Translated Description:", translatedDescription);
+
+    // const translatedIntroduction = await translateText(
+    //   content.introduction.original,
+    // );
+    // console.log("Translated Introduction:", translatedIntroduction);
+
+    // const translatedVulnDetail = await translateText(
+    //   content.vulnDetail.original,
+    // );
+    // console.log("Translated Vuln Detail:", translatedVulnDetail);
+
+    // const translatedRemediation = await translateText(
+    //   content.remediation.original,
+    // );
+    // console.log("Translated Remediation:", translatedRemediation);
+
+    crawledData.push(newCrawledData);
     await addPost(newCrawledData);
     return true; // 크롤링 계속 진행
   }
