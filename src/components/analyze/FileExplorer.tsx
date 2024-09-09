@@ -1,9 +1,8 @@
 "use client";
 
-import { expandFolder } from "@/lib/api/repositories";
 import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
-import { RepoContentItem } from "@/types/repo";
+import { FolderItem, RepoContentItem } from "@/types/repo";
 import { useCallback, useEffect, useState } from "react";
 import FileList from "./FileList";
 import { useExpandFolder } from "@/lib/queries/useExpandFolder";
@@ -17,9 +16,7 @@ export default function FileExplorer({
   username: string;
   repo: string;
 }) {
-  const [currentFolder, setCurrentFolder] = useState<RepoContentItem | null>(
-    null,
-  );
+  const [currentFolder, setCurrentFolder] = useState<FolderItem | null>(null);
   const { data, isLoading, error } = useExpandFolder(
     username,
     repo,
@@ -34,31 +31,25 @@ export default function FileExplorer({
     useState<RepoContentItem[]>(initialStructure);
 
   // 레포 이동시 초기화
-  // useEffect(() => {
-  //   resetFileViewer();
-  //   setCurrentRepo(repo);
-  //   deselectAllFiles();
-  // }, [resetFileViewer, repo]);
+  useEffect(() => {
+    resetFileViewer();
+    setCurrentRepo(repo);
+    deselectAllFiles();
+  }, [resetFileViewer, setCurrentRepo, deselectAllFiles, repo]);
 
   useEffect(() => {
-    if (data) {
+    if (data && data.type === "dir") {
       setStructure((prevStructure) =>
-        updateNestedStructure(prevStructure, {
-          ...data,
-          expanded: true, 
-        }),
+        updateNestedStructure(prevStructure, data),
       );
-      setCurrentFolder(null); 
+      setCurrentFolder(null);
     }
   }, [data]);
 
   const updateNestedStructure = useCallback(
-    (
-      items: RepoContentItem[],
-      updatedItem: RepoContentItem,
-    ): RepoContentItem[] => {
+    (items: RepoContentItem[], updatedItem: FolderItem): RepoContentItem[] => {
       return items.map((item) => {
-        if (item.path === updatedItem.path) {
+        if (item.path === updatedItem.path && item.type === "dir") {
           return { ...item, ...updatedItem };
         }
         if (item.type === "dir" && item.items) {
@@ -73,32 +64,32 @@ export default function FileExplorer({
     [],
   );
 
-  const handleToggle = useCallback((item: RepoContentItem) => {
-    if (item.type !== "dir") return;
+  const handleToggle = useCallback(
+    (item: RepoContentItem) => {
+      if (item.type !== "dir") return;
 
-    if (item.loadingStatus !== "loaded") {
-      setCurrentFolder(item);
       setStructure((prevStructure) =>
         updateNestedStructure(prevStructure, {
           ...item,
-          loadingStatus: "loading",
+          folderExpandStatus:
+            item.folderExpandStatus === "expanded" ? "initial" : "expanding",
+          items: item.folderExpandStatus === "expanded" ? [] : item.items,
         }),
       );
-    } else {
-      setStructure((prevStructure) =>
-        updateNestedStructure(prevStructure, {
-          ...item,
-          expanded: !item.expanded,
-        }),
-      );
-    }
-  }, []);
+
+      if (item.folderExpandStatus !== "expanded") {
+        setCurrentFolder(item);
+      }
+    },
+    [updateNestedStructure],
+  );
 
   const getAllFiles = useCallback(
     (items: RepoContentItem[]): RepoContentItem[] => {
       return items.reduce((allFiles, item) => {
-        allFiles.push(item);
-        if (item.type === "dir" && item.items) {
+        if (item.type === "file") {
+          allFiles.push(item);
+        } else if (item.type === "dir" && item.items) {
           allFiles.push(...getAllFiles(item.items));
         }
         return allFiles;

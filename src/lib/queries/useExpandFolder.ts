@@ -1,17 +1,19 @@
 import { useQuery } from "@tanstack/react-query";
 import { expandFolder } from "@/lib/api/repositories";
-import { RepoContentItem } from "@/types/repo";
+import { FolderItem, RepoContentItem } from "@/types/repo";
+
 
 export function useExpandFolder(
   username: string,
   repo: string,
-  folder: RepoContentItem | null,
+  folder: FolderItem | null,
 ) {
-  return useQuery({
+  return useQuery<FolderItem | null, Error>({
     queryKey: ["folderContents", username, repo, folder?.path],
-    queryFn: () =>
-      folder ? expandFolder(username, repo, folder) : Promise.resolve(null),
-    enabled:
-      !!folder && folder.type === "dir" && folder.loadingStatus !== "loaded",
+    queryFn: async () => {
+      if (!folder) return null;
+      return await expandFolder(username, repo, folder);
+    },
+    enabled: !!folder && folder.folderExpandStatus !== "expanded",
   });
 }

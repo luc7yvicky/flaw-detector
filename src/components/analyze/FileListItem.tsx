@@ -12,6 +12,7 @@ import {
   IconFolder,
   IconOnProcess,
   IconOnWait,
+  IconStar,
 } from "../ui/Icons";
 import FileList from "./FileList";
 
@@ -28,12 +29,8 @@ function FileListItem({
   username: string;
   repo: string;
 }) {
-  const { name, type, expanded, items, path } = item;
-  const fetchFileContent = useFileViewerStore(
-    (state) => state.fetchFileContent,
-  );
-  const setCurrentFile = useFileViewerStore((state) => state.setCurrentFile);
-  const currentFile = useFileViewerStore((state) => state.currentFile);
+  const { name, type, path } = item;
+  const { setCurrentFile, currentFile } = useFileViewerStore();
 
   const { toggleFileSelection, isFileSelected } = useFileSelectionStore();
   const { getFileStatus } = useFileProcessStore();
@@ -54,17 +51,18 @@ function FileListItem({
   // };
 
   const handleItemClick = useCallback(
-    async (e: React.MouseEvent<HTMLLIElement>) => {
+    (e: React.MouseEvent<HTMLLIElement>) => {
       e.stopPropagation();
       if (type === "dir") {
         onToggle(item);
+        console.log(item.folderExpandStatus);
       } else if (type === "file") {
         setCurrentFile(path);
-        await fetchFileContent(username, repo, path);
       }
     },
-    [item, onToggle, username, repo],
+    [item, onToggle, setCurrentFile, path, type],
   );
+
   const statusIcon = useMemo(() => {
     switch (fileStatus) {
       case "onCheck":
@@ -81,11 +79,13 @@ function FileListItem({
   }, [fileStatus]);
 
   const showNestedList = useMemo(
-    () => type === "dir" && expanded && items && items.length > 0,
-    [type, expanded, items],
+    () =>
+      type === "dir" &&
+      item.folderExpandStatus === "expanded" &&
+      item.items &&
+      item.items.length > 0,
+    [type, item],
   );
-
-  const isActive = type === "file" && path === currentFile;
 
   // 깊이에 따른 padding 및 indicator (동적생성 이슈로 인라인스타일 지정)
   const BASE_PADDING = 10;
@@ -110,8 +110,8 @@ function FileListItem({
       <li
         title={name}
         className={cn(
-          "group/item relative my-[-1px] flex w-full cursor-pointer border-y border-line-default p-2.5 last:border-b-0 hover:bg-purple-light",
-          isActive && "bg-primary-50",
+          "group/item relative flex w-full cursor-pointer border-b border-line-default p-2.5 py-[-1px] hover:bg-purple-light",
+          path === currentFile && "bg-primary-50",
         )}
         style={{ paddingLeft: `${BASE_PADDING + depth * PADDING_INCREMENT}px` }}
         onClick={handleItemClick}
@@ -127,7 +127,7 @@ function FileListItem({
                 <IconCaretLeft
                   className={cn(
                     "inline-block size-4 rotate-180 fill-black",
-                    expanded && "-rotate-90",
+                    item.folderExpandStatus === "expanded" && "-rotate-90",
                   )}
                 />
               ) : (
@@ -146,14 +146,27 @@ function FileListItem({
             <div className="mr-1 flex items-center">
               {type === "file" ? <IconDoc /> : <IconFolder />}
             </div>
-            <div className="truncate">{name}</div>
+            <div className="truncate">
+              {name}
+              {type === "dir" && item.folderExpandStatus === "expanding" && (
+                <span className="ml-1">...</span>
+              )}
+            </div>
           </div>
+          {/* <div className="flex-center-center invisible">
+            <button
+              className="group-hover/item:visible"
+              onClick={handleBookmark}
+            >
+              <IconStar className="fill-primary-300" />
+            </button>
+          </div> */}
           {fileStatus && statusIcon}
         </div>
       </li>
-      {showNestedList && items && (
+      {showNestedList && type === "dir" && item.items && (
         <FileList
-          structure={items}
+          structure={item.items}
           onToggle={onToggle}
           depth={depth + 1}
           username={username}

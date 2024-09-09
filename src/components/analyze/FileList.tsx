@@ -15,7 +15,7 @@ export default function FileList({
   repo: string;
 }) {
   return (
-    <ul className="max-h-[calc(100dvh-12rem)] overflow-y-scroll scrollbar-hide">
+    <ul className="w-full max-h-[calc(100dvh-12rem)] overflow-y-scroll overflow-x-hidden scrollbar-hide">
       {structure.map((item) => (
         <FileListItem
           key={item.path}
