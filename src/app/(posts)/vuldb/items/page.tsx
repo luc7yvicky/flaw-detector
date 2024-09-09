@@ -11,6 +11,7 @@ const applyChips = (posts: VulDBPost[]): VulDBPostWithChip[] => {
 
   // 조회수 기준으로 상위 10개의 hot 게시글 선정
   const hotPosts = posts
+    .filter((post) => post.views > 0)
     .slice()
     .sort((a, b) => b.views - a.views)
     .slice(0, 10);
