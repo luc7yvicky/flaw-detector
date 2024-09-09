@@ -27,13 +27,16 @@ export const formatTimestampAsDaysAgo = (timestamp: {
   const daysAgo = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
   const hoursAgo = Math.floor(differenceInMs / (1000 * 60 * 60));
   const minutesAgo = Math.floor(differenceInMs / (1000 * 60));
+  const secondsAgo = Math.floor(differenceInMs / 1000);
 
   if (daysAgo > 0) {
     return `${daysAgo}일 전`;
   } else if (hoursAgo > 0) {
     return `${hoursAgo}시간 전`;
-  } else {
+  } else if (minutesAgo > 0) {
     return `${minutesAgo}분 전`;
+  } else {
+    return `${secondsAgo}초 전`;
   }
 };
 
