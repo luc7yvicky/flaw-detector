@@ -1,5 +1,13 @@
 import { VulDBPost } from "@/types/post";
-import { collection, doc, getDocs, setDoc } from "firebase/firestore";
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import db from "../../../firebaseConfig";
 
 /**
@@ -65,5 +73,33 @@ export async function addPost(newPost: VulDBPost): Promise<VulDBPost> {
   } catch (error) {
     console.error("Error in savePost:", error);
     throw new Error("Failed to save post.");
+  }
+}
+
+//삭제
+export async function deleteCNNVDPosts() {
+  const postsRef = collection(db, "posts");
+  const q = query(postsRef, where("source", "==", "CNNVD"));
+
+  try {
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      console.log("No documents found with source 'CNNVD'.");
+      return;
+    }
+
+    const batchDeletions: any[] = [];
+
+    querySnapshot.forEach((docSnapshot) => {
+      const docRef = doc(db, "posts", docSnapshot.id);
+      batchDeletions.push(deleteDoc(docRef));
+    });
+
+    await Promise.all(batchDeletions);
+    console.log("source가 'CNNVD'인 모든 문서 삭제됨 ");
+  } catch (error) {
+    console.error("Error deleting documents: ", error);
+    throw new Error("게시물 삭제 실패");
   }
 }
