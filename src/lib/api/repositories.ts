@@ -150,7 +150,7 @@ export async function fetchRepoContents(
     });
   } catch (error) {
     throw new Error(
-      `${path}에 대한 레포 내용을 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
+      `${path} 레포 내용을 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
     );
   }
 }

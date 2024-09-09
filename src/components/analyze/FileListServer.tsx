@@ -21,7 +21,9 @@ export default async function FileListServer({
     );
   } catch (error) {
     return (
-      <div>Error loading repository structure: {(error as Error).message}</div>
+      <div className="rounded-lg border border-line-default p-3">
+        Error loading repository structure: {(error as Error).message}
+      </div>
     );
   }
 }
