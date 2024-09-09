@@ -1,15 +1,19 @@
 import { generateLlm } from "@/lib/api/llama3";
 import { fetchCodes } from "@/lib/api/repositories";
-import { FileStatus } from "@/types/file";
+import { convertEscapedCharacterToRawString } from "@/lib/utils";
+import { FileResultProps, FileStatus } from "@/types/file";
+import { v4 as uuidv4 } from "uuid";
 import { create } from "zustand";
 
 interface FileProcessState {
   fileStatuses: Map<string, FileStatus>;
-  fileDetectedResults: string | null;
+  currentDetectedFile: string;
+  fileDetectedResults: FileResultProps[] | null;
   setFileStatus: (path: string, status: FileStatus) => void;
   getFileStatus: (path: string) => FileStatus;
   resetFileStatuses: () => void;
-  setFileDetectedResults: (results: string) => void;
+  setCurrentDetectedFile: (path: string) => void;
+  setFileDetectedResults: (results: FileResultProps[] | null) => void;
   processFiles: (
     files: Array<{ path: string; name: string }>,
     username: string,
@@ -20,6 +24,7 @@ interface FileProcessState {
 
 export const useFileProcessStore = create<FileProcessState>((set, get) => ({
   fileStatuses: new Map(),
+  currentDetectedFile: "",
   fileDetectedResults: null,
   setFileStatus: (path, status) =>
     set((state) => {
@@ -29,6 +34,7 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
     }),
   getFileStatus: (path) => get().fileStatuses.get(path) ?? null,
   resetFileStatuses: () => set({ fileStatuses: new Map() }),
+  setCurrentDetectedFile: (path: string) => set({ currentDetectedFile: path }),
   setFileDetectedResults: (results) => set({ fileDetectedResults: results }),
   processFiles: async (files, username, repo, action) => {
     const processFile = async (file: { path: string; name: string }) => {
@@ -37,10 +43,22 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
         const content = await fetchCodes(username, repo, file.path);
 
         // LLM 분석 수행
-        const results = await generateLlm("analyze", content);
-        // TODO: result 처리 (alert)
-        console.log(`File ${file.name} analysis result:`, results);
+        const res = await generateLlm("analyze", content);
+        console.log("res", res);
+        const jsonStr = convertEscapedCharacterToRawString(res);
+        console.log("jsonStr", jsonStr);
+        const data = JSON.parse(jsonStr);
+        const results: FileResultProps[] = data.map(
+          (result: FileResultProps) => ({
+            ...result,
+            id: uuidv4(),
+          }),
+        );
+        // 결과 대상 파일 저장
+        get().setCurrentDetectedFile(file.path);
+        // 결과 저장
         get().setFileDetectedResults(results);
+        // 파일 검사 상태 변경
         get().setFileStatus(file.path, "success");
       } catch (error) {
         get().setFileStatus(file.path, "error");

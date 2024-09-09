@@ -1,8 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { useDetectedModeStore } from "@/stores/useDetectedModeStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
-import Link from "next/link";
 import { useState } from "react";
 import Button from "./Button";
 import {
@@ -10,6 +10,7 @@ import {
   IconCheck,
   IconClose,
   IconHourGlass,
+  IconThinClose,
 } from "./Icons";
 
 const alertType = {
@@ -77,6 +78,7 @@ export const Alert = ({
   const [isOpen, setIsOpen] = useState(true);
   const repoName = useFileViewerStore((state) => state.currentRepo);
   const filePath = useFileViewerStore((state) => state.currentFile);
+  const setMode = useDetectedModeStore((state) => state.setMode);
 
   if (!status) {
     return null;
@@ -85,6 +87,12 @@ export const Alert = ({
   const { icon, title, descriptions, button } = alertType[
     status
   ] as AlertProperty;
+
+  const onClickToResults = () => {
+    setMode("detected");
+    window.history.replaceState({}, "", `/repos/${repoName}/${filePath}`);
+    setIsOpen(false);
+  };
 
   return (
     <>
@@ -107,15 +115,14 @@ export const Alert = ({
             </p>
             {button &&
               (status === "success" ? (
-                <Link href={`/repos/${repoName}/${filePath}`}>
-                  <Button
-                    variant="filled"
-                    shape="rounded"
-                    className="w-full rounded-[0.75rem] py-3 text-2xl font-medium leading-[2.1rem]"
-                  >
-                    {button.text}
-                  </Button>
-                </Link>
+                <Button
+                  variant="filled"
+                  shape="rounded"
+                  className="w-full rounded-[0.75rem] py-3 text-2xl font-medium leading-[2.1rem]"
+                  onClick={onClickToResults}
+                >
+                  {button.text}
+                </Button>
               ) : (
                 <Button
                   variant="filled"
@@ -129,7 +136,7 @@ export const Alert = ({
           </div>
 
           <div className="shrink-0 basis-8">
-            <IconClose
+            <IconThinClose
               className="size-8 cursor-pointer"
               onClick={() => setIsOpen(false)}
             />
