@@ -101,9 +101,6 @@ export async function increasePostViews(postId: string): Promise<void> {
     console.error("Error updating post views:", error);
     throw new Error("Failed to update post views.");
   }
-
-  revalidatePath("/posts");
-  revalidatePath(`/posts/${postId}`); // 조회수가 업데이트된 post를 다시 렌더링합니다.`)
 }
 
 /**

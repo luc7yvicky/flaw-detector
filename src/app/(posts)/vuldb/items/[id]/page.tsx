@@ -12,7 +12,6 @@ export default async function VulnerabilityDBDetailPage({
   await redirectIfNotLoggedIn("/vuldb/items");
 
   const postId = params.id;
-  await increasePostViews(postId);
   const post = (await getPostById(postId)) as VulDBPost;
   const posts = await getAllPosts();
 
