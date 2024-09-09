@@ -38,7 +38,7 @@ export default async function RepoPage({
           </Status>
           <FileListServer repo={repo} username={username} />
         </div>
-        <CodeViewer />
+        <CodeViewer username={username} repo={repo} />
       </div>
     </section>
   );
