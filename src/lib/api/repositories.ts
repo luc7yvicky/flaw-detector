@@ -78,22 +78,24 @@ export async function getRepoLists(username: string) {
 }
 
 // 폴더의 하위 콘텐츠를 불러옵니다.
+type FolderItem = Extract<RepoContentItem, { type: "dir" }>;
+
 export async function expandFolder(
   username: string,
   repo: string,
-  folder: RepoContentItem,
-): Promise<RepoContentItem> {
-  if (folder.type !== "dir" || folder.loadingStatus === "loaded") {
+  folder: FolderItem,
+): Promise<FolderItem> {
+  if (folder.folderExpandStatus === "expanded") {
     return folder;
   }
 
   try {
-    folder.loadingStatus = "loading";
+    folder.folderExpandStatus = "expanding";
     folder.items = await fetchRepoContents(username, repo, folder.path);
-    folder.loadingStatus = "loaded";
+    folder.folderExpandStatus = "expanded";
     return folder;
   } catch (error) {
-    folder.loadingStatus = "error";
+    folder.folderExpandStatus = "error";
     folder.error =
       error instanceof Error
         ? error.message
@@ -102,7 +104,7 @@ export async function expandFolder(
   }
 }
 // 해당 경로의 content를 1depth만 읽어옵니다 (폴더/파일)
-async function fetchRepoContents(
+export async function fetchRepoContents(
   username: string,
   repo: string,
   path: string = "",
@@ -123,16 +125,29 @@ async function fetchRepoContents(
     }
 
     // const sortedData = sortFilesAndDirs(response.data);
-    return response.data?.map(
-      (item: any): RepoContentItem => ({
+    return response.data?.map((item: any): RepoContentItem => {
+      const baseItem = {
         name: item.name,
         path: item.path,
-        type: item.type,
-        loadingStatus: item.type === "file" ? "loaded" : "initial",
+        type: item.type as "file" | "dir",
         size: item.size,
-        items: item.type === "dir" ? [] : undefined,
-      }),
-    );
+      };
+
+      if (item.type === "dir") {
+        return {
+          ...baseItem,
+          type: "dir",
+          folderExpandStatus: "initial",
+          items: [],
+        };
+      } else {
+        return {
+          ...baseItem,
+          type: "file",
+          fileContentStatus: "initial",
+        };
+      }
+    });
   } catch (error) {
     throw new Error(
       `${path}에 대한 레포 내용을 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
@@ -151,4 +166,31 @@ export async function fetchRootStructure(username: string, repo: string) {
     console.error("fetchRootStructure에서 오류 발생:", error);
     throw error;
   }
+}
+
+// 전체 레포의 파일 리스트를 가져옵니다 - response 오래 걸림
+export async function fetchAllDepthFiles(
+  username: string,
+  repo: string,
+  path: string = "",
+  signal?: AbortSignal,
+): Promise<RepoContentItem[]> {
+  const contents = await fetchRepoContents(username, repo, path);
+  const allContents: RepoContentItem[] = [];
+
+  for (const item of contents) {
+    if (item.type === "file") {
+      allContents.push(item);
+    } else if (item.type === "dir") {
+      const subContents = await fetchAllDepthFiles(
+        username,
+        repo,
+        item.path,
+        signal,
+      );
+      allContents.push({ ...item, items: subContents });
+    }
+  }
+
+  return allContents;
 }

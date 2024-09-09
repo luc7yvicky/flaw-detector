@@ -11,10 +11,18 @@ export type RepoContentItem = {
   name: string;
   path: string;
   type: "file" | "dir";
-  // processStatus?: "success" | "onCheck" | "onWait" | "error";
-  expanded?: boolean;
   size?: number;
-  loadingStatus: "initial" | "loading" | "loaded" | "error";
-  items?: RepoItem[];
   error?: string;
-};
+} & (
+  | {
+      type: "dir";
+      folderExpandStatus: "initial" | "expanding" | "expanded" | "error";
+      items?: RepoContentItem[];
+    }
+  | {
+      type: "file";
+      fileContentStatus: "initial" | "loading" | "loaded" | "error";
+    }
+);
+
+export type FolderItem = Extract<RepoContentItem, { type: "dir" }>;
