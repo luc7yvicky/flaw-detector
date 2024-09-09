@@ -88,8 +88,8 @@ function FileListItem({
   );
 
   // 깊이에 따른 padding 및 indicator (동적생성 이슈로 인라인스타일 지정)
-  const BASE_PADDING = 10;
-  const PADDING_INCREMENT = 20;
+  const BASE_PADDING = 8;
+  const PADDING_INCREMENT = 16;
 
   const depthIndicators = useMemo(() => {
     return Array(depth)
@@ -99,7 +99,7 @@ function FileListItem({
           key={index}
           className="absolute bottom-0 top-0 inline-block h-full w-px bg-gray-300"
           style={{
-            left: `${6 + BASE_PADDING + index * PADDING_INCREMENT}px`,
+            left: `${BASE_PADDING * 2 + index * PADDING_INCREMENT}px`,
           }}
         />
       ));
@@ -117,51 +117,49 @@ function FileListItem({
         onClick={handleItemClick}
       >
         {depthIndicators}
-        <div className="flex w-full justify-between">
-          <div className="flex w-full">
-            <div
-              className="mr-2 flex items-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              {type === "dir" ? (
-                <IconCaretLeft
-                  className={cn(
-                    "inline-block size-4 rotate-180 fill-black",
-                    item.folderExpandStatus === "expanded" && "-rotate-90",
-                  )}
-                />
-              ) : (
-                <input
-                  type="checkbox"
-                  checked={isFileSelected(item.path)}
-                  onChange={handleCheckboxChange}
-                  disabled={isImage}
-                  className={cn(
-                    "size-4 accent-primary-500",
-                    isImage && "cursor-not-allowed opacity-50",
-                  )}
-                />
-              )}
-            </div>
-            <div className="mr-1 flex items-center">
-              {type === "file" ? <IconDoc /> : <IconFolder />}
-            </div>
-            <div className="truncate">
-              {name}
-              {type === "dir" && item.folderExpandStatus === "expanding" && (
-                <span className="ml-1">...</span>
-              )}
-            </div>
+        <div className="flex w-full">
+          <div
+            className="mr-2 flex items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {type === "dir" ? (
+              <IconCaretLeft
+                className={cn(
+                  "inline-block size-4 rotate-180 fill-black",
+                  item.folderExpandStatus === "expanded" && "-rotate-90",
+                )}
+              />
+            ) : (
+              <input
+                type="checkbox"
+                checked={isFileSelected(item.path)}
+                onChange={handleCheckboxChange}
+                disabled={isImage}
+                className={cn(
+                  "size-4 accent-primary-500",
+                  isImage && "cursor-not-allowed opacity-50",
+                )}
+              />
+            )}
           </div>
-          {/* <div className="flex-center-center invisible">
+          <div className="mr-1 flex items-center">
+            {type === "file" ? <IconDoc /> : <IconFolder />}
+          </div>
+          <div className="shrink truncate">
+            {name}
+            {type === "dir" && item.folderExpandStatus === "expanding" && (
+              <span className="ml-1">...</span>
+            )}
+          </div>
+          {/* <div className="flex-center-center invisible ml-auto">
             <button
               className="group-hover/item:visible"
-              onClick={handleBookmark}
+              // onClick={handleBookmark}
             >
               <IconStar className="fill-primary-300" />
             </button>
           </div> */}
-          {fileStatus && statusIcon}
+          <div className="flex ml-auto pl-1">{fileStatus && statusIcon}</div>
         </div>
       </li>
       {showNestedList && type === "dir" && item.items && (
