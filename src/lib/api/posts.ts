@@ -1,6 +1,7 @@
 import { VulDBPost } from "@/types/post";
 import {
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -10,6 +11,7 @@ import {
   query,
   setDoc,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import { revalidatePath } from "next/cache";
 import db from "../../../firebaseConfig";
@@ -170,3 +172,20 @@ export async function getLatestPosts(
     throw new Error("Failed to get latest posts.");
   }
 }
+
+/**
+ * Firestore에서 source가 CERT/CC 혹은 CNNVD인 문서를 삭제합니다.
+ */
+export const deletePostsBySource = async (source: "CERT/CC" | "CNNVD") => {
+  const postsRef = collection(db, "posts");
+  const q = query(postsRef, where("source", "==", source));
+
+  const querySnapshot = await getDocs(q);
+
+  querySnapshot.forEach((document) => {
+    const docRef = doc(db, "posts", document.id);
+    deleteDoc(docRef);
+  });
+
+  console.log(`${querySnapshot.size}개의 문서가 삭제되었습니다.`);
+};
