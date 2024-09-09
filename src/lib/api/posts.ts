@@ -63,9 +63,14 @@ export async function addPost(newPost: VulDBPost): Promise<VulDBPost> {
     const postsCollection = collection(db, "posts");
     const newPostRef = doc(postsCollection);
 
+    const now = Date.now();
+    const seconds = Math.floor(now / 1000);
+    const nanoseconds = (now % 1000) * 1000000;
+
     const postToSave = {
       ...newPost,
-      id: newPostRef.id, // 새로운 post의 id를 자동 생성합니다.
+      created_at: { seconds, nanoseconds },
+      id: newPostRef.id,
     };
 
     if (newPost.source_updated_at) {
