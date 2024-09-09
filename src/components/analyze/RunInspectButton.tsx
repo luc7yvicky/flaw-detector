@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import Button from "@/components/ui/Button";
-import { useFileProcessStore, useFileSelectionStore } from "@/stores/store";
 import { List, Modal, ModalTitle } from "../ui/Modal";
+import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
+import { useFileProcessStore } from "@/stores/useFileProcessStore";
 
 export default function RunInspectButton({
   repo,
@@ -13,17 +14,17 @@ export default function RunInspectButton({
   username: string;
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const [isProcessing, setIsProcessing] = useState(false);
   const {
     getSelectedFilesCount,
     getSelectedFiles,
     initializeSelectedFilesStatus,
   } = useFileSelectionStore();
-  const { resetFileStatuses, processFiles, setFileStatus } =
-    useFileProcessStore();
+  const { resetFileStatuses, processFiles } = useFileProcessStore();
   const selectedFilesCount = getSelectedFilesCount();
 
-  const openModal = () => setIsModalOpen(true);
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
   const closeModal = () => setIsModalOpen(false);
 
   const handleInspect = async () => {
@@ -33,7 +34,6 @@ export default function RunInspectButton({
     }
 
     closeModal();
-    // setIsProcessing(true);
     resetFileStatuses();
     initializeSelectedFilesStatus();
     const selectedFiles = getSelectedFiles();
@@ -43,19 +43,15 @@ export default function RunInspectButton({
       console.log("모든 파일 처리가 완료되었습니다.");
     } catch (error) {
       console.error("파일 처리 중 오류 발생:", error);
-    } finally {
-      // setIsProcessing(false);
     }
   };
 
   return (
     <>
-      <Button
-        className="h-[6.75rem] w-full"
-        onClick={openModal}
-        disabled={selectedFilesCount === 0}
-      >
-        선택한 파일 검사 ({selectedFilesCount})
+      <Button className="h-[6.75rem] w-full" onClick={openModal}>
+        {selectedFilesCount
+          ? `선택한 파일 검사 (${selectedFilesCount})`
+          : `전체 파일 검사`}
       </Button>
       {isModalOpen && (
         <Modal

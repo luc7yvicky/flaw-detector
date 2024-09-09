@@ -1,4 +1,4 @@
-import { VulDBPost } from "@/types/type";
+import { VulDBPost } from "@/types/post";
 import { Timestamp } from "firebase/firestore";
 
 export const exampleCode = `import SectionBusinessForever from "@/components/section-business-forever";
@@ -51,7 +51,8 @@ export const exampleCertCCVulDBPost: VulDBPost = {
       "여러 SMTP 서비스가 불충분한 강화로 인해 스푸핑 공격에 취약합니다.",
   },
   created_at: Timestamp.fromDate(new Date("2023-09-01T12:34:56Z")),
-  updated_at: Timestamp.fromDate(new Date("2024-09-01T12:34:56Z")),
+  source_updated_at: Timestamp.fromDate(new Date("2024-09-01T12:34:56Z")),
+  source_created_at: Timestamp.fromDate(new Date("2024-09-01T12:34:56Z")),
   views: 0,
   content: {
     overview: {
