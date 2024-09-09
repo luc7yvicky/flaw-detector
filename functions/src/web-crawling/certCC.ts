@@ -252,7 +252,7 @@ export const startCertCCWebCrawling = async () => {
         label: "기타",
         source: "CERT/CC",
         page_url: link,
-        created_at: { seconds: Date.now() / 1000, nanoseconds: 0 },
+        created_at: { seconds: 0, nanoseconds: 0 },
         views: 0,
         ...postData,
       });
