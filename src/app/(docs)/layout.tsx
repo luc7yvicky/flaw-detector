@@ -22,7 +22,7 @@ export default function DocsLayout({
         />
         {children}
       </div>
-      <p className="mx-auto min-h-[46.563rem] max-w-[120rem] whitespace-pre-wrap break-keep p-20 text-2xl font-normal leading-[2.1rem] tracking-tighter">
+      <p className="mx-auto min-h-[46.563rem] max-w-[120rem] whitespace-pre-wrap break-keep p-20 text-2xl font-normal leading-[2.1rem]">
         {koreanLoremIpsum}
       </p>
     </>
