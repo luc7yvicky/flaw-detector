@@ -152,15 +152,15 @@ function FileListItem({
               <span className="ml-1">...</span>
             )}
           </div>
-          {/* <div className="flex-center-center invisible ml-auto">
+          <div className="flex-center-center invisible ml-auto">
             <button
               className="group-hover/item:visible"
               // onClick={handleBookmark}
             >
               <IconStar className="fill-primary-300" />
             </button>
-          </div> */}
-          <div className="flex ml-auto pl-1">{fileStatus && statusIcon}</div>
+          </div>
+          {fileStatus && <div className="ml-auto flex pl-1"> {statusIcon}</div>}
         </div>
       </li>
       {showNestedList && type === "dir" && item.items && (
