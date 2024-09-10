@@ -24,6 +24,9 @@ export default function FileExplorer({
   );
   const resetFileViewer = useFileViewerStore((state) => state.resetFileViewer);
   const setCurrentRepo = useFileViewerStore((state) => state.setCurrentRepo);
+  const resetFileSelection = useFileSelectionStore(
+    (state) => state.resetFileSelection,
+  );
 
   const [structure, setStructure] =
     useState<RepoContentItem[]>(initialStructure);
@@ -32,7 +35,16 @@ export default function FileExplorer({
   useEffect(() => {
     resetFileViewer();
     setCurrentRepo(repo);
-  }, [resetFileViewer, setCurrentRepo, repo]);
+    resetFileSelection(); // 파일 선택 상태 리셋
+    setStructure(initialStructure); // 구조 초기화
+    setCurrentFolder(null); // 현재 폴더 초기화
+  }, [
+    resetFileViewer,
+    setCurrentRepo,
+    resetFileSelection,
+    repo,
+    initialStructure,
+  ]);
 
   useEffect(() => {
     if (data && data.type === "dir") {
