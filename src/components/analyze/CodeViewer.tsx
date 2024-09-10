@@ -1,7 +1,9 @@
 "use client";
 
+import { getDetectedResultsByFile } from "@/lib/api/repositories";
 import { useFileContent } from "@/lib/queries/useFileContent";
 import { cn } from "@/lib/utils";
+import { useDetectedModeStore } from "@/stores/useDetectedModeStore";
 import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import dynamic from "next/dynamic";
@@ -9,8 +11,6 @@ import { useEffect, useRef, useState } from "react";
 import { Alert } from "../ui/Alert";
 import { IconMagnifierWithPlus } from "../ui/Icons";
 import ResultInfoBoxList from "./ResultInfoBoxList";
-import { useDetectedModeStore } from "@/stores/useDetectedModeStore";
-import { getDetectedResults } from "@/lib/api/repositories";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
@@ -70,14 +70,14 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
     }
   }, [status, hasAlertBeenSet]);
 
-  // 취약점 검사 결과 조회 시도
+  // 취약점 검사 결과 조회
   useEffect(() => {
     setMode("undetected");
     setResults(null);
 
     const getResults = async () => {
       try {
-        const { mode, results } = await getDetectedResults(
+        const { mode, results } = await getDetectedResultsByFile(
           username,
           currentFile,
         );
@@ -88,42 +88,10 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
       }
     };
 
-    if (currentFile) {
+    if (currentFile && !filePath) {
       getResults();
     }
   }, [currentFile]);
-
-  // 취약점 검사 결과 저장
-  useEffect(() => {
-    const addDetectedResults = async () => {
-      try {
-        const res = await fetch("/api/repos/results", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username,
-            repo,
-            filePath,
-            results,
-          }),
-          cache: "no-store",
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to save results.");
-        }
-      } catch (err) {
-        console.error("Error adding results:", err);
-      }
-    };
-
-    if (status === "success" && results && filePath) {
-      addDetectedResults();
-      setMode("undetected");
-    }
-  }, [status]);
 
   // 위치 보기 하이라이트
   useEffect(() => {
@@ -208,6 +176,7 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
         </SyntaxHighlighter>
         {isAlertOpen && <Alert status={status} />}
       </div>
+
       {/* 검사 결과 */}
       {results && mode === "detected" && (
         <ResultInfoBoxList

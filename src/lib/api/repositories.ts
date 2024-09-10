@@ -199,14 +199,70 @@ export async function fetchAllDepthFiles(
   return allContents;
 }
 
-// 취약점 검사 결과 조회
-export const getDetectedResults = async (
+// 취약점 검사 결과 저장 (파일 단위)
+export const addFileResults = async (
+  username: string,
+  repo: string,
+  filePath: string,
+  results: FileResultProps[],
+) => {
+  try {
+    const res = await fetch("/api/repos/results", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        repo,
+        filePath,
+        results,
+      }),
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to save results.");
+    }
+  } catch (err) {
+    console.error("Error adding results:", err);
+  }
+};
+
+// 파일의 취약점 검사 결과 조회
+export const getDetectedResultsByFile = async (
   username: string,
   filePath: string | null,
 ): Promise<{ mode: Mode; results: FileResultProps[] | null }> => {
   try {
     const res = await fetch(
       `/api/repos/results?username=${username}&filePath=${filePath}`,
+    );
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw Error("Failed to fetch results.");
+    }
+
+    if (data.results) {
+      return { mode: "detected", results: data.results };
+    } else {
+      return { mode: "detected", results: data.results };
+    }
+  } catch (err) {
+    console.error("Error fetching results:", err);
+    throw err;
+  }
+};
+
+// 레포의 취약점 검사 결과 조회
+export const getDetectedResultsByRepo = async (
+  username: string,
+  repo: string | null,
+): Promise<{ mode: Mode; results: FileResultProps[] | null }> => {
+  try {
+    const res = await fetch(
+      `/api/repos/results?username=${username}&repo=${repo}`,
     );
     const data = await res.json();
 
