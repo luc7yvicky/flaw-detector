@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
 import Button from "@/components/ui/Button";
-import { List, Modal, ModalTitle } from "../ui/Modal";
-import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
+import { getRepoTree } from "@/lib/api/repositories";
 import { useFileProcessStore } from "@/stores/useFileProcessStore";
+import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
+import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { useQuery } from "@tanstack/react-query";
-import { getRepoTree, RepoTreeResult } from "@/lib/api/repositories";
-import { formatFileSize } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { List, Modal, ModalTitle } from "../ui/Modal";
 
 export default function RunInspectButton({
   repo,
@@ -23,9 +23,16 @@ export default function RunInspectButton({
     getSelectedFilesCount,
     getSelectedFiles,
     initializeSelectedFilesStatus,
+    resetFileSelection,
   } = useFileSelectionStore();
-  const { resetFileStatuses, processFiles } = useFileProcessStore();
+  const {
+    resetFileStatuses,
+    processFiles,
+    isInspectionRunning,
+    setIsInspectionRunning,
+  } = useFileProcessStore();
   const selectedFilesCount = getSelectedFilesCount();
+  const { setCurrentFile } = useFileViewerStore();
 
   const {
     data: repoTreeResult,
@@ -66,12 +73,19 @@ export default function RunInspectButton({
 
   const handleSelectedFilesInspect = async () => {
     const selectedFiles = getSelectedFiles();
+    if (selectedFiles.length > 0) {
+      setCurrentFile(selectedFiles[0].path);
+    }
     try {
+      setIsInspectionRunning(true);
       await processFiles(selectedFiles, username, repo, "analyze");
       console.log("선택된 파일 처리가 완료되었습니다.");
     } catch (error) {
       console.error("파일 처리 중 오류 발생:", error);
       setError("파일 처리 중 오류가 발생했습니다.");
+    } finally {
+      setIsInspectionRunning(false);
+      resetFileSelection();
     }
   };
 
@@ -81,6 +95,10 @@ export default function RunInspectButton({
         const allFiles = repoTreeResult.tree.filter(
           (item) => item.type === "file",
         );
+        if (allFiles.length > 0) {
+          setCurrentFile(allFiles[0].path);
+        }
+        setIsInspectionRunning(true);
         // TODO: 파일 처리 분산화 로직
         console.log(allFiles);
         // await processFiles(allFiles, username, repo, "analyze");
@@ -94,8 +112,11 @@ export default function RunInspectButton({
     } catch (error) {
       console.error("전체 레포지토리 처리 중 오류 발생:", error);
       setError("전체 레포지토리 처리 중 오류가 발생했습니다.");
+    } finally {
+      setIsInspectionRunning(false);
     }
   };
+
   const handleInspect = async () => {
     if (!username || !repo) {
       console.error("사용자 정보를 찾을 수 없습니다.");
@@ -113,13 +134,6 @@ export default function RunInspectButton({
       await handleFullRepoInspect();
     }
   };
-
-  const fileCount = useMemo(() => {
-    if (repoTreeResult) {
-      return repoTreeResult.tree.filter((item) => item.type === "file").length;
-    }
-    return 0;
-  }, [repoTreeResult]);
 
   const renderFileList = () => {
     if (scanType === "selected") {
@@ -157,12 +171,21 @@ export default function RunInspectButton({
     return <p>레포지토리 구조를 불러오는 중...</p>;
   };
 
+  let buttonText = "레포지토리 전체 검사";
+  if (isInspectionRunning) {
+    buttonText = "취약점 검사 중...";
+  } else if (selectedFilesCount > 0) {
+    buttonText = `선택한 파일 검사 (${selectedFilesCount})`;
+  }
+
   return (
     <>
-      <Button className="h-[6.75rem] w-full" onClick={openModal}>
-        {selectedFilesCount
-          ? `선택한 파일 검사 (${selectedFilesCount})`
-          : `레포지토리 전체 검사`}
+      <Button
+        className="h-[6.75rem] w-full"
+        onClick={openModal}
+        disabled={isInspectionRunning}
+      >
+        {buttonText}
       </Button>
       {isModalOpen && (
         <Modal
