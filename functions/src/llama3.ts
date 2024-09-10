@@ -1,11 +1,15 @@
 import axios from "axios";
 import * as logger from "firebase-functions/logger";
 
-export const getLlamaAPItoken = async (
-  LLAMA_AUTH_URL: string,
-  LLAMA_USERNAME: string,
-  LLAMA_PASSWORD: string,
-) => {
+export const getLlamaAPItoken = async () => {
+  const LLAMA_AUTH_URL = process.env.LLAMA_AUTH_URL;
+  const LLAMA_USERNAME = process.env.LLAMA_USERNAME;
+  const LLAMA_PASSWORD = process.env.LLAMA_PASSWORD;
+
+  if (!LLAMA_AUTH_URL || !LLAMA_USERNAME || !LLAMA_PASSWORD) {
+    throw new Error("환경 변수가 설정되지 않았습니다.");
+  }
+
   try {
     const params = new URLSearchParams();
     params.append("grant_type", "password");
@@ -25,12 +29,16 @@ export const getLlamaAPItoken = async (
   }
 };
 
-export const generateLlamaText = async (
-  token: string,
-  LLAMA_API_URL: string,
-  user_message: string,
-) => {
+export const generateLlamaText = async (user_message: string) => {
+  const LLAMA_API_URL = process.env.LLAMA_API_URL;
+  if (!LLAMA_API_URL) {
+    throw new Error("환경 변수가 설정되지 않았습니다.");
+  }
+
   try {
+    const token = await getLlamaAPItoken();
+    logger.info(`토큰 발급에 성공했습니다: ${token}`);
+
     const response = await axios.post(
       LLAMA_API_URL,
       {
