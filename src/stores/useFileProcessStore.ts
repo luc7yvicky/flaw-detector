@@ -9,11 +9,13 @@ interface FileProcessState {
   fileStatuses: Map<string, FileStatus>;
   currentDetectedFile: string;
   fileDetectedResults: FileResultProps[] | FileResultFailProps | null;
+  isInspectionRunning: boolean;
   setFileStatus: (path: string, status: FileStatus) => void;
   getFileStatus: (path: string) => FileStatus;
   resetFileStatuses: () => void;
   setCurrentDetectedFile: (path: string) => void;
   setFileDetectedResults: (results: FileResultProps[] | null) => void;
+  setIsInspectionRunning: (isRunning: boolean) => void;
   processFiles: (
     files: Array<{ path: string; name: string }>,
     username: string,
@@ -26,6 +28,7 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
   fileStatuses: new Map(),
   currentDetectedFile: "",
   fileDetectedResults: null,
+  isInspectionRunning: false,
   setFileStatus: (path, status) =>
     set((state) => {
       const newFileStatuses = new Map(state.fileStatuses);
@@ -36,6 +39,8 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
   resetFileStatuses: () => set({ fileStatuses: new Map() }),
   setCurrentDetectedFile: (path: string) => set({ currentDetectedFile: path }),
   setFileDetectedResults: (results) => set({ fileDetectedResults: results }),
+  setIsInspectionRunning: (isRunning: boolean) =>
+    set({ isInspectionRunning: isRunning }),
   processFiles: async (files, username, repo, action) => {
     const processFile = async (file: { path: string; name: string }) => {
       try {
@@ -74,5 +79,6 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
     for (const file of files) {
       await processFile(file);
     }
+    set({ isInspectionRunning: false });
   },
 }));

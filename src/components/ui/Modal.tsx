@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
+import { cn, formatFileSize } from "@/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
-import { IconRoundedDoc } from "./Icons";
 import { useCallback } from "react";
+import { IconRoundedDoc } from "./Icons";
 
 const modalVariants = cva("relative flex flex-col bg-white ", {
   variants: {
@@ -47,46 +47,46 @@ type ModalVariant = keyof ModalVariantsConfig["variant"];
 
 //selectfile 모달에서 쓰이는 List, ListItem 컴포넌트
 type ListItemProps = {
-  title: string;
-  subtitle: string;
-  date: string;
+  name: string;
+  path: string;
+  size?: number;
 };
 
-export function ListItem({ title, subtitle, date }: ListItemProps) {
+export function ListItem({ name, path, size }: ListItemProps) {
   return (
-    <li className="grid h-11 w-full grid-cols-[1fr_1fr_4rem] items-center justify-between border border-b p-[0.625rem] last:border-0">
-      <div className="flex items-center">
-        <IconRoundedDoc className="mr-[0.625rem]" />
-        <div className="font-medium">{title}</div>
-      </div>
-      <div className="text-xs font-normal leading-[0.907rem] tracking-[-0.01em] text-[#9E9E9E]">
-        {subtitle}
+    <li className="grid h-11 w-full grid-cols-[1fr_1.5fr_4rem] gap-1 items-center justify-between border border-b p-[0.625rem] last:border-0">
+      <div className="truncate font-medium">{name}</div>
+      <div className="truncate text-xs font-normal leading-[0.907rem] tracking-[-0.01em] text-[#9E9E9E]">
+        {path}
       </div>
       <div className="text-xs leading-[0.907rem] tracking-[-0.01em] text-[#9E9E9E]">
-        {date}
+        {formatFileSize(size)}
       </div>
     </li>
   );
 }
-
 type ListProps = {
-  items: {
-    title: string;
-    subtitle: string;
-    date: string;
-  }[];
+  items: ListItemProps[];
+  totalFileCount: number;
+  ignoredCount: number;
 };
+export function List({ items, totalFileCount, ignoredCount }: ListProps) {
+  const processedCount = items.length;
 
-export function List({ items }: ListProps) {
   return (
-    <ul className="max-h-[16rem] w-[36.875rem] overflow-hidden overflow-y-scroll rounded-lg border border-[#bcbcbc]">
-      {items.map((item, index) => (
-        <ListItem key={index} {...item} />
-      ))}
-    </ul>
+    <div>
+      <div className="mb-2 text-sm">
+        총 {totalFileCount}개 파일 중 {processedCount}개 검사 예정 (무시된 파일:
+        {ignoredCount}개)
+      </div>
+      <ul className="max-h-[16rem] w-[36.875rem] overflow-hidden overflow-y-scroll rounded-lg border border-[#bcbcbc]">
+        {items.map((item, index) => (
+          <ListItem key={index} {...item} />
+        ))}
+      </ul>
+    </div>
   );
 }
-
 export type ModalProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof modalVariants> & {
     children?: React.ReactNode;

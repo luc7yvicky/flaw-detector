@@ -1,4 +1,3 @@
-import { RepoContentItem } from "@/types/repo";
 import { create } from "zustand";
 import { useFileProcessStore } from "./useFileProcessStore";
 
@@ -8,11 +7,10 @@ interface FileSelectionState {
   deselectFile: (path: string) => void;
   toggleFileSelection: (path: string, name: string) => void;
   isFileSelected: (path: string) => boolean;
-  selectAllFiles: (files: RepoContentItem[]) => void;
-  deselectAllFiles: () => void;
   getSelectedFilesCount: () => number;
   getSelectedFiles: () => Array<{ path: string; name: string }>;
   initializeSelectedFilesStatus: () => void;
+  resetFileSelection: () => void;
 }
 
 export const useFileSelectionStore = create<FileSelectionState>((set, get) => ({
@@ -40,13 +38,6 @@ export const useFileSelectionStore = create<FileSelectionState>((set, get) => ({
       return { selectedFiles: newMap };
     }),
   isFileSelected: (path) => get().selectedFiles.has(path),
-  selectAllFiles: (files) =>
-    set((state) => {
-      const newMap = new Map(state.selectedFiles);
-      files.forEach((file) => newMap.set(file.path, file.name));
-      return { selectedFiles: newMap };
-    }),
-  deselectAllFiles: () => set({ selectedFiles: new Map() }),
   getSelectedFilesCount: () => get().selectedFiles.size,
   getSelectedFiles: () =>
     Array.from(get().selectedFiles, ([path, name]) => ({ path, name })),
@@ -57,4 +48,5 @@ export const useFileSelectionStore = create<FileSelectionState>((set, get) => ({
       useFileProcessStore.getState().setFileStatus(path, "onWait");
     });
   },
+  resetFileSelection: () => set({ selectedFiles: new Map() }),
 }));
