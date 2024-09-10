@@ -60,7 +60,9 @@ export type VulDBPost = {
   };
   source_created_at: { seconds: number; nanoseconds: number }; //원문 게시글 등록일
   created_at: { seconds: number; nanoseconds: number }; // firestore timestamp
-  updated_at?: { seconds: number; nanoseconds: number };
+  source_updated_at?: { seconds: number; nanoseconds: number };
   content: CertCCContent | CnnvdContent;
   views: number;
 };
+
+export type VulDBPostWithChip = VulDBPost & { chip: "hot" | "new" | "" };

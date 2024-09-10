@@ -1,6 +1,9 @@
 import { OCTOKIT_TOKEN } from "@/lib/const";
+import { Mode } from "@/stores/useDetectedModeStore";
+import { FileResultProps } from "@/types/file";
 import { RepoContentItem, RepoListData } from "@/types/repo";
 import { Octokit } from "@octokit/rest";
+import { sortDirectoryFirst } from "../utils";
 import { isIgnoredFile } from "../utils";
 
 type RepoListRawData = {
@@ -61,6 +64,7 @@ export async function getRepoLists(username: string) {
       username: username,
       headers: {
         "X-GitHub-Api-Version": "2022-11-28",
+        Authorization: `token ${OCTOKIT_TOKEN}`, // Github API 요청 한도 초과로 임시 추가
       },
     });
 
@@ -125,8 +129,8 @@ export async function fetchRepoContents(
       throw new Error(`경로 ${path}에 대한 예상치 못한 응답입니다.`);
     }
 
-    // const sortedData = sortFilesAndDirs(response.data);
-    return response.data?.map((item: any): RepoContentItem => {
+    const sortedData = sortDirectoryFirst(response.data);
+    return sortedData?.map((item: any): RepoContentItem => {
       const baseItem = {
         name: item.name,
         path: item.path,
@@ -269,3 +273,29 @@ export async function getRepoTree(
     );
   }
 }
+
+// 취약점 검사 결과 조회
+export const getDetectedResults = async (
+  username: string,
+  filePath: string | null,
+): Promise<{ mode: Mode; results: FileResultProps[] | null }> => {
+  try {
+    const res = await fetch(
+      `/api/repos/results?username=${username}&filePath=${filePath}`,
+    );
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw Error("Failed to fetch results.");
+    }
+
+    if (data.results) {
+      return { mode: "detected", results: data.results };
+    } else {
+      return { mode: "detected", results: data.results };
+    }
+  } catch (err) {
+    console.error("Error fetching results:", err);
+    throw err;
+  }
+};

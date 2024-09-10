@@ -1,263 +1,282 @@
 import { getChromeExecutablePath } from "@/lib/api/chrome";
-import { handleError } from "@/lib/helpers";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
+import {
+  CnnvdLocalizedTextBlock,
+  CnnvdTextBlock,
+  VulDBPost,
+} from "@/types/post";
+import { collection, getDocs, query, where } from "firebase/firestore";
+import db from "../../../../../firebaseConfig";
+import { addPost } from "@/lib/api/posts";
 
-export async function GET() {
-  try {
-    const executablePath = getChromeExecutablePath();
+type CNNVDData = {
+  id: string;
+  label: "기타" | "취약성 보고서" | "취약성 알림";
+  source: "CNNVD";
+  page_url: string;
+  views: number;
+  title: {
+    original: CnnvdTextBlock;
+    translated: [];
+  };
+  created_at: {
+    seconds: number;
+    nanoseconds: number;
+  };
+  source_created_at: { seconds: number; nanoseconds: number };
+  content: {
+    description: CnnvdLocalizedTextBlock;
+    introduction: CnnvdLocalizedTextBlock;
+    vulnDetail: CnnvdLocalizedTextBlock;
+    remediation: CnnvdLocalizedTextBlock;
+  };
+};
 
-    // Puppeteer로 브라우저 실행
-    const browser = await puppeteer.launch({
-      executablePath,
-      headless: false,
-    });
+// Firestore에 데이터가 이미 저장되어 있는지 확인
+async function checkIfDataExistsBySourceCreatedAt(
+  timestamp: number,
+): Promise<boolean> {
+  const collectionRef = collection(db, "posts");
+  const q = query(
+    collectionRef,
+    where("source_created_at.seconds", "==", timestamp),
+  );
+  const querySnapshot = await getDocs(q);
 
-    const page = await browser.newPage();
-
-    // 크롤링할 사이트 URL로 이동
-    await page.goto("");
-
-    // 크롤링 코드 작성
-
-    // 브라우저 종료
-    await browser.close();
-
-    return NextResponse.json({ message: "크롤링 완료" });
-  } catch (error) {
-    return handleError(error);
-  }
+  return !querySnapshot.empty; // 동일한 데이터가 있으면 true
 }
 
-// import { getChromeExecutablePath } from "@/lib/api/chrome";
-// import { NextResponse } from "next/server";
-// import puppeteer from "puppeteer-core";
-// import { CnnvdLocalizedTextBlock, CnnvdTextBlock } from "@/types/type";
+export async function GET() {
+  const executablePath = getChromeExecutablePath();
 
-// type CNNVDData = {
-//   id: string;
-//   label: string;
-//   source: string;
-//   page_url: string;
-//   title: {
-//     original: CnnvdTextBlock;
-//     translated: [];
-//   };
-//   created_at: {
-//     seconds: number;
-//     nanoseconds: number;
-//   };
-//   source_created_at: { seconds: number; nanoseconds: number };
-//   content: {
-//     description: CnnvdLocalizedTextBlock;
-//     introduction: CnnvdLocalizedTextBlock;
-//     vulnDetail: CnnvdLocalizedTextBlock;
-//     remediation: CnnvdLocalizedTextBlock;
-//   };
-// };
+  const browser = await puppeteer.launch({
+    executablePath,
+    headless: true,
+  });
+  const page = await browser.newPage();
 
-// export async function GET() {
-//   const executablePath = getChromeExecutablePath();
+  const CNNVD_URL = "https://www.cnnvd.org.cn/home/warn";
+  await page.goto(CNNVD_URL, { waitUntil: "networkidle0", timeout: 120000 });
 
-//   const browser = await puppeteer.launch({
-//     executablePath,
-//     headless: true,
-//   });
-//   const page = await browser.newPage();
+  await page.waitForSelector("p.content-title", {
+    timeout: 20000,
+  });
 
-//   const CNNVD_URL = "https://www.cnnvd.org.cn/home/warn";
-//   await page.goto(CNNVD_URL, { waitUntil: "networkidle0", timeout: 120000 });
+  const crawledData: CNNVDData[] = [];
 
-//   await page.waitForSelector("p.content-title", {
-//     timeout: 20000,
-//   });
+  async function crawlDetails(startIndex: number) {
+    const elements = await page.$$("p.content-title");
 
-//   const crawledData: CNNVDData[] = [];
+    if (startIndex >= elements.length) {
+      return "done";
+    }
 
-//   async function crawlDetails(startIndex = 0) {
-//     const elements = await page.$$("p.content-title");
+    // 페이지 리로드 후 요소 다시 참조
+    const refreshedElement = elements[startIndex];
 
-//     if (elements.length === 0 || startIndex >= elements.length) {
-//       return;
-//     }
+    if (!refreshedElement) {
+      return "done";
+    }
 
-//     const dateText = await page.$eval(
-//       "div.content-detail",
-//       (el) => el.textContent?.trim() || "",
-//     );
+    await new Promise((r) => setTimeout(r, 2000));
+    await refreshedElement.click();
+    await new Promise((r) => setTimeout(r, 2000));
 
-//     const year = dateText?.split("-")[0];
+    await page.waitForSelector("p.detail-title", {
+      visible: true,
+      timeout: 120000,
+    });
 
-//     if (!["2024"].includes(year)) {
-//       console.log(`크롤링 종료: ${year}년도의 게시물은 크롤링 하지 않음.`);
-//       return;
-//     }
+    // 상세 페이지의 데이터 크롤링
+    const detailTitle = await page.$eval("p.detail-title", (el) =>
+      el.textContent?.trim(),
+    );
 
-//     // 페이지 리로드 후 요소 다시 참조
-//     const refreshedElement = (await page.$$("p.content-title"))[startIndex];
+    const detailSubtitle = await page.$eval("div.detail-subtitle", (el) =>
+      el.textContent?.trim(),
+    );
 
-//     if (!refreshedElement) {
-//       await crawlDetails(startIndex + 1);
-//       return;
-//     }
+    //날짜만 추출
+    let sourceCreatedAtTimestamp = 0;
+    if (detailSubtitle && detailSubtitle.includes("发布时间：")) {
+      const dateString = detailSubtitle.replace("发布时间：", "").trim();
+      const parsedDate = new Date(dateString);
+      if (!isNaN(parsedDate.getTime())) {
+        sourceCreatedAtTimestamp = parsedDate.getTime() / 1000;
+      } else {
+        console.error("Invalid date format:", dateString);
+      }
+    }
 
-//     await new Promise((r) => setTimeout(r, 2000));
+    const sourceYear = new Date(sourceCreatedAtTimestamp * 1000).getFullYear();
+    if (sourceYear !== 2023 && sourceYear !== 2024) {
+      return false;
+    }
 
-//     await refreshedElement.click();
-//     console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
+    // Firestore에 이미 저장되어 있는지 확인
+    const exists = await checkIfDataExistsBySourceCreatedAt(
+      sourceCreatedAtTimestamp,
+    );
+    if (exists) {
+      return true;
+    }
 
-//     await new Promise((r) => setTimeout(r, 2000));
+    // CnnvdContent 추출
+    const content = await page.evaluate(() => {
+      const paragraphs = document.querySelectorAll(
+        "div.detail-content > p.MsoNormal, div.detail-content > pre, div.detail-content > font, div.detail-content > p.\\32,  div.detail-content > h2, div.detail-content > p.MsoNormalCxSpFirst",
+      );
+      let description = "";
+      let introduction = "";
+      let vulnDetail = "";
+      let remediation = "";
 
-//     await page.waitForSelector("p.detail-title", {
-//       visible: true,
-//       timeout: 120000,
-//     });
+      let section = "description";
+      let skipNextP = false;
 
-//     // 상세 페이지의 데이터 크롤링
-//     const detailTitle = await page.$eval("p.detail-title", (el) =>
-//       el.textContent?.trim(),
-//     );
+      paragraphs.forEach((p) => {
+        const text = p.textContent?.trim() || "";
 
-//     console.log(`Crawled Title: ${detailTitle || "제목을 찾을 수 없습니다."}`);
+        if (p.tagName === "TABLE" && p.classList.contains("MsoTableGrid")) {
+          skipNextP = true;
+          return;
+        }
 
-//     // CnnvdContent 추출
-//     const content = await page.evaluate(() => {
-//       const paragraphs = document.querySelectorAll(
-//         "div.detail-content > p.MsoNormal, div.detail-content > pre, div.detail-content > font",
-//       );
-//       let description = "";
-//       let introduction = "";
-//       let vulnDetail = "";
-//       let remediation = "";
+        if (skipNextP && p.className === "") {
+          return;
+        } else if (p.className !== "") {
+          skipNextP = false;
+        }
 
-//       let section = "description";
-//       let skipNextP = false; //table 이후 나오는 p태그 스킵하기 위한 플래그
+        if (text.startsWith("一、")) {
+          section = "introduction";
+          introduction += text + "\n";
+          return;
+        } else if (text.startsWith("二、")) {
+          section = "vulnDetail";
+          vulnDetail += text + "\n";
+          return;
+        } else if (text.startsWith("三、")) {
+          section = "remediation";
+          remediation += text + "\n";
+          return;
+        }
+        if (section === "description") {
+          description += text + "\n";
+        } else if (section === "introduction") {
+          introduction += text + "\n";
+        } else if (section === "vulnDetail") {
+          vulnDetail += text + "\n";
+        } else if (section === "remediation") {
+          remediation += text + "\n";
+        }
+      });
 
-//       paragraphs.forEach((p) => {
-//         const text = p.textContent?.trim() || "";
+      return {
+        description: { original: description.trim(), translated: "" },
+        introduction: { original: introduction.trim(), translated: "" },
+        vulnDetail: { original: vulnDetail.trim(), translated: "" },
+        remediation: { original: remediation.trim(), translated: "" },
+      };
+    });
 
-//         // <table class="MsoTableGrid">가 등장하면 그 이후의 <p> 태그 스킵
-//         if (p.tagName === "TABLE" && p.classList.contains("MsoTableGrid")) {
-//           skipNextP = true;
-//           return;
-//         }
+    await page.waitForSelector("div.el-page-header__title", { timeout: 3000 });
+    await page.click("div.el-page-header__title");
 
-//         if (skipNextP && p.className === "") {
-//           // 테이블 바로 다음에 있는 클래스가 없는 <p> 태그는 무시
-//           return;
-//         } else if (p.className !== "") {
-//           skipNextP = false; // 다시 <p class="MsoNormal">이므로 처리할 수 있도록 설정
-//         }
+    const newCrawledData: VulDBPost = {
+      id: crypto.randomUUID(),
+      label: "취약성 보고서",
+      source: "CNNVD",
+      page_url: CNNVD_URL,
+      views: 0,
+      title: {
+        original: detailTitle || "제목을 찾을 수 없습니다.",
+        translated: "",
+      },
+      created_at: {
+        seconds: 0,
+        nanoseconds: 0,
+      },
+      source_created_at: {
+        seconds: sourceCreatedAtTimestamp,
+        nanoseconds: 0,
+      },
+      content: {
+        description: {
+          original: content.description.original,
+          translated: content.description.translated,
+        },
+        introduction: {
+          original: content.introduction.original,
+          translated: content.introduction.translated,
+        },
+        vulnDetail: {
+          original: content.vulnDetail.original,
+          translated: content.vulnDetail.translated,
+        },
+        remediation: {
+          original: content.remediation.original,
+          translated: content.remediation.translated,
+        },
+      },
+    };
+    await addPost(newCrawledData);
+    return true; // 크롤링 계속 진행
+  }
 
-//         if (text.startsWith("一、")) {
-//           section = "introduction";
-//           introduction += text + "\n";
-//           return;
-//         } else if (text.startsWith("二、")) {
-//           section = "vulnDetail";
-//           vulnDetail += text + "\n";
-//           return;
-//         } else if (text.startsWith("三、")) {
-//           section = "remediation";
-//           remediation += text + "\n";
-//           return;
-//         }
-//         if (section === "description") {
-//           description += text + "\n";
-//         } else if (section === "introduction") {
-//           introduction += text + "\n";
-//         } else if (section === "vulnDetail") {
-//           vulnDetail += text + "\n";
-//         } else if (section === "remediation") {
-//           remediation += text + "\n";
-//         }
-//       });
+  async function handlePagination() {
+    let hasNextPage = true;
 
-//       return {
-//         description: { original: description.trim(), translated: "" },
-//         introduction: { original: introduction.trim(), translated: "" },
-//         vulnDetail: { original: vulnDetail.trim(), translated: "" },
-//         remediation: { original: remediation.trim(), translated: "" },
-//       };
-//     });
+    while (hasNextPage) {
+      let startIndex = 0;
+      let hasMoreItems = true;
 
-//     await page.waitForSelector("div.el-page-header__title", { timeout: 3000 });
-//     await page.click("div.el-page-header__title");
+      // 현재 페이지의 모든 요소를 처리
+      while (hasMoreItems) {
+        const result = await crawlDetails(startIndex);
+        if (!result) {
+          hasMoreItems = false; // 2024년, 2023년이 아닌 연도 발견 시 중단
+        } else if (result === "done") {
+          break; // 현재 페이지의 모든 요소가 처리되면 루프 종료
+        } else {
+          startIndex++;
+        }
+      }
 
-//     crawledData.push({
-//       id: crypto.randomUUID(),
-//       label: "CNNVD",
-//       source: "CNNVD",
-//       page_url: await page.url(),
-//       title: {
-//         original: { text: detailTitle || "제목을 찾을 수 없습니다." },
-//         translated: [],
-//       },
-//       created_at: {
-//         seconds: Math.floor(new Date().getTime() / 1000),
-//         nanoseconds: 0,
-//       },
-//       source_created_at: {
-//         seconds: dateText ? new Date(dateText).getTime() / 1000 : 0,
-//         nanoseconds: 0,
-//       },
-//       content: content,
-//     });
+      const nextPageButton = await page.$("li.number.active + li.number");
+      if (nextPageButton) {
+        await new Promise((r) => setTimeout(r, 2000));
 
-//     // 모든 작업이 완료된 후 재귀 호출로 다음 요소를 크롤링
-//     await crawlDetails(startIndex + 1);
-//   }
+        const previousContent = await page.content();
 
-//   //페이지네이션 처리
-//   async function handlePagination() {
-//     let hasNextPage = true;
+        await page.evaluate((el) => el.click(), nextPageButton);
+        await new Promise((r) => setTimeout(r, 2000));
 
-//     while (hasNextPage) {
-//       await crawlDetails(); // 현재 페이지 크롤링
+        try {
+          await page.waitForFunction(
+            (prevContent) => document.body.innerHTML !== prevContent,
+            { timeout: 120000 },
+            previousContent,
+          );
+        } catch (error) {
+          hasNextPage = false;
+          continue;
+        }
 
-//       // 다음 페이지로 이동
-//       const nextPageButton = await page.$("li.number.active + li.number");
-//       if (nextPageButton) {
-//         console.log("Moving to the next page..."); //확인 로그 (추후삭제예정)
+        // 새 페이지 로드 후 다시 요소 처리 시작
+        await page.waitForSelector("p.content-title", { timeout: 120000 });
+      } else {
+        hasNextPage = false;
+      }
+    }
+  }
 
-//         await new Promise((r) => setTimeout(r, 2000));
+  await handlePagination();
+  await browser.close();
 
-//         // 클릭 전 페이지의 특정 요소를 저장
-//         const previousContent = await page.content();
-
-//         // 버튼 클릭 후 페이지 전환을 시도
-//         await page.evaluate((el) => el.click(), nextPageButton);
-
-//         await new Promise((r) => setTimeout(r, 2000));
-
-//         // 새로운 콘텐츠가 로드될 때까지 대기
-//         try {
-//           await page.waitForFunction(
-//             (prevContent) => document.body.innerHTML !== prevContent,
-//             { timeout: 120000 },
-//             previousContent,
-//           );
-//         } catch (error) {
-//           console.error("Page did not navigate within the timeout period.");
-//           hasNextPage = false;
-//           continue;
-//         }
-
-//         await page.waitForSelector("p.content-title", { timeout: 120000 });
-
-//         await crawlDetails();
-//       } else {
-//         console.log("No more pages to crawl.");
-//         hasNextPage = false;
-//       }
-//     }
-//   }
-
-//   await handlePagination();
-//   await browser.close();
-
-//   return NextResponse.json({
-//     message: "Data saved to Firestore",
-//     crawledData,
-//   });
-// }
+  return NextResponse.json({
+    message: "Data saved to Firestore",
+    crawledData,
+  });
+}

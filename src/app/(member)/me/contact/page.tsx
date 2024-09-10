@@ -3,7 +3,7 @@ import CustomerService from "@/components/ui/CustomerService";
 
 export default function ContactPage() {
   return (
-    <div className="flex w-full max-w-[96.125rem] flex-col gap-y-[7.75rem]">
+    <div className="mb-[7.75rem] flex w-full max-w-[96.125rem] flex-col gap-y-[7.75rem]">
       <TitleBar
         title="Customer Service"
         align="center"
