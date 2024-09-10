@@ -31,7 +31,7 @@ async function getGeneratedText(user_message: string) {
 const translateText = async (originalText: string) => {
   if (!originalText) return "";
   const res = await getGeneratedText(
-    `다음 텍스트를 한국어로 번역해주세요. "近日"과 url은 제외하고 이어서 번역해주세요. ${originalText}`,
+    `다음 텍스트를 한국어로 번역해주세요. url은 제외하고 이어서 번역해주세요. ${originalText}`,
   );
   if (!res) {
     console.error("Translation failed, received undefined");
@@ -234,30 +234,6 @@ export async function GET() {
         },
       },
     };
-
-    // 번역하기 전 번역 결과를 콘솔로 확인
-    // const translatedTitle = await translateText(detailTitle || "");
-    // console.log("Translated Title:", translatedTitle);
-
-    // const translatedDescription = await translateText(
-    //   content.description.original,
-    // );
-    // console.log("Translated Description:", translatedDescription);
-
-    // const translatedIntroduction = await translateText(
-    //   content.introduction.original,
-    // );
-    // console.log("Translated Introduction:", translatedIntroduction);
-
-    // const translatedVulnDetail = await translateText(
-    //   content.vulnDetail.original,
-    // );
-    // console.log("Translated Vuln Detail:", translatedVulnDetail);
-
-    // const translatedRemediation = await translateText(
-    //   content.remediation.original,
-    // );
-    // console.log("Translated Remediation:", translatedRemediation);
 
     crawledData.push(newCrawledData);
     await addPost(newCrawledData);
