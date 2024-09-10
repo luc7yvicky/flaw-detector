@@ -1,6 +1,5 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { SPECIAL_CHAR_FILE_DIR_REGEX } from "./const";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -14,7 +13,7 @@ const convertTimestampToDate = (timestamp: {
   return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
 };
 
-/** Firestore의 timestamp 형식에서 문자열('#일 전')로 변환합니다.*/
+/** Firestore의 timestamp 형식에서 문자열('#일 전' 또는 '#시간 전' 또는 '#분 전')으로 변환합니다.*/
 export const formatTimestampAsDaysAgo = (timestamp: {
   seconds: number;
   nanoseconds: number;
@@ -22,13 +21,22 @@ export const formatTimestampAsDaysAgo = (timestamp: {
   const createdAtDate = convertTimestampToDate(timestamp);
   const now = new Date();
 
-  // 두 날짜 간의 차이 계산 (밀리초 단위)
   const differenceInMs = now.getTime() - createdAtDate.getTime();
 
-  // 차이를 일 단위로 변환
   const daysAgo = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+  const hoursAgo = Math.floor(differenceInMs / (1000 * 60 * 60));
+  const minutesAgo = Math.floor(differenceInMs / (1000 * 60));
+  const secondsAgo = Math.floor(differenceInMs / 1000);
 
-  return `${daysAgo}일 전`;
+  if (daysAgo > 0) {
+    return `${daysAgo}일 전`;
+  } else if (hoursAgo > 0) {
+    return `${hoursAgo}시간 전`;
+  } else if (minutesAgo > 0) {
+    return `${minutesAgo}분 전`;
+  } else {
+    return `${secondsAgo}초 전`;
+  }
 };
 
 /** Firestore의 timestamp 형식에서 문자열('YYYY.MM.DD HH:mm:ss')로 변환합니다. */
@@ -76,6 +84,43 @@ export const getLanguage = (filename: string) => {
       return "css";
     case "json":
       return "json";
+    case "java":
+      return "java";
+    case "jsp":
+      return "jsp";
+    case "c":
+      return "c";
+    case "cpp":
+    case "cxx":
+    case "cc":
+    case "c++":
+      return "cpp";
+    case "cs":
+      return "csharp";
+    case "rb":
+      return "ruby";
+    case "php":
+      return "php";
+    case "go":
+      return "go";
+    case "rs":
+      return "rust";
+    case "swift":
+      return "swift";
+    case "kt":
+    case "kts":
+      return "kotlin";
+    case "r":
+      return "r";
+    case "sh":
+      return "bash";
+    case "xml":
+      return "xml";
+    case "yml":
+    case "yaml":
+      return "yaml";
+    case "sql":
+      return "sql";
     case "png":
     case "jpg":
     case "jpeg":
@@ -90,76 +135,13 @@ export const getLanguage = (filename: string) => {
   }
 };
 
-/* 폴더-특수 > 폴더-특수X -> 파일-특수 > 파일-특수X 순 정렬 */
-export const sortFilesAndDirs = (
+/* 폴더 -> 파일 순 정렬 */
+export const sortDirectoryFirst = (
   data: Array<{ name: string; type: "dir" | "file" | "submodule" | "symlink" }>,
 ): Array<{ name: string; type: "dir" | "file" | "submodule" | "symlink" }> => {
   const sortedData = data.sort((a, b) => {
-    const aStartsWithSpecialChar = SPECIAL_CHAR_FILE_DIR_REGEX.test(a.name);
-    const bStartsWithSpecialChar = SPECIAL_CHAR_FILE_DIR_REGEX.test(b.name);
-
-    // 1. 폴더, 특수문자로 시작
-    if (
-      a.type === "dir" &&
-      aStartsWithSpecialChar &&
-      !(b.type === "dir" && bStartsWithSpecialChar)
-    ) {
+    if (a.type === "dir" && b.type !== "dir") {
       return -1;
-    }
-    if (
-      !(a.type === "dir" && aStartsWithSpecialChar) &&
-      b.type === "dir" &&
-      bStartsWithSpecialChar
-    ) {
-      return 1;
-    }
-
-    // 2. 폴더, 특수문자로 시작 X
-    if (
-      a.type === "dir" &&
-      !aStartsWithSpecialChar &&
-      !(b.type === "dir" && !bStartsWithSpecialChar)
-    ) {
-      return -1;
-    }
-    if (
-      !(a.type === "dir" && !aStartsWithSpecialChar) &&
-      b.type === "dir" &&
-      !bStartsWithSpecialChar
-    ) {
-      return 1;
-    }
-
-    // 3. 파일, 특수문자로 시작
-    if (
-      a.type !== "dir" &&
-      aStartsWithSpecialChar &&
-      !(b.type !== "dir" && bStartsWithSpecialChar)
-    ) {
-      return -1;
-    }
-    if (
-      !(a.type !== "dir" && aStartsWithSpecialChar) &&
-      b.type !== "dir" &&
-      bStartsWithSpecialChar
-    ) {
-      return 1;
-    }
-
-    // 4. 파일, 특수문자 없음 X
-    if (
-      a.type !== "dir" &&
-      !aStartsWithSpecialChar &&
-      !(b.type !== "dir" && !bStartsWithSpecialChar)
-    ) {
-      return -1;
-    }
-    if (
-      !(a.type !== "dir" && !aStartsWithSpecialChar) &&
-      b.type !== "dir" &&
-      !bStartsWithSpecialChar
-    ) {
-      return 1;
     }
 
     // 나머지 경우는 원래 순서 유지
@@ -167,4 +149,20 @@ export const sortFilesAndDirs = (
   });
 
   return sortedData;
+};
+
+/* json으로 파싱되기 전 문자열에 포함되어 있는 정규식, 작은따옴표 처리 */
+export const convertEscapedCharacterToRawString = (str: string) => {
+  let rawString;
+
+  // 정규식 문자열을 두 개의 백슬래시로 감싸주기
+  rawString = str.replace(/\/([^\/]+)\/g/g, "\\\\/$1\\\\/g");
+
+  // 싱글 쿼테이션을 앞에 백슬래시 + 더블 쿼테이션 조합으로 대체
+  rawString = rawString.replace(/'/g, `\\"`);
+
+  // 슬래시 + 더블 쿼테이션을 앞에 슬래시 + 백슬래시 + 더블 쿼테이션 조합으로 대체
+  rawString = rawString.replace(/\/"/g, `/\\"`);
+
+  return rawString;
 };

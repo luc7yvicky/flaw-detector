@@ -225,7 +225,7 @@ export default function ScrapsPage() {
   const currentArticles = articles.slice(startIndex, endIndex);
 
   return (
-    <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
+    <div className="mb-[7.75rem] flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <TitleBar
         title="Clipping articles"
         align="center"

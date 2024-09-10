@@ -10,7 +10,7 @@ export default async function MyPage() {
   const session = await auth();
 
   return (
-    <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
+    <div className="mb-[7.75rem] flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <TitleBar
         title="Profile Information"
         align="center"
