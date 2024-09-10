@@ -1,11 +1,19 @@
+import Footer from "@/components/layout/Footer";
+import Header from "@/components/layout/Header";
+import ReactQueryProviders from "@/lib/queries/useReactQuery";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
-import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
-import ReactQueryProviders from "@/lib/queries/useReactQuery";
 
 const inter = Inter({ subsets: ["latin"] });
+
+const pretendard = localFont({
+  src: "../../public/fonts/PretendardVariable.woff2",
+  display: "swap",
+  weight: "45 920",
+  variable: "--font-pretendard",
+});
 
 export const metadata: Metadata = {
   title: "Flaw Detector",
@@ -20,7 +28,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={inter.className}>
+      <body
+        className={`${pretendard.variable} font-pretendard ${inter.className}`}
+      >
         <Header />
         <main className="min-h-[calc(100dvh-136px)]">
           <ReactQueryProviders>{children}</ReactQueryProviders>
