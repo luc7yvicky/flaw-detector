@@ -186,3 +186,33 @@ export const deletePostsBySource = async (source: "CERT/CC" | "CNNVD") => {
 
   console.log(`${querySnapshot.size}개의 문서가 삭제되었습니다.`);
 };
+
+//
+export async function deleteCNNVDPosts() {
+  const postsRef = collection(db, "posts");
+  const q = query(postsRef, where("source", "==", "CNNVD"));
+
+  try {
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      console.log("No documents found with source 'CNNVD'.");
+      return;
+    }
+
+    const batchDeletions: any[] = [];
+
+    // 각 문서를 순회하면서 삭제
+    querySnapshot.forEach((docSnapshot) => {
+      const docRef = doc(db, "posts", docSnapshot.id);
+      batchDeletions.push(deleteDoc(docRef));
+    });
+
+    // 모든 삭제 작업이 완료될 때까지 기다림
+    await Promise.all(batchDeletions);
+    console.log("All documents with source 'CNNVD' have been deleted.");
+  } catch (error) {
+    console.error("Error deleting documents: ", error);
+    throw new Error("Failed to delete posts");
+  }
+}

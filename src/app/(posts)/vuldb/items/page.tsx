@@ -1,5 +1,4 @@
 import RealTimeTopic from "@/components/vulnerability-db/RealTimeTopic";
-import { Search } from "@/components/vulnerability-db/Search";
 import VulDBDashboard from "@/components/vulnerability-db/VulDBDashboard";
 import VulDBImageCardContainer from "@/components/vulnerability-db/VulDBImageCardContainer";
 import { getAllPosts } from "@/lib/api/posts";
@@ -74,10 +73,9 @@ export default async function VulDBPage() {
 
     return (
       <div className="relative mx-auto mb-[1.188rem] mt-[1.688rem] flex min-h-[2445px] w-[82.063rem] flex-col gap-[4.75rem]">
-        {/* <VulDBImageCardContainer posts={top3RecentPosts} /> */}
-        <Search initialPosts={sortedPostsByDate} />
+        <VulDBImageCardContainer posts={top3RecentPosts} />
         <div className="flex justify-between">
-          {/* <VulDBDashboard posts={sortedPostsByDate} /> */}
+          <VulDBDashboard posts={sortedPostsByDate} />
           <RealTimeTopic />
         </div>
       </div>

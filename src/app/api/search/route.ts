@@ -5,23 +5,31 @@ import db from "../../../../firebaseConfig";
 export async function POST(req: Request) {
   const { searchTerm } = await req.json();
 
-  // Firestore에서 데이터를 검색하는 쿼리
-  const postsRef = collection(db, "posts");
-
   try {
-    // Firestore 쿼리 설정 (title 또는 content에 searchTerm 포함)
-    const q = query(
+    const postsRef = collection(db, "posts");
+
+    // title 필드에서 검색
+    const titleQuery = query(
       postsRef,
-      or(
-        where("title", ">=", searchTerm),
-        where("title", "<=", searchTerm + "\uf8ff"),
-        where("content", ">=", searchTerm),
-        where("content", "<=", searchTerm + "\uf8ff"),
-      ),
+      where("title", ">=", searchTerm),
+      where("title", "<=", searchTerm + "\uf8ff"),
     );
 
-    const querySnapshot = await getDocs(q);
-    const posts = querySnapshot.docs.map((doc) => doc.data());
+    // content 필드에서 검색
+    const contentQuery = query(
+      postsRef,
+      where("content", ">=", searchTerm),
+      where("content", "<=", searchTerm + "\uf8ff"),
+    );
+
+    // 각각의 쿼리 실행
+    const titleSnapshot = await getDocs(titleQuery);
+    const contentSnapshot = await getDocs(contentQuery);
+
+    // title과 content에서 검색된 결과를 결합
+    const posts = [...titleSnapshot.docs, ...contentSnapshot.docs].map((doc) =>
+      doc.data(),
+    );
 
     return NextResponse.json({ posts });
   } catch (error) {
