@@ -66,3 +66,8 @@ export type VulDBPost = {
 };
 
 export type VulDBPostWithChip = VulDBPost & { chip: "hot" | "new" | "" };
+
+export type VulDBPinnedInfo = {
+  userId: string;
+  postId: string;
+};
