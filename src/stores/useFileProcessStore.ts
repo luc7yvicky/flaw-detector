@@ -4,6 +4,23 @@ import { convertEscapedCharacterToRawString } from "@/lib/utils";
 import { FileResultFailProps, FileResultProps, FileStatus } from "@/types/file";
 import { v4 as uuidv4 } from "uuid";
 import { create } from "zustand";
+import { FILE_INSPECTION_STATUS_KEY } from "../lib/const";
+
+// 파일 검사 여부 -> 로컬 스토리지에 저장
+const saveFileStatusesToLocalStorage = (
+  fileStatuses: Map<string, FileStatus>,
+) => {
+  const serializedStatuses = JSON.stringify(Array.from(fileStatuses.entries()));
+  localStorage.setItem(FILE_INSPECTION_STATUS_KEY, serializedStatuses);
+};
+
+const loadFileStatusesFromLocalStorage = (): Map<string, FileStatus> => {
+  const serializedStatuses = localStorage.getItem(FILE_INSPECTION_STATUS_KEY);
+  if (serializedStatuses) {
+    return new Map(JSON.parse(serializedStatuses));
+  }
+  return new Map();
+};
 
 interface FileProcessState {
   fileStatuses: Map<string, FileStatus>;
@@ -25,7 +42,7 @@ interface FileProcessState {
 }
 
 export const useFileProcessStore = create<FileProcessState>((set, get) => ({
-  fileStatuses: new Map(),
+  fileStatuses: loadFileStatusesFromLocalStorage(),
   currentDetectedFile: null,
   fileDetectedResults: null,
   isInspectionRunning: false,
@@ -33,6 +50,7 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
     set((state) => {
       const newFileStatuses = new Map(state.fileStatuses);
       newFileStatuses.set(path, status);
+      saveFileStatusesToLocalStorage(newFileStatuses);
       return { fileStatuses: newFileStatuses };
     }),
   getFileStatus: (path) => get().fileStatuses.get(path) ?? null,

@@ -36,3 +36,5 @@ export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability";
 
 export const WEB_CRAWLING_CERT_CC_API_URL = `${BASE_URL}/api/web-crawling/cert-cc`;
 export const WEB_CRAWLING_CNNVD_API_URL = `${BASE_URL}/api/web-crawling/cnnvd`;
+
+export const FILE_INSPECTION_STATUS_KEY = "fileStatuses";

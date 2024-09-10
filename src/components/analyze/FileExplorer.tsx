@@ -6,6 +6,8 @@ import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { FolderItem, RepoContentItem } from "@/types/repo";
 import { useCallback, useEffect, useState } from "react";
 import FileList from "./FileList";
+import { getDetectedResultsByRepo } from "@/lib/api/repositories";
+import { useFileProcessStore } from "@/stores/useFileProcessStore";
 
 export default function FileExplorer({
   initialStructure,
@@ -27,6 +29,7 @@ export default function FileExplorer({
   const resetFileSelection = useFileSelectionStore(
     (state) => state.resetFileSelection,
   );
+  const setStatus = useFileProcessStore((state) => state.setFileStatus);
 
   const [structure, setStructure] =
     useState<RepoContentItem[]>(initialStructure);
