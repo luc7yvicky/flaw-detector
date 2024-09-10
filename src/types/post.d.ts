@@ -64,3 +64,5 @@ export type VulDBPost = {
   content: CertCCContent | CnnvdContent;
   views: number;
 };
+
+export type VulDBPostWithChip = VulDBPost & { chip: "hot" | "new" | "" };

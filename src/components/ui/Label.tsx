@@ -8,24 +8,25 @@ const labelVariants = cva(
     variants: {
       variant: {
         // 취약점 DB
-        hot: "px-3 py-2 h-[2.188rem] bg-accent-red text-white font-semibold leading-[1.216rem]",
-        new: "px-3 py-2 h-[2.188rem] bg-accent-blue text-white font-semibold leading-[1.216rem]",
+        hot: "px-3 py-2 h-[2.375rem] bg-accent-red text-white font-semibold leading-[1.4rem]",
+        new: "px-3 py-2 h-[2.375rem] bg-accent-blue text-white font-semibold leading-[1.4rem]",
         unselected:
-          "px-3 py-2 h-[2.188rem] bg-[#E8E8E8] text-[#ADADAD] font-semibold leading-[1.216rem]",
+          "px-3 py-2 h-[2.375rem] bg-[#E8E8E8] text-[#ADADAD] font-semibold leading-[1.4rem]",
 
         // 취약점 DB - grid label
         column:
           "px-[0.5rem] py-[0.75rem] h-[2.625rem] bg-white font-normal border border-gray-dark leading-[1.627rem] rounded-full",
 
-        // MY 저장소 - UI 스크랩
+        // MY 저장소 - 메인 (로그인 o) & UI 스크랩
         clipping:
-          "px-3 py-2 h-[2.188rem] bg-bggray-light text-gray-default font-semibold leading-[1.216rem]",
+          "px-3 py-2 h-[2.375rem] bg-[#E8F8FF] text-accent-blue font-medium leading-[1.4rem]",
+        "clipping-etc":
+          "px-3 py-2 h-[2.375rem] bg-bggray-light text-gray-default font-medium leading-[1.4rem]", // 기타
         "clipping-notify":
-          "px-3 py-2 h-[2.188rem] bg-primary-50 text-primary-500 font-semibold leading-[1.216rem]",
-        "clipping-warning":
-          "px-3 py-2 h-[2.188rem] bg-red-light text-accent-red font-semibold leading-[1.216rem]",
+          "px-3 py-2 h-[2.375rem] bg-primary-50 text-primary-500 font-medium leading-[1.4rem]",
 
-        // MY 저장소 - 메인 (로그인 o)
+        "clipping-warning":
+          "px-3 py-2 h-[2.375rem] bg-red-light text-accent-red font-medium leading-[1.4rem]",
         outline:
           "px-[0.75rem] py-[0.438rem] h-[1.875rem] bg-white font-normal border border-gray-dark leading-4",
 

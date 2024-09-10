@@ -1,6 +1,9 @@
 import { OCTOKIT_TOKEN } from "@/lib/const";
+import { Mode } from "@/stores/useDetectedModeStore";
+import { FileResultProps } from "@/types/file";
 import { RepoContentItem, RepoListData } from "@/types/repo";
 import { Octokit } from "@octokit/rest";
+import { sortDirectoryFirst } from "../utils";
 
 type RepoListRawData = {
   id: number;
@@ -60,6 +63,7 @@ export async function getRepoLists(username: string) {
       username: username,
       headers: {
         "X-GitHub-Api-Version": "2022-11-28",
+        Authorization: `token ${OCTOKIT_TOKEN}`, // Github API 요청 한도 초과로 임시 추가
       },
     });
 
@@ -78,22 +82,24 @@ export async function getRepoLists(username: string) {
 }
 
 // 폴더의 하위 콘텐츠를 불러옵니다.
+type FolderItem = Extract<RepoContentItem, { type: "dir" }>;
+
 export async function expandFolder(
   username: string,
   repo: string,
-  folder: RepoContentItem,
-): Promise<RepoContentItem> {
-  if (folder.type !== "dir" || folder.loadingStatus === "loaded") {
+  folder: FolderItem,
+): Promise<FolderItem> {
+  if (folder.folderExpandStatus === "expanded") {
     return folder;
   }
 
   try {
-    folder.loadingStatus = "loading";
+    folder.folderExpandStatus = "expanding";
     folder.items = await fetchRepoContents(username, repo, folder.path);
-    folder.loadingStatus = "loaded";
+    folder.folderExpandStatus = "expanded";
     return folder;
   } catch (error) {
-    folder.loadingStatus = "error";
+    folder.folderExpandStatus = "error";
     folder.error =
       error instanceof Error
         ? error.message
@@ -102,7 +108,7 @@ export async function expandFolder(
   }
 }
 // 해당 경로의 content를 1depth만 읽어옵니다 (폴더/파일)
-async function fetchRepoContents(
+export async function fetchRepoContents(
   username: string,
   repo: string,
   path: string = "",
@@ -122,17 +128,30 @@ async function fetchRepoContents(
       throw new Error(`경로 ${path}에 대한 예상치 못한 응답입니다.`);
     }
 
-    // const sortedData = sortFilesAndDirs(response.data);
-    return response.data?.map(
-      (item: any): RepoContentItem => ({
+    const sortedData = sortDirectoryFirst(response.data);
+    return sortedData?.map((item: any): RepoContentItem => {
+      const baseItem = {
         name: item.name,
         path: item.path,
-        type: item.type,
-        loadingStatus: item.type === "file" ? "loaded" : "initial",
+        type: item.type as "file" | "dir",
         size: item.size,
-        items: item.type === "dir" ? [] : undefined,
-      }),
-    );
+      };
+
+      if (item.type === "dir") {
+        return {
+          ...baseItem,
+          type: "dir",
+          folderExpandStatus: "initial",
+          items: [],
+        };
+      } else {
+        return {
+          ...baseItem,
+          type: "file",
+          fileContentStatus: "initial",
+        };
+      }
+    });
   } catch (error) {
     throw new Error(
       `${path}에 대한 레포 내용을 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
@@ -152,3 +171,56 @@ export async function fetchRootStructure(username: string, repo: string) {
     throw error;
   }
 }
+
+// 전체 레포의 파일 리스트를 가져옵니다 - response 오래 걸림
+export async function fetchAllDepthFiles(
+  username: string,
+  repo: string,
+  path: string = "",
+  signal?: AbortSignal,
+): Promise<RepoContentItem[]> {
+  const contents = await fetchRepoContents(username, repo, path);
+  const allContents: RepoContentItem[] = [];
+
+  for (const item of contents) {
+    if (item.type === "file") {
+      allContents.push(item);
+    } else if (item.type === "dir") {
+      const subContents = await fetchAllDepthFiles(
+        username,
+        repo,
+        item.path,
+        signal,
+      );
+      allContents.push({ ...item, items: subContents });
+    }
+  }
+
+  return allContents;
+}
+
+// 취약점 검사 결과 조회
+export const getDetectedResults = async (
+  username: string,
+  filePath: string | null,
+): Promise<{ mode: Mode; results: FileResultProps[] | null }> => {
+  try {
+    const res = await fetch(
+      `/api/repos/results?username=${username}&filePath=${filePath}`,
+    );
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw Error("Failed to fetch results.");
+    }
+
+    if (data.results) {
+      return { mode: "detected", results: data.results };
+    } else {
+      return { mode: "detected", results: data.results };
+    }
+  } catch (err) {
+    console.error("Error fetching results:", err);
+    throw err;
+  }
+};

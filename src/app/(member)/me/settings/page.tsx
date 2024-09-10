@@ -6,7 +6,7 @@ import { logout } from "@/lib/actions";
 
 export default function SettingsPage() {
   return (
-    <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
+    <div className="mb-[7.75rem] flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <TitleBar title="Settings" align="center" className="mb-0 mt-[4.5rem]" />
 
       <div className="flex flex-col gap-y-20 last:mb-[5.438rem]">
