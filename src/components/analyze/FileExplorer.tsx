@@ -31,6 +31,26 @@ export default function FileExplorer({
   const [structure, setStructure] =
     useState<RepoContentItem[]>(initialStructure);
 
+  useEffect(() => {
+    const getResults = async () => {
+      try {
+        const { status, filePaths } = await getDetectedResultsByRepo(
+          username,
+          repo,
+        );
+        if (status && filePaths) {
+          filePaths.forEach((filePath) => {
+            setStatus(filePath, status);
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching detected results:", err);
+      }
+    };
+
+    getResults();
+  }, []);
+
   // 레포 이동시 초기화
   useEffect(() => {
     resetFileViewer();

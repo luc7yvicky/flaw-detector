@@ -7,13 +7,13 @@ import { create } from "zustand";
 
 interface FileProcessState {
   fileStatuses: Map<string, FileStatus>;
-  currentDetectedFile: string;
+  currentDetectedFile: string | null;
   fileDetectedResults: FileResultProps[] | FileResultFailProps | null;
   isInspectionRunning: boolean;
   setFileStatus: (path: string, status: FileStatus) => void;
   getFileStatus: (path: string) => FileStatus;
   resetFileStatuses: () => void;
-  setCurrentDetectedFile: (path: string) => void;
+  setCurrentDetectedFile: (path: string | null) => void;
   setFileDetectedResults: (results: FileResultProps[] | null) => void;
   setIsInspectionRunning: (isRunning: boolean) => void;
   processFiles: (
@@ -26,7 +26,7 @@ interface FileProcessState {
 
 export const useFileProcessStore = create<FileProcessState>((set, get) => ({
   fileStatuses: new Map(),
-  currentDetectedFile: "",
+  currentDetectedFile: null,
   fileDetectedResults: null,
   isInspectionRunning: false,
   setFileStatus: (path, status) =>
@@ -37,7 +37,8 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
     }),
   getFileStatus: (path) => get().fileStatuses.get(path) ?? null,
   resetFileStatuses: () => set({ fileStatuses: new Map() }),
-  setCurrentDetectedFile: (path: string) => set({ currentDetectedFile: path }),
+  setCurrentDetectedFile: (path: string | null) =>
+    set({ currentDetectedFile: path }),
   setFileDetectedResults: (results) => set({ fileDetectedResults: results }),
   setIsInspectionRunning: (isRunning: boolean) =>
     set({ isInspectionRunning: isRunning }),

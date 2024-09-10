@@ -1,6 +1,6 @@
 import { OCTOKIT_TOKEN } from "@/lib/const";
 import { Mode } from "@/stores/useDetectedModeStore";
-import { FileResultProps } from "@/types/file";
+import { FileResultProps, FileStatus } from "@/types/file";
 import { RepoContentItem, RepoListData } from "@/types/repo";
 import { Octokit } from "@octokit/rest";
 import { sortDirectoryFirst } from "../utils";
@@ -297,7 +297,8 @@ export const addFileResults = async (
     });
 
     if (!res.ok) {
-      throw new Error("Failed to save results.");
+      const errorData = await res.json();
+      throw new Error(errorData.error || "Failed to save results.");
     }
   } catch (err) {
     console.error("Error adding results:", err);
@@ -322,7 +323,7 @@ export const getDetectedResultsByFile = async (
     if (data.results) {
       return { mode: "detected", results: data.results };
     } else {
-      return { mode: "detected", results: data.results };
+      return { mode: "undetected", results: data.message };
     }
   } catch (err) {
     console.error("Error fetching results:", err);
@@ -334,21 +335,27 @@ export const getDetectedResultsByFile = async (
 export const getDetectedResultsByRepo = async (
   username: string,
   repo: string | null,
-): Promise<{ mode: Mode; results: FileResultProps[] | null }> => {
+): Promise<{
+  status: FileStatus;
+  filePaths: string[];
+  // results?: FileResultProps[] | null;
+}> => {
   try {
     const res = await fetch(
       `/api/repos/results?username=${username}&repo=${repo}`,
     );
     const data = await res.json();
-
     if (!res.ok) {
       throw Error("Failed to fetch results.");
     }
 
     if (data.results) {
-      return { mode: "detected", results: data.results };
+      return {
+        status: "success",
+        filePaths: data.results,
+      };
     } else {
-      return { mode: "detected", results: data.results };
+      return { status: null, filePaths: [] };
     }
   } catch (err) {
     console.error("Error fetching results:", err);
