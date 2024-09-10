@@ -41,6 +41,7 @@ function FileListItem({
   const handleCheckboxChange = () => {
     if (!isImage) {
       toggleFileSelection(item.path, item.name);
+      setCurrentFile(path);
     }
   };
 
