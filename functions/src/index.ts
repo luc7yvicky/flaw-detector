@@ -4,7 +4,7 @@ import * as logger from "firebase-functions/logger";
 import { MemoryOption } from "firebase-functions/v2/options";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { SCHEDULE_EXPRESSION } from "./const";
-import { getLlamaAPItoken } from "./llama3";
+import { generateLlamaText, getLlamaAPItoken } from "./llama3";
 import { startCertCCWebCrawling } from "./web-crawling/certCC";
 
 initializeApp({
@@ -50,13 +50,21 @@ export const handleScheduledCrawlingCertCC = onSchedule(
     }
 
     try {
+      logger.info("토큰 발급 시작합니다.");
       const token = await getLlamaAPItoken(
         LLAMA_AUTH_URL,
         LLAMA_USERNAME,
         LLAMA_PASSWORD,
       );
-
       logger.info(`토큰 발급에 성공했습니다: ${JSON.stringify(token)}`);
+
+      logger.info("텍스트 생성 시작합니다.");
+      const generatedText = await generateLlamaText(
+        token,
+        LLAMA_API_URL,
+        "Firebase Cloud Functions에 대해 알려주세요.",
+      );
+      logger.info(`텍스트 생성 성공했습니다: ${JSON.stringify(generatedText)}`);
 
       logger.info("웹 크롤링 시작합니다."); // 시작 로그
       await startCertCCWebCrawling();
