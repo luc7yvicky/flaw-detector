@@ -12,6 +12,8 @@ import {
   IconHourGlass,
   IconThinClose,
 } from "./Icons";
+import { getDetectedResultsByFile } from "@/lib/api/repositories";
+import { useFileProcessStore } from "@/stores/useFileProcessStore";
 
 const alertType = {
   onCheck: {
@@ -71,14 +73,18 @@ type AlertType = {
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export const Alert = ({
+  username,
   status = "onWait",
   className,
   ...props
-}: AlertType) => {
+}: { username: string } & AlertType) => {
   const [isOpen, setIsOpen] = useState(true);
   const repoName = useFileViewerStore((state) => state.currentRepo);
   const filePath = useFileViewerStore((state) => state.currentFile);
   const setMode = useDetectedModeStore((state) => state.setMode);
+  const setResults = useFileProcessStore(
+    (state) => state.setFileDetectedResults,
+  );
 
   if (!status) {
     return null;
@@ -88,10 +94,20 @@ export const Alert = ({
     status
   ] as AlertProperty;
 
-  const onClickToResults = () => {
-    setMode("detected");
-    window.history.replaceState({}, "", `/repos/${repoName}/${filePath}`);
-    setIsOpen(false);
+  const onClickToResults = async () => {
+    try {
+      const { mode, results } = await getDetectedResultsByFile(
+        username,
+        filePath,
+      );
+
+      setMode(mode);
+      setResults(results);
+      window.history.replaceState({}, "", `/repos/${repoName}/${filePath}`);
+      setIsOpen(false);
+    } catch (err) {
+      console.error("Error fetching results:", err);
+    }
   };
 
   return (

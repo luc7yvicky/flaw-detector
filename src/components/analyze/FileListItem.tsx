@@ -3,7 +3,7 @@ import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { RepoContentItem } from "@/types/repo";
-import { memo, useCallback, useEffect, useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import {
   IconCaretLeft,
   IconDoc,
@@ -64,14 +64,7 @@ function FileListItem({
     [item, onToggle, setCurrentFile, path, type],
   );
 
-  useEffect(() => {
-    console.log("들어오나용");
-    console.log("fileStatus", fileStatus);
-  }, [fileStatus]);
-
   const statusIcon = useMemo(() => {
-    console.log("들어오나용");
-    console.log("fileStatus", fileStatus);
     switch (fileStatus) {
       case "onCheck":
         return <IconOnProcess className="animate-spin" />; // 처리 중임을 더 명확하게 표시
