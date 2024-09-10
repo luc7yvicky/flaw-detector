@@ -1,11 +1,11 @@
 "use client";
 
+import { useExpandFolder } from "@/lib/queries/useExpandFolder";
 import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { FolderItem, RepoContentItem } from "@/types/repo";
 import { useCallback, useEffect, useState } from "react";
 import FileList from "./FileList";
-import { useExpandFolder } from "@/lib/queries/useExpandFolder";
 
 export default function FileExplorer({
   initialStructure,
@@ -24,8 +24,6 @@ export default function FileExplorer({
   );
   const resetFileViewer = useFileViewerStore((state) => state.resetFileViewer);
   const setCurrentRepo = useFileViewerStore((state) => state.setCurrentRepo);
-  const { selectAllFiles, deselectAllFiles, getSelectedFilesCount } =
-    useFileSelectionStore();
 
   const [structure, setStructure] =
     useState<RepoContentItem[]>(initialStructure);
@@ -34,8 +32,7 @@ export default function FileExplorer({
   useEffect(() => {
     resetFileViewer();
     setCurrentRepo(repo);
-    deselectAllFiles();
-  }, [resetFileViewer, setCurrentRepo, deselectAllFiles, repo]);
+  }, [resetFileViewer, setCurrentRepo, repo]);
 
   useEffect(() => {
     if (data && data.type === "dir") {
@@ -98,36 +95,10 @@ export default function FileExplorer({
     [],
   );
 
-  const handleSelectAll = useCallback(() => {
-    const allFiles = getAllFiles(structure);
-    if (getSelectedFilesCount() === allFiles.length) {
-      deselectAllFiles();
-    } else {
-      selectAllFiles(allFiles);
-    }
-  }, [
-    structure,
-    selectAllFiles,
-    deselectAllFiles,
-    getSelectedFilesCount,
-    getAllFiles,
-  ]);
-
-  const isAllSelected = useCallback(() => {
-    const allFiles = getAllFiles(structure);
-    return getSelectedFilesCount() === allFiles.length;
-  }, [structure, getSelectedFilesCount, getAllFiles]);
-
   return (
     <div className="overflow-hidden rounded-lg border border-line-default">
       <div className="flex items-center border-b border-line-default bg-purple-light px-3 py-5 text-xl">
         <div className="flex items-center">
-          <input
-            type="checkbox"
-            checked={isAllSelected()}
-            onChange={handleSelectAll}
-            className="mr-2 size-4 accent-primary-500"
-          />
           <span>Files</span>
         </div>
       </div>
