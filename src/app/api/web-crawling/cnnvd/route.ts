@@ -1,11 +1,7 @@
 import { getChromeExecutablePath } from "@/lib/api/chrome";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
-import {
-  CnnvdLocalizedTextBlock,
-  CnnvdTextBlock,
-  VulDBPost,
-} from "@/types/post";
+import { VulDBPost } from "@/types/post";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import db from "../../../../../firebaseConfig";
 import { addPost } from "@/lib/api/posts";
@@ -42,29 +38,6 @@ const translateText = async (originalText: string) => {
     return "";
   }
   return res;
-};
-
-type CNNVDData = {
-  id: string;
-  label: "기타" | "취약성 보고서" | "취약성 알림";
-  source: "CNNVD";
-  page_url: string;
-  views: number;
-  title: {
-    original: CnnvdTextBlock;
-    translated: [];
-  };
-  created_at: {
-    seconds: number;
-    nanoseconds: number;
-  };
-  source_created_at: { seconds: number; nanoseconds: number };
-  content: {
-    description: CnnvdLocalizedTextBlock;
-    introduction: CnnvdLocalizedTextBlock;
-    vulnDetail: CnnvdLocalizedTextBlock;
-    remediation: CnnvdLocalizedTextBlock;
-  };
 };
 
 // Firestore에 데이터가 이미 저장되어 있는지 확인
@@ -134,8 +107,8 @@ export async function GET() {
     );
 
     // 크롤링 요소확인 로그 (추후 삭제 예정)
-    console.log(`Crawled Title: ${detailTitle || "제목을 찾을 수 없습니다."}`);
-    console.log(`날짜 : ${detailSubtitle || "날짜를 찾을 수 없습니다."} `);
+    // console.log(`Crawled Title: ${detailTitle || "제목을 찾을 수 없습니다."}`);
+    // console.log(`날짜 : ${detailSubtitle || "날짜를 찾을 수 없습니다."} `);
 
     //날짜만 추출
     let sourceCreatedAtTimestamp = 0;
@@ -162,7 +135,6 @@ export async function GET() {
       return true;
     }
 
-    // CnnvdContent 추출
     const content = await page.evaluate(() => {
       const paragraphs = document.querySelectorAll(
         "div.detail-content > p.MsoNormal, div.detail-content > pre, div.detail-content > font, div.detail-content > p.\\32,  div.detail-content > h2, div.detail-content > p.MsoNormalCxSpFirst",
