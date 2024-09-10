@@ -1,6 +1,7 @@
 import { OCTOKIT_TOKEN } from "@/lib/const";
 import { RepoContentItem, RepoListData } from "@/types/repo";
 import { Octokit } from "@octokit/rest";
+import { isIgnoredFile } from "../utils";
 
 type RepoListRawData = {
   id: number;
@@ -168,29 +169,103 @@ export async function fetchRootStructure(username: string, repo: string) {
   }
 }
 
-// 전체 레포의 파일 리스트를 가져옵니다 - response 오래 걸림
-export async function fetchAllDepthFiles(
-  username: string,
+// GitHub API 응답에 맞춘 타입 정의
+type GitHubTreeItem = {
+  path?: string;
+  mode?: string;
+  type?: string;
+  sha?: string;
+  size?: number;
+  url?: string;
+};
+
+export type RepoTreeItem = {
+  name: string;
+  path: string;
+  type: "file" | "directory";
+  size?: number;
+  sha: string;
+};
+export type RepoTreeResult = {
+  tree: RepoTreeItem[];
+  ignoredFiles: RepoTreeItem[];
+  ignoredCount: number;
+};
+
+// 타입 가드 함수
+function isValidTreeItem(
+  item: GitHubTreeItem,
+): item is Required<Pick<GitHubTreeItem, "path" | "type" | "sha">> &
+  Pick<GitHubTreeItem, "size"> {
+  return (
+    typeof item.path === "string" &&
+    typeof item.type === "string" &&
+    typeof item.sha === "string" &&
+    (item.size === undefined || typeof item.size === "number")
+  );
+}
+
+export async function getRepoTree(
+  owner: string,
   repo: string,
-  path: string = "",
-  signal?: AbortSignal,
-): Promise<RepoContentItem[]> {
-  const contents = await fetchRepoContents(username, repo, path);
-  const allContents: RepoContentItem[] = [];
+  branch: string = "main",
+): Promise<RepoTreeResult> {
+  try {
+    // 1. Get the latest commit SHA of the specified branch
+    const { data: refData } = await octokit.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${branch}`,
+    });
+    const commitSha = refData.object.sha;
 
-  for (const item of contents) {
-    if (item.type === "file") {
-      allContents.push(item);
-    } else if (item.type === "dir") {
-      const subContents = await fetchAllDepthFiles(
-        username,
-        repo,
-        item.path,
-        signal,
-      );
-      allContents.push({ ...item, items: subContents });
-    }
+    // 2. Get the tree SHA from the commit
+    const { data: commitData } = await octokit.git.getCommit({
+      owner,
+      repo,
+      commit_sha: commitSha,
+    });
+    const treeSha = commitData.tree.sha;
+
+    // 3. Get the full tree recursively
+    const { data: treeData } = await octokit.git.getTree({
+      owner,
+      repo,
+      tree_sha: treeSha,
+      recursive: "1",
+    });
+
+    const processedTree: RepoTreeItem[] = [];
+    const ignoredFiles: RepoTreeItem[] = [];
+
+    // 4. Process and filter the tree data
+    treeData.tree.forEach((item) => {
+      if (isValidTreeItem(item)) {
+        const processedItem: RepoTreeItem = {
+          name: item.path.split("/").pop() || item.path,
+          path: item.path,
+          type: item.type === "blob" ? "file" : "directory",
+          size: item.size,
+          sha: item.sha,
+        };
+
+        if (isIgnoredFile(item.path)) {
+          ignoredFiles.push(processedItem);
+        } else {
+          processedTree.push(processedItem);
+        }
+      }
+    });
+
+    return {
+      tree: processedTree,
+      ignoredFiles,
+      ignoredCount: ignoredFiles.length,
+    };
+  } catch (error) {
+    console.error("Error fetching repo tree:", error);
+    throw new Error(
+      `레포지토리 트리를 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
+    );
   }
-
-  return allContents;
 }
