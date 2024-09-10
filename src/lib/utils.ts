@@ -13,7 +13,7 @@ const convertTimestampToDate = (timestamp: {
   return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
 };
 
-/** Firestore의 timestamp 형식에서 문자열('#일 전')로 변환합니다.*/
+/** Firestore의 timestamp 형식에서 문자열('#일 전' 또는 '#시간 전' 또는 '#분 전')으로 변환합니다.*/
 export const formatTimestampAsDaysAgo = (timestamp: {
   seconds: number;
   nanoseconds: number;
@@ -21,13 +21,22 @@ export const formatTimestampAsDaysAgo = (timestamp: {
   const createdAtDate = convertTimestampToDate(timestamp);
   const now = new Date();
 
-  // 두 날짜 간의 차이 계산 (밀리초 단위)
   const differenceInMs = now.getTime() - createdAtDate.getTime();
 
-  // 차이를 일 단위로 변환
   const daysAgo = Math.floor(differenceInMs / (1000 * 60 * 60 * 24));
+  const hoursAgo = Math.floor(differenceInMs / (1000 * 60 * 60));
+  const minutesAgo = Math.floor(differenceInMs / (1000 * 60));
+  const secondsAgo = Math.floor(differenceInMs / 1000);
 
-  return `${daysAgo}일 전`;
+  if (daysAgo > 0) {
+    return `${daysAgo}일 전`;
+  } else if (hoursAgo > 0) {
+    return `${hoursAgo}시간 전`;
+  } else if (minutesAgo > 0) {
+    return `${minutesAgo}분 전`;
+  } else {
+    return `${secondsAgo}초 전`;
+  }
 };
 
 /** Firestore의 timestamp 형식에서 문자열('YYYY.MM.DD HH:mm:ss')로 변환합니다. */

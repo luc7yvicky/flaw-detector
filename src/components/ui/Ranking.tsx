@@ -1,11 +1,11 @@
-"use client";
-
+import { SearchKeyword } from "@/lib/api/searchKeywords";
 import { cn } from "@/lib/utils";
-import { useEffect, useState } from "react";
 
-export type RankingProps = React.HTMLAttributes<HTMLUListElement> & {};
+export type RankingProps = React.HTMLAttributes<HTMLUListElement> & {
+  topSearchKeywords: SearchKeyword[];
+};
 
-const topics = [
+const dummySearchKeywords: string[] = [
   "유닛테스트",
   "웹뷰 프레임워크",
   "허프만 코딩 구현",
@@ -18,39 +18,51 @@ const topics = [
   "클린 코어",
 ];
 
-export const Ranking: React.FC<RankingProps> = ({ className, ...props }) => {
-  const [highlightedTopic, setHighlightedTopic] = useState<number>(0);
+const renderTopics = (
+  topics: string[] | SearchKeyword[],
+  haveSearchKeywords: boolean,
+) => {
+  return topics.map((topic, index) => {
+    const topicName = typeof topic === "string" ? topic : topic.keyword;
 
-  useEffect(() => {
-    const intervalId = setInterval(() => {
-      setHighlightedTopic(
-        (prevIndex: number) => (prevIndex + 1) % topics.length,
-      );
-    }, 5000); // 5초마다 highlightedTopic 변경 (임시)
+    return (
+      <li
+        key={topicName}
+        className={cn(
+          "animate-fadeIn border-b border-line-light py-4 text-lg font-medium leading-[1.361rem] tracking-[-0.01em]",
+          index === topics.length - 1 && "border-none",
+          !haveSearchKeywords && "select-none blur-md",
+        )}
+      >
+        {index + 1}. {topicName}
+      </li>
+    );
+  });
+};
 
-    return () => clearInterval(intervalId);
-  }, []);
-
+export const Ranking: React.FC<RankingProps> = ({
+  className,
+  topSearchKeywords,
+  ...props
+}) => {
   return (
     <ul
       className={cn(
-        "h-[36.25rem] w-[21.625rem] rounded-lg border border-line-default p-5",
+        "relative h-[36.25rem] w-full rounded-[1.25rem] border border-[#CFCFCF] px-9 py-5",
         className,
       )}
       {...props}
     >
-      {topics.map((topic, index) => (
-        <li
-          key={index}
-          className={cn(
-            "border-b border-line-light py-4 pl-1 text-lg font-medium leading-[21.78px] tracking-[-0.01em]",
-            index === topics.length - 1 && "border-none",
-            index === highlightedTopic && "text-primary-500",
-          )}
-        >
-          {index + 1}. {topic}
-        </li>
-      ))}
+      {topSearchKeywords.length > 0 ? (
+        renderTopics(topSearchKeywords, true)
+      ) : (
+        <>
+          {renderTopics(dummySearchKeywords, false)}
+          <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform whitespace-nowrap text-xl font-medium">
+            데이터를 준비중입니다.
+          </p>
+        </>
+      )}
     </ul>
   );
 };
