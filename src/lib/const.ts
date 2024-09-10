@@ -35,3 +35,4 @@ export const PAGES_PER_GROUP = 10;
 export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability";
 
 export const WEB_CRAWLING_CERT_CC_API_URL = `${BASE_URL}/api/web-crawling/cert-cc`;
+export const WEB_CRAWLING_CNNVD_API_URL = `${BASE_URL}/api/web-crawling/cnnvd`;

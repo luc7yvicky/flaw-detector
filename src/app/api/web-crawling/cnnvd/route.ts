@@ -1,36 +1,41 @@
 import { getChromeExecutablePath } from "@/lib/api/chrome";
 import { NextResponse } from "next/server";
 import puppeteer from "puppeteer-core";
-import {
-  CnnvdLocalizedTextBlock,
-  CnnvdTextBlock,
-  VulDBPost,
-} from "@/types/post";
+import { VulDBPost } from "@/types/post";
 import { collection, getDocs, query, where } from "firebase/firestore";
 import db from "../../../../../firebaseConfig";
 import { addPost } from "@/lib/api/posts";
 
-type CNNVDData = {
-  id: string;
-  label: "기타" | "취약성 보고서" | "취약성 알림";
-  source: "CNNVD";
-  page_url: string;
-  views: number;
-  title: {
-    original: CnnvdTextBlock;
-    translated: [];
-  };
-  created_at: {
-    seconds: number;
-    nanoseconds: number;
-  };
-  source_created_at: { seconds: number; nanoseconds: number };
-  content: {
-    description: CnnvdLocalizedTextBlock;
-    introduction: CnnvdLocalizedTextBlock;
-    vulnDetail: CnnvdLocalizedTextBlock;
-    remediation: CnnvdLocalizedTextBlock;
-  };
+async function getGeneratedText(user_message: string) {
+  const LOCAL_LLAMA_API_URL = "http://localhost:3000/api/generate";
+  const res = await fetch(LOCAL_LLAMA_API_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      user_message,
+      temperature: 0.9,
+      top_p: 0.9,
+    }),
+  });
+
+  if (!res.ok) {
+    console.error("LLaMA API request failed:", res.statusText);
+    return null;
+  }
+
+  const data = await res.json();
+  return data.generated_text;
+}
+
+const translateText = async (originalText: string) => {
+  if (!originalText) return "";
+  const res = await getGeneratedText(
+    `다음 텍스트를 한국어로 번역해주세요. url은 제외하고 이어서 번역해주세요. ${originalText}`,
+  );
+  if (!res) {
+    console.error("Translation failed, received undefined");
+    return "";
+  }
+  return res;
 };
 
 // Firestore에 데이터가 이미 저장되어 있는지 확인
@@ -63,7 +68,7 @@ export async function GET() {
     timeout: 20000,
   });
 
-  const crawledData: CNNVDData[] = [];
+  const crawledData: VulDBPost[] = [];
 
   async function crawlDetails(startIndex: number) {
     const elements = await page.$$("p.content-title");
@@ -76,6 +81,7 @@ export async function GET() {
     const refreshedElement = elements[startIndex];
 
     if (!refreshedElement) {
+      console.log("인덱스", startIndex, "에 해당하는 요소를 찾을 수 없습니다.");
       return "done";
     }
 
@@ -122,7 +128,6 @@ export async function GET() {
       return true;
     }
 
-    // CnnvdContent 추출
     const content = await page.evaluate(() => {
       const paragraphs = document.querySelectorAll(
         "div.detail-content > p.MsoNormal, div.detail-content > pre, div.detail-content > font, div.detail-content > p.\\32,  div.detail-content > h2, div.detail-content > p.MsoNormalCxSpFirst",
@@ -192,7 +197,7 @@ export async function GET() {
       views: 0,
       title: {
         original: detailTitle || "제목을 찾을 수 없습니다.",
-        translated: "",
+        translated: (await translateText(detailTitle || "")) || "",
       },
       created_at: {
         seconds: 0,
@@ -205,22 +210,25 @@ export async function GET() {
       content: {
         description: {
           original: content.description.original,
-          translated: content.description.translated,
+          translated: (await translateText(content.description.original)) || "",
         },
         introduction: {
           original: content.introduction.original,
-          translated: content.introduction.translated,
+          translated:
+            (await translateText(content.introduction.original)) || "",
         },
         vulnDetail: {
           original: content.vulnDetail.original,
-          translated: content.vulnDetail.translated,
+          translated: (await translateText(content.vulnDetail.original)) || "",
         },
         remediation: {
           original: content.remediation.original,
-          translated: content.remediation.translated,
+          translated: (await translateText(content.remediation.original)) || "",
         },
       },
     };
+
+    crawledData.push(newCrawledData);
     await addPost(newCrawledData);
     return true; // 크롤링 계속 진행
   }
