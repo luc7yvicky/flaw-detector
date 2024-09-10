@@ -66,6 +66,9 @@ const config: Config = {
           dark: "#ADADAD",
         },
       },
+      screens: {
+        "1150": "71.875rem",
+      },
     },
   },
   plugins: [require("tailwind-scrollbar-hide")],

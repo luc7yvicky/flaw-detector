@@ -26,7 +26,7 @@ export default async function RepoPage({
   };
 
   return (
-    <section className="mx-auto mb-7 h-full w-full max-w-[110rem] px-[1rem]">
+    <section className="mx-auto mb-7 h-full w-full min-w-[64rem] max-w-[110rem] px-[1rem]">
       <TitleBar title={repo} />
       <div className="flex h-full gap-7">
         <div className="flex w-[17rem] flex-col gap-7">

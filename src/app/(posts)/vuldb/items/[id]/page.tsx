@@ -16,7 +16,7 @@ export default async function VulnerabilityDBDetailPage({
   const posts = await getAllPosts();
 
   return (
-    <div className="mb-[8.596rem] mt-[2.063rem] flex flex-col items-center gap-[3.75rem]">
+    <div className="mb-[8.596rem] mt-[2.063rem] flex flex-col items-center gap-[3.75rem] px-[1rem]">
       <ArticleDetail post={post} />
       {/* <VulnerabilityGrid /> */}
       <SimilarInfoPosts posts={posts} postId={postId} />
