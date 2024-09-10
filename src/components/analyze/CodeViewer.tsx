@@ -33,17 +33,12 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
     repo,
     currentFile,
   );
-  const {
-    getFileStatus,
-    fileDetectedResults: results,
-    setFileDetectedResults: setResults,
-    currentDetectedFile: filePath,
-  } = useFileProcessStore((state) => ({
-    getFileStatus: state.getFileStatus,
-    fileDetectedResults: state.fileDetectedResults,
-    setFileDetectedResults: state.setFileDetectedResults,
-    currentDetectedFile: state.currentDetectedFile,
-  }));
+  const getFileStatus = useFileProcessStore((state) => state.getFileStatus);
+  const results = useFileProcessStore((state) => state.fileDetectedResults);
+  const setResults = useFileProcessStore(
+    (state) => state.setFileDetectedResults,
+  );
+  const filePath = useFileProcessStore((state) => state.currentDetectedFile);
   const status = currentFile ? getFileStatus(currentFile) : null;
 
   const [highlighterStyle, setHighlighterStyle] = useState({});
@@ -170,7 +165,7 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
 
   if (!data && !isLoading && !error) {
     return (
-      <div className="flex-center-center h-full flex-col gap-8 rounded-lg border border-[#c3c3c3]">
+      <div className="flex-center-center w-full flex-col gap-8 rounded-lg border border-[#c3c3c3]">
         <IconMagnifierWithPlus />
         <div className="text-2xl text-primary-500">파일을 선택하세요</div>
       </div>
@@ -180,14 +175,14 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
   return (
     <div
       className={cn(
-        "max-w-full",
+        "w-full overflow-x-scroll",
         results && mode === "detected" && "min-h-dvh",
       )}
     >
       {/* 코드 뷰어 */}
       <div
         className={cn(
-          "relative h-full w-full overflow-hidden rounded-lg border border-[#c3c3c3]",
+          "relative h-full w-full rounded-lg border border-[#c3c3c3] overflow-hidden",
           results && mode === "detected" ? "h-full max-h-[34.688rem]" : "",
         )}
       >
@@ -199,7 +194,11 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
           wrapLines
           className="p-11"
           PreTag={({ children, ...props }) => (
-            <pre {...props} className="!m-0 h-full" ref={codeRef}>
+            <pre
+              {...props}
+              className="!m-0 h-full w-full max-w-full !overflow-x-auto"
+              ref={codeRef}
+            >
               {children}
             </pre>
           )}
