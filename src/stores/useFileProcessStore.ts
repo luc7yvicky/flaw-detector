@@ -1,14 +1,14 @@
 import { generateLlm } from "@/lib/api/llama3";
 import { fetchCodes } from "@/lib/api/repositories";
 import { convertEscapedCharacterToRawString } from "@/lib/utils";
-import { FileResultProps, FileStatus } from "@/types/file";
+import { FileResultFailProps, FileResultProps, FileStatus } from "@/types/file";
 import { v4 as uuidv4 } from "uuid";
 import { create } from "zustand";
 
 interface FileProcessState {
   fileStatuses: Map<string, FileStatus>;
   currentDetectedFile: string;
-  fileDetectedResults: FileResultProps[] | null;
+  fileDetectedResults: FileResultProps[] | FileResultFailProps | null;
   setFileStatus: (path: string, status: FileStatus) => void;
   getFileStatus: (path: string) => FileStatus;
   resetFileStatuses: () => void;
@@ -44,9 +44,9 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
 
         // LLM 분석 수행
         const res = await generateLlm("analyze", content);
-        console.log("res", res);
+        // 파싱 가능한 문자열로 변환 (JSON)
         const jsonStr = convertEscapedCharacterToRawString(res);
-        console.log("jsonStr", jsonStr);
+        // 파싱
         const data = JSON.parse(jsonStr);
         const results: FileResultProps[] = data.map(
           (result: FileResultProps) => ({

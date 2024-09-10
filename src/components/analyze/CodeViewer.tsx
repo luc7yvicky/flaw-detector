@@ -188,9 +188,7 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
       <div
         className={cn(
           "relative h-full w-full overflow-hidden rounded-lg border border-[#c3c3c3]",
-          results && results.length > 0 && mode === "detected"
-            ? "h-full max-h-[34.688rem]"
-            : "",
+          results && mode === "detected" ? "h-full max-h-[34.688rem]" : "",
         )}
       >
         {/* <ProcessStatus status={status} /> */}

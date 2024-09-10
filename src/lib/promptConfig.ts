@@ -17,10 +17,11 @@ export const promptConfigs: Record<string, PromptConfig> = {
         (2) The potential impact of the attack.
         (3) The solution to overcome the vulnerability.
         Ensure that descriptions are wrapped in an array.
-      5. Provide the exact range of lines in the code where the vulnerability is found. Ensure the range is provided in the format "start-end" using numbers.
+      5. Provide the exact range of lines in the code where the vulnerability is found. Ensure the range is provided in the format "start-end" using numbers. And the line numbers provided in the "lines" section are accurate and correspond to the actual lines in the provided code snippet.
       6. The modified code snippet that addresses the vulnerability, ensuring the fix is secure and follows best practices. Ensure that the modified code snippet is wrapped in an array and adds a backslash mark before double quotation marks when representing strings in the code.
       Ensure that each response includes the titles "name", "vulnerability", "severity", "descriptions", "lines", and "modified_codes" for each section.
       Structure the response as an array of objects, where each object represents a vulnerability.
+      If no vulnerabilities are found, respond with the following message: {"message": "No vulnerabilities"}
       Do not include any additional notes or explanations outside the specified template.
       Ignore any characters that cannot be considered as part of the code.
       Answer only in Korean using complete sentences, not in fragments or informal language, but keep the titles in English.

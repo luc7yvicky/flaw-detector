@@ -9,3 +9,7 @@ export type FileResultProps = {
   modified_codes: string[];
   lines: string;
 };
+
+export type FileResultFailProps = {
+  message: string;
+};
