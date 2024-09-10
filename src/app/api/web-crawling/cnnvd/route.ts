@@ -8,7 +8,6 @@ import { addPost } from "@/lib/api/posts";
 
 async function getGeneratedText(user_message: string) {
   const LOCAL_LLAMA_API_URL = "http://localhost:3000/api/generate";
-  // console.log("Sending request to 라마 API with message:", user_message); 추후 삭제 예정
   const res = await fetch(LOCAL_LLAMA_API_URL, {
     method: "POST",
     body: JSON.stringify({
@@ -24,7 +23,6 @@ async function getGeneratedText(user_message: string) {
   }
 
   const data = await res.json();
-  // console.log("LLaMA API response:", data); 추후 삭제 예정
   return data.generated_text;
 }
 
@@ -89,7 +87,6 @@ export async function GET() {
 
     await new Promise((r) => setTimeout(r, 2000));
     await refreshedElement.click();
-    // console.log(`Clicking on element at index: ${startIndex}`); // 확인용 추후 삭제 예정
     await new Promise((r) => setTimeout(r, 2000));
 
     await page.waitForSelector("p.detail-title", {
@@ -105,10 +102,6 @@ export async function GET() {
     const detailSubtitle = await page.$eval("div.detail-subtitle", (el) =>
       el.textContent?.trim(),
     );
-
-    // 크롤링 요소확인 로그 (추후 삭제 예정)
-    // console.log(`Crawled Title: ${detailTitle || "제목을 찾을 수 없습니다."}`);
-    // console.log(`날짜 : ${detailSubtitle || "날짜를 찾을 수 없습니다."} `);
 
     //날짜만 추출
     let sourceCreatedAtTimestamp = 0;
