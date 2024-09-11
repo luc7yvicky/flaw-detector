@@ -2,6 +2,7 @@ import { VulDBPinnedInfo } from "@/types/post";
 import {
   arrayUnion,
   collection,
+  deleteDoc,
   doc,
   getDocs,
   query,
@@ -88,5 +89,55 @@ export async function addPinnedPostToUser(
       err,
     );
     throw new Error("Failed to save the pinnedPost for the user.");
+  }
+}
+
+/**
+ * Firestore에 저장되어 있는 user 정보를 모두 삭제합니다.
+ * @returns Promise<void>
+ */
+export async function deleteUserData(username: string): Promise<void> {
+  if (!username) {
+    throw new Error("Username이 필요합니다.");
+  }
+
+  try {
+    // 1. users collection 데이터 삭제
+    const usersCollection = collection(db, "users");
+    const usersQuery = query(
+      usersCollection,
+      where("username", "==", username),
+    );
+    const usersSnapshot = await getDocs(usersQuery);
+    usersSnapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+
+    // 2. users collection 데이터 삭제
+    const resultsCollection = collection(db, "results");
+    const resultsQuery = query(
+      resultsCollection,
+      where("username", "==", username),
+    );
+    const resultsSnapshot = await getDocs(resultsQuery);
+    resultsSnapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+
+    // 3. users collection 데이터 삭제
+    const reposCollection = collection(db, "repos");
+    const reposQuery = query(
+      reposCollection,
+      where("username", "==", username),
+    );
+    const reposSnapshot = await getDocs(reposQuery);
+    reposSnapshot.forEach(async (doc) => {
+      await deleteDoc(doc.ref);
+    });
+
+    console.log(`유저 ${username}의 모든 정보를 삭제했습니다.`);
+  } catch (error) {
+    console.error("유저 정보를 삭제하는 중 오류 발생:", error);
+    throw new Error("유저 정보를 삭제하는 중 오류가 발생했습니다.");
   }
 }
