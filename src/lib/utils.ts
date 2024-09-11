@@ -135,22 +135,6 @@ export const getLanguage = (filename: string) => {
   }
 };
 
-/* 폴더 -> 파일 순 정렬 */
-export const sortDirectoryFirst = (
-  data: Array<{ name: string; type: "dir" | "file" | "submodule" | "symlink" }>,
-): Array<{ name: string; type: "dir" | "file" | "submodule" | "symlink" }> => {
-  const sortedData = data.sort((a, b) => {
-    if (a.type === "dir" && b.type !== "dir") {
-      return -1;
-    }
-
-    // 나머지 경우는 원래 순서 유지
-    return 0;
-  });
-
-  return sortedData;
-};
-
 /* json으로 파싱되기 전 문자열에 포함되어 있는 정규식, 작은따옴표 처리 */
 export const convertEscapedCharacterToRawString = (str: string) => {
   return str

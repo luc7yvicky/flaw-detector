@@ -5,7 +5,7 @@ import RecentFilesButton from "@/components/me/RecentFilesButton";
 import RepoList from "@/components/me/RepoList";
 import { IconCaretLeft } from "@/components/ui/Icons";
 import TitleBar from "@/components/ui/TitleBar";
-import { getRepoListFromDB } from "@/lib/api/repositories";
+import { getRepoListFromDB, getRepoLists } from "@/lib/api/repositories";
 import { RepoListData } from "@/types/repo";
 import Image from "next/image";
 import Link from "next/link";
@@ -15,10 +15,16 @@ export default async function ReposPage() {
   const session = await auth();
   const username = session?.user?.username;
 
-  const params = new URLSearchParams();
-  if (username) {
-    params.append("username", username);
+  if (!username) {
+    return null;
   }
+
+  // 1. 깃허브에서 레포지토리 리스트 불러와서 저장
+  await getRepoLists(username);
+
+  // 2. DB에서 레포지토리 리스트 불러오기
+  const params = new URLSearchParams();
+  params.append("username", username);
   const repos: RepoListData[] = await getRepoListFromDB(params);
 
   return (

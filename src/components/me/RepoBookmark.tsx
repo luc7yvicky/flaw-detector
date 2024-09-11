@@ -51,9 +51,9 @@ function RepoBookmark({
       onClick={onToggleFavorite}
     >
       {isSelected ? (
-        <IconStar className="size-8 fill-primary-200" />
+        <IconStar className="size-8 fill-primary-200 stroke-primary-200" />
       ) : (
-        <IconStar className="size-8 bg-white fill-primary-100" />
+        <IconStar className="size-8 bg-white fill-white stroke-primary-100" />
       )}
     </div>
   );
