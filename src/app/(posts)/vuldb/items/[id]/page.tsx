@@ -26,7 +26,7 @@ export default async function VulnerabilityDBDetailPage({
       {/* <VulnerabilityGrid /> */}
       <SimilarInfoPosts posts={posts} postId={postId} userId={userId} />
       <div className="width-[4.75rem] absolute right-[8.75rem] top-[46.313rem]">
-        <Floating className="fixed top-[46.313rem]" />
+        <Floating variant="chat" className="fixed top-[46.313rem]" />
       </div>
     </div>
   );

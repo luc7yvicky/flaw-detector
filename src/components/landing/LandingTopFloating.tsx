@@ -27,6 +27,7 @@ export default function LandingTopFloating() {
     <div className="width-[4.75rem] absolute bottom-36 right-32">
       {isFloatingVisible && (
         <Floating
+          variant="top"
           onClick={() => {
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
