@@ -12,13 +12,41 @@ export default function LandingServiceSection() {
           </h3>
         </article>
         <article className="relative w-full overflow-x-hidden">
-          <div className="relative ml-[-10.604rem] grid min-h-[35rem] w-[120%] grid-cols-6 gap-x-12 whitespace-pre-wrap">
-            <ServiceCard variant="security" />
-            <ServiceCard variant="critical" />
-            <ServiceCard variant="realtime" />
-            <ServiceCard variant="privacy" />
-            <ServiceCard variant="efficiency" />
-            <ServiceCard variant="quick" />
+          {/* <div className="animate-scroll-left gap-x-15 relative ml-[-10.604rem] grid min-h-[35rem] w-[120%] grid-cols-6"> */}
+          <div className="animate-scroll-left flex min-h-[35rem] w-auto flex-nowrap gap-x-12">
+            <ServiceCard
+              variant="security"
+              className="w-[339px] flex-shrink-0"
+            />
+            <ServiceCard
+              variant="critical"
+              className="w-[339px] flex-shrink-0"
+            />
+            <ServiceCard
+              variant="realtime"
+              className="w-[339px] flex-shrink-0"
+            />
+            <ServiceCard
+              variant="privacy"
+              className="w-[339px] flex-shrink-0"
+            />
+            <ServiceCard
+              variant="efficiency"
+              className="w-[339px] flex-shrink-0"
+            />
+            <ServiceCard variant="quick" className="w-[339px] flex-shrink-0" />
+            <ServiceCard
+              variant="security"
+              className="w-[339px] flex-shrink-0"
+            />
+            <ServiceCard
+              variant="critical"
+              className="w-[339px] flex-shrink-0"
+            />
+            <ServiceCard
+              variant="realtime"
+              className="w-[339px] flex-shrink-0"
+            />
           </div>
         </article>
       </section>
