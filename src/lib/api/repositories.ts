@@ -3,7 +3,6 @@ import { Mode } from "@/stores/useDetectedModeStore";
 import { FileResultProps, FileStatus } from "@/types/file";
 import { detectedStatus, RepoContentItem, RepoListData } from "@/types/repo";
 import { Octokit } from "@octokit/rest";
-import { sortDirectoryFirst } from "../utils";
 import { isIgnoredFile } from "../utils";
 
 type RepoListRawData = {
