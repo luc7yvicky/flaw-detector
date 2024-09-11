@@ -29,7 +29,7 @@ const Floating = React.forwardRef<HTMLButtonElement, FloatingProps>(
         className={cn(
           floatingVariants({ variant }),
           className,
-          "bg-white text-primary-500 hover:bg-primary-500 hover:text-white",
+          "bg-white text-primary-500 transition-all duration-75 hover:bg-primary-500 hover:text-white",
         )}
         ref={ref}
         {...props}
