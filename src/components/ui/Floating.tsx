@@ -6,7 +6,7 @@ import React from "react";
 import { IconArrow, IconChat } from "./Icons";
 
 const floatingVariants = cva(
-  "w-[76px] h-[76px] border-[1.46px] px-4 border-primary-500 rounded-full text-primary-500 flex-center-center flex-col",
+  "w-[76px] h-[76px] border-[1.46px] px-4 border-primary-500 rounded-full text-primary-500 flex-center-center flex-col z-20",
   {
     variants: {
       variant: {
@@ -29,7 +29,7 @@ const Floating = React.forwardRef<HTMLButtonElement, FloatingProps>(
         className={cn(
           floatingVariants({ variant }),
           className,
-          "text-primary-500 hover:bg-primary-500 hover:text-white",
+          "bg-white text-primary-500 hover:bg-primary-500 hover:text-white",
         )}
         ref={ref}
         {...props}
