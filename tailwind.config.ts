@@ -30,6 +30,7 @@ const config: Config = {
           blue: "#6DB0FF",
           orange: "#FFD542",
           green: "#00C308",
+          cyan: "#17E0D4",
         },
         purple: {
           light: "#FAF8FF",
@@ -65,6 +66,9 @@ const config: Config = {
           light: "#E6E6E6",
           dark: "#ADADAD",
         },
+      },
+      screens: {
+        "1150": "71.875rem",
       },
       keyframes: {
         scrollLeft: {
