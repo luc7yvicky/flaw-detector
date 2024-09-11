@@ -412,6 +412,7 @@ export function IconBug({
   className,
   width = "191",
   height = "196",
+  color = "fill-primary-500",
   ...props
 }: React.ComponentProps<"svg"> & { width?: string; height?: string }) {
   return (
@@ -421,7 +422,7 @@ export function IconBug({
       viewBox="0 0 191 196"
       fill="currentColor"
       xmlns="http://www.w3.org/2000/svg"
-      className={cn("fill-primary-500", className)}
+      className={cn(color, className)}
       {...props}
     >
       <path

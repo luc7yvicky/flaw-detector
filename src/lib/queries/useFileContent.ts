@@ -38,5 +38,7 @@ export function useFileContent(
       }
     },
     enabled: !!username && !!repo && !!path,
+    retry: 1, // 실패 시 1번 더 시도
+    retryDelay: 1000,
   });
 }
