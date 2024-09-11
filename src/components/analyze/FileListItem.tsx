@@ -15,6 +15,7 @@ import {
   IconStar,
 } from "../ui/Icons";
 import FileList from "./FileList";
+import { useBookmarkStore } from "@/stores/useBookMarkStore";
 
 function FileListItem({
   item,
@@ -35,6 +36,8 @@ function FileListItem({
   const { toggleFileSelection, isFileSelected } = useFileSelectionStore();
   const { getFileStatus } = useFileProcessStore();
   const fileStatus = getFileStatus(item.path);
+  const { toggleBookmark, isBookmarked } = useBookmarkStore();
+  const isItemBookmarked = isBookmarked(item.path);
 
   const isImage = useMemo(() => getLanguage(name) === "image", [name]);
 
@@ -45,11 +48,10 @@ function FileListItem({
     }
   };
 
-  // const handleBookmark = (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.stopPropagation();
-  //   // TODO: 북마크 로직 구현
-  //   console.log(`Bookmarked: ${name}`);
-  // };
+  const handleBookmark = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    toggleBookmark(item.path);
+  };
 
   const handleItemClick = useCallback(
     (e: React.MouseEvent<HTMLLIElement>) => {
@@ -69,11 +71,11 @@ function FileListItem({
       case "onCheck":
         return <IconOnProcess className="animate-spin" />; // 처리 중임을 더 명확하게 표시
       case "onWait":
-        return <IconOnWait color="fill-gray-default" />;
+        return <IconOnWait className="fill-gray-default" />;
       case "error":
         return <IconError />;
       case "success":
-        return <IconDone />;
+        return <IconDone className="fill-accent-cyan" />;
       default:
         return null;
     }
@@ -121,7 +123,7 @@ function FileListItem({
         <div className="flex w-full">
           <div
             className="mr-2 flex items-center"
-            onClick={(e) => e.stopPropagation()}
+            // onClick={(e) => e.stopPropagation()}
           >
             {type === "dir" ? (
               <IconCaretLeft
@@ -152,12 +154,22 @@ function FileListItem({
               <span className="ml-1">...</span>
             )}
           </div>
-          <div className="flex-center-center invisible ml-auto">
+          <div
+            className={cn(
+              "flex-center-center invisible ml-auto",
+              isItemBookmarked && "visible",
+            )}
+          >
             <button
               className="group-hover/item:visible"
-              // onClick={handleBookmark}
+              onClick={handleBookmark}
             >
-              <IconStar className="fill-primary-300" />
+              <IconStar
+                filled={isItemBookmarked}
+                className={
+                  isItemBookmarked ? "text-primary-500" : "text-primary-300"
+                }
+              />
             </button>
           </div>
           {fileStatus && <div className="ml-auto flex pl-1"> {statusIcon}</div>}
