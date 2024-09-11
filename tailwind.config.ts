@@ -67,6 +67,10 @@ const config: Config = {
         },
       },
       keyframes: {
+        scrollLeft: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
         rollAroundY: {
           "0%": { transform: "translate(195px, 0px) rotate(0deg)" },
           "25%": {
@@ -84,6 +88,7 @@ const config: Config = {
         },
       },
       animation: {
+        "scroll-left": "scrollLeft 10s linear infinite",
         "roll-around-y": "rollAroundY 5s linear infinite",
       },
     },
