@@ -70,12 +70,14 @@ const config: Config = {
         rollAroundY: {
           "0%": { transform: "translate(195px, 0px) rotate(0deg)" },
           "25%": {
-            transform: "translate(145px, 5px) rotate(-90deg)",
+            transform: "translate(145px, 30px) rotate(-90deg)",
           },
           "50%": {
-            transform: "translate(115px, 5px) rotate(-180deg)",
+            transform: "translate(115px, 60px) rotate(-180deg)",
           },
-          "75%": { transform: "translate(145px, 35px) rotate(-270deg)" },
+          "75%": {
+            transform: "translate(145px, 30px) rotate(-270deg)",
+          },
           "100%": {
             transform: "translate(195px, 0px) rotate(-360deg)",
           },
