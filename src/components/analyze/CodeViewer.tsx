@@ -34,6 +34,7 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
     currentFile,
   );
   const getFileStatus = useFileProcessStore((state) => state.getFileStatus);
+  const setFileStatus = useFileProcessStore((state) => state.setFileStatus);
   const results = useFileProcessStore((state) => state.fileDetectedResults);
   const setResults = useFileProcessStore(
     (state) => state.setFileDetectedResults,
@@ -57,15 +58,7 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
     );
   }, []);
 
-  // 검사 상태에 따른 Alert 출력
-  useEffect(() => {
-    if (status && !hasAlertBeenSet) {
-      setIsAlertOpen(true);
-      setHasAlertBeenSet(true);
-    }
-  }, [status, hasAlertBeenSet]);
-
-  // 취약점 검사 결과 조회
+  // 검사 결과가 있는 파일에 한해서 취약점 검사 결과 조회
   useEffect(() => {
     setMode("undetected");
     setResults(null);
@@ -83,10 +76,18 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
       }
     };
 
-    if (currentFile && !filePath) {
+    if (currentFile && status === "success") {
       getResults();
     }
   }, [currentFile]);
+
+  // 검사 상태에 따른 Alert 출력
+  useEffect(() => {
+    if (currentFile === filePath && status) {
+      setIsAlertOpen(true);
+      setHasAlertBeenSet(true);
+    }
+  }, [status]);
 
   // 위치 보기 하이라이트
   useEffect(() => {
@@ -96,9 +97,13 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
 
       if (detectedLines.includes(lineNumber)) {
         line.setAttribute("target", "detected");
+        line.classList.add("block");
+        line.classList.add("mb-[0.125rem]");
         line.classList.add("bg-red-light");
       } else {
         line.removeAttribute("target");
+        line.classList.remove("block");
+        line.classList.remove("mb-[0.125rem]");
         line.classList.remove("bg-red-light");
       }
 
@@ -150,8 +155,8 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
       {/* 코드 뷰어 */}
       <div
         className={cn(
-          "relative h-full w-full rounded-lg border border-[#c3c3c3] overflow-hidden",
-          results && mode === "detected" ? "h-full max-h-[34.688rem]" : "",
+          "relative h-full w-full overflow-hidden rounded-lg border border-[#c3c3c3]",
+          results && mode === "detected" && "h-full max-h-[34.688rem]",
         )}
       >
         {/* <ProcessStatus status={status} /> */}
@@ -173,7 +178,7 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
         >
           {renderContent()}
         </SyntaxHighlighter>
-        {isAlertOpen && <Alert status={status} />}
+        {isAlertOpen && <Alert username={username} status={status} />}
       </div>
 
       {/* 검사 결과 */}

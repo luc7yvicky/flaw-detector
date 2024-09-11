@@ -27,7 +27,7 @@ export const promptConfigs: Record<string, PromptConfig> = {
       Answer only in Korean using complete sentences, not in fragments or informal language, but keep the titles in English.
     `,
     temperature: 0.1,
-    top_p: 0.9,
+    top_p: 0.1,
   },
   translate: {
     systemPrompt:

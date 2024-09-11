@@ -23,8 +23,9 @@ export default async function MyPage() {
             <Profile />
             <form action={logout}>
               <Button
-                variant="outlined"
-                className="flex-center-center px-5 py-4 text-2xl font-medium"
+                variant="filled-light-purple"
+                shape="rounded"
+                className="flex-center-center px-5 py-4 font-medium"
               >
                 로그아웃
               </Button>

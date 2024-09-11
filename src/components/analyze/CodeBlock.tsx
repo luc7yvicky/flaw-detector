@@ -26,7 +26,7 @@ export default function CodeBlock({
   return (
     <div
       className={cn(
-        "leading=[1.575rem] spacing-[1.5%] my-[0.625rem] max-w-[88rem] rounded-[0.625rem] bg-neutral-80 text-lg",
+        "leading=[1.575rem] my-[0.625rem] max-w-[88rem] rounded-[0.625rem] bg-neutral-80 text-lg tracking-[1.5%]",
         className,
       )}
       onMouseOver={() => setIsMouseOverCodeBlock(true)}

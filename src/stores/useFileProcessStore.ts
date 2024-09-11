@@ -1,5 +1,9 @@
 import { generateLlm } from "@/lib/api/llama3";
-import { addFileResults, fetchCodes } from "@/lib/api/repositories";
+import {
+  addFileResults,
+  fetchCodes,
+  updateRepoStatus,
+} from "@/lib/api/repositories";
 import { convertEscapedCharacterToRawString } from "@/lib/utils";
 import { FileResultFailProps, FileResultProps, FileStatus } from "@/types/file";
 import { v4 as uuidv4 } from "uuid";
@@ -10,14 +14,20 @@ import { FILE_INSPECTION_STATUS_KEY } from "../lib/const";
 const saveFileStatusesToLocalStorage = (
   fileStatuses: Map<string, FileStatus>,
 ) => {
-  const serializedStatuses = JSON.stringify(Array.from(fileStatuses.entries()));
-  localStorage.setItem(FILE_INSPECTION_STATUS_KEY, serializedStatuses);
+  if (typeof window !== "undefined") {
+    const serializedStatuses = JSON.stringify(
+      Array.from(fileStatuses.entries()),
+    );
+    localStorage.setItem(FILE_INSPECTION_STATUS_KEY, serializedStatuses);
+  }
 };
 
 const loadFileStatusesFromLocalStorage = (): Map<string, FileStatus> => {
-  const serializedStatuses = localStorage.getItem(FILE_INSPECTION_STATUS_KEY);
-  if (serializedStatuses) {
-    return new Map(JSON.parse(serializedStatuses));
+  if (typeof window !== "undefined") {
+    const serializedStatuses = localStorage.getItem(FILE_INSPECTION_STATUS_KEY);
+    if (serializedStatuses) {
+      return new Map(JSON.parse(serializedStatuses));
+    }
   }
   return new Map();
 };
@@ -88,6 +98,8 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
         await addFileResults(username, repo, file.path, results);
         // 파일 검사 상태 변경
         get().setFileStatus(file.path, "success");
+        // 파일 검사 상태 저장
+        await updateRepoStatus(username, repo, "onProgress");
       } catch (error) {
         get().setFileStatus(file.path, "error");
         console.error(`Error processing file ${file.name}:`, error);
