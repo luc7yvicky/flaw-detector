@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!querySnapshot.empty) {
       return NextResponse.json(
         { error: "Result already exists in Firestore." },
-        { status: 400 },
+        { status: 200 },
       );
     }
 
@@ -43,29 +43,47 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const username = searchParams.get("username");
+  const repo = searchParams.get("repo");
   const filePath = searchParams.get("filePath");
 
-  if (!username || !filePath) {
-    return NextResponse.json(
-      { error: "Missing username or filePath." },
-      { status: 400 },
-    );
+  if (!username) {
+    return NextResponse.json({ error: "Missing username" }, { status: 400 });
   }
 
   try {
     const resultsCollection = collection(db, "results");
-    const usernameAndFilepathQuery = query(
-      resultsCollection,
-      where("username", "==", username),
-      where("filePath", "==", filePath),
-    );
+    let resultsQuery;
 
-    const querySnapshot = await getDocs(usernameAndFilepathQuery);
+    if (filePath) {
+      resultsQuery = query(
+        resultsCollection,
+        where("username", "==", username),
+        where("filePath", "==", filePath),
+      );
+    } else if (repo) {
+      resultsQuery = query(
+        resultsCollection,
+        where("username", "==", username),
+        where("repo", "==", repo),
+      );
+    } else {
+      return NextResponse.json(
+        { error: "Missing filePath or repo." },
+        { status: 400 },
+      );
+    }
+
+    const querySnapshot = await getDocs(resultsQuery);
     if (querySnapshot.empty) {
       return NextResponse.json({ results: null });
     }
 
-    const results = querySnapshot.docs[0].data().results;
+    let results;
+    if (repo) {
+      results = querySnapshot.docs.map((doc) => doc.data().filePath);
+    } else {
+      results = querySnapshot.docs[0].data().results;
+    }
 
     return NextResponse.json({ results });
   } catch (error) {

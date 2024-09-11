@@ -1,7 +1,9 @@
 "use client";
 
+import { getDetectedResultsByFile } from "@/lib/api/repositories";
 import { useFileContent } from "@/lib/queries/useFileContent";
 import { cn } from "@/lib/utils";
+import { useDetectedModeStore } from "@/stores/useDetectedModeStore";
 import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import dynamic from "next/dynamic";
@@ -9,8 +11,6 @@ import { useEffect, useRef, useState } from "react";
 import { Alert } from "../ui/Alert";
 import { IconMagnifierWithPlus } from "../ui/Icons";
 import ResultInfoBoxList from "./ResultInfoBoxList";
-import { useDetectedModeStore } from "@/stores/useDetectedModeStore";
-import { getDetectedResults } from "@/lib/api/repositories";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
@@ -34,6 +34,7 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
     currentFile,
   );
   const getFileStatus = useFileProcessStore((state) => state.getFileStatus);
+  const setFileStatus = useFileProcessStore((state) => state.setFileStatus);
   const results = useFileProcessStore((state) => state.fileDetectedResults);
   const setResults = useFileProcessStore(
     (state) => state.setFileDetectedResults,
@@ -57,22 +58,14 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
     );
   }, []);
 
-  // 검사 상태에 따른 Alert 출력
-  useEffect(() => {
-    if (status && !hasAlertBeenSet) {
-      setIsAlertOpen(true);
-      setHasAlertBeenSet(true);
-    }
-  }, [status, hasAlertBeenSet]);
-
-  // 취약점 검사 결과 조회 시도
+  // 검사 결과가 있는 파일에 한해서 취약점 검사 결과 조회
   useEffect(() => {
     setMode("undetected");
     setResults(null);
 
     const getResults = async () => {
       try {
-        const { mode, results } = await getDetectedResults(
+        const { mode, results } = await getDetectedResultsByFile(
           username,
           currentFile,
         );
@@ -83,40 +76,16 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
       }
     };
 
-    if (currentFile) {
+    if (currentFile && status === "success") {
       getResults();
     }
   }, [currentFile]);
 
-  // 취약점 검사 결과 저장
+  // 검사 상태에 따른 Alert 출력
   useEffect(() => {
-    const addDetectedResults = async () => {
-      try {
-        const res = await fetch("/api/repos/results", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username,
-            repo,
-            filePath,
-            results,
-          }),
-          cache: "no-store",
-        });
-
-        if (!res.ok) {
-          throw new Error("Failed to save results.");
-        }
-      } catch (err) {
-        console.error("Error adding results:", err);
-      }
-    };
-
-    if (status === "success" && results && filePath) {
-      addDetectedResults();
-      setMode("undetected");
+    if (currentFile === filePath && status) {
+      setIsAlertOpen(true);
+      setHasAlertBeenSet(true);
     }
   }, [status]);
 
@@ -128,9 +97,13 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
 
       if (detectedLines.includes(lineNumber)) {
         line.setAttribute("target", "detected");
+        line.classList.add("block");
+        line.classList.add("mb-[0.125rem]");
         line.classList.add("bg-red-light");
       } else {
         line.removeAttribute("target");
+        line.classList.remove("block");
+        line.classList.remove("mb-[0.125rem]");
         line.classList.remove("bg-red-light");
       }
 
@@ -182,8 +155,8 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
       {/* 코드 뷰어 */}
       <div
         className={cn(
-          "relative h-full w-full rounded-lg border border-[#c3c3c3] overflow-hidden",
-          results && mode === "detected" ? "h-full max-h-[34.688rem]" : "",
+          "relative h-full w-full overflow-hidden rounded-lg border border-[#c3c3c3]",
+          results && mode === "detected" && "h-full max-h-[34.688rem]",
         )}
       >
         {/* <ProcessStatus status={status} /> */}
@@ -205,8 +178,9 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
         >
           {renderContent()}
         </SyntaxHighlighter>
-        {isAlertOpen && <Alert status={status} />}
+        {isAlertOpen && <Alert username={username} status={status} />}
       </div>
+
       {/* 검사 결과 */}
       {results && mode === "detected" && (
         <ResultInfoBoxList

@@ -1,14 +1,16 @@
 "use client";
 
+import { getDetectedResultsByRepo } from "@/lib/api/repositories";
 import { useExpandFolder } from "@/lib/queries/useExpandFolder";
+import { cn } from "@/lib/utils";
+import { useBookmarkStore } from "@/stores/useBookMarkStore";
+import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { FolderItem, RepoContentItem } from "@/types/repo";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import FileList from "./FileList";
 import { IconList } from "../ui/Icons";
-import { cn } from "@/lib/utils";
-import { useBookmarkStore } from "@/stores/useBookMarkStore";
+import FileList from "./FileList";
 
 export default function FileExplorer({
   initialStructure,
@@ -30,6 +32,7 @@ export default function FileExplorer({
   const resetFileSelection = useFileSelectionStore(
     (state) => state.resetFileSelection,
   );
+  const setStatus = useFileProcessStore((state) => state.setFileStatus);
 
   const sortListRef = useRef<HTMLDivElement>(null);
   const { isBookmarked, bookmarks } = useBookmarkStore();
@@ -48,6 +51,27 @@ export default function FileExplorer({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+  }, []);
+
+  // 해당 레파지토리의 검사 결과 여부 조회
+  useEffect(() => {
+    const getResults = async () => {
+      try {
+        const { status, filePaths } = await getDetectedResultsByRepo(
+          username,
+          repo,
+        );
+        if (status && filePaths) {
+          filePaths.forEach((filePath) => {
+            setStatus(filePath, status);
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching detected results:", err);
+      }
+    };
+
+    getResults();
   }, []);
 
   const [structure, setStructure] =

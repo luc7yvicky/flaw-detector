@@ -153,18 +153,12 @@ export const sortDirectoryFirst = (
 
 /* json으로 파싱되기 전 문자열에 포함되어 있는 정규식, 작은따옴표 처리 */
 export const convertEscapedCharacterToRawString = (str: string) => {
-  let rawString;
-
-  // 정규식 문자열을 두 개의 백슬래시로 감싸주기
-  rawString = str.replace(/\/([^\/]+)\/g/g, "\\\\/$1\\\\/g");
-
-  // 싱글 쿼테이션을 앞에 백슬래시 + 더블 쿼테이션 조합으로 대체
-  rawString = rawString.replace(/'/g, `\\"`);
-
-  // 슬래시 + 더블 쿼테이션을 앞에 슬래시 + 백슬래시 + 더블 쿼테이션 조합으로 대체
-  rawString = rawString.replace(/\/"/g, `/\\"`);
-
-  return rawString;
+  return str
+    .replace(/\/([^\/]+)\/g/g, "\\\\/$1\\\\/g") // 정규식 문자열을 두 개의 백슬래시로 감싸기
+    .replace(/'/g, `\\"`) // 싱글 쿼테이션
+    .replace(/\/"/g, `/\\"`) // 슬래쉬 + 더블 쿼테이션
+    .replace(/</g, "\\u003C") // '<' 문자
+    .replace(/>/g, "\\u003E"); // '>' 문자
 };
 
 // 분석 제외 파일 리스트

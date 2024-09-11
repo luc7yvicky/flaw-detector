@@ -3,21 +3,56 @@
 import Repo from "@/components/me/Repo";
 import { ITEMS_PER_MY_PAGE, PAGES_PER_GROUP } from "@/lib/const";
 import { RepoListData } from "@/types/repo";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Dropdown from "../ui/Dropdown";
 import Pagination from "../ui/Pagination";
+import { useRepoListStore } from "@/stores/useRepoListStore";
+import { getRepoListFromDB } from "@/lib/api/repositories";
 
 export default function RepoList({
   initialRepos,
+  username,
 }: {
   initialRepos: RepoListData[];
+  username: string;
 }) {
-  // 1. 필터링 적용
+  // 1. 북마크한 레파지토리만 보기
+  const filterByBookmarked = useRepoListStore(
+    (state) => state.filterByBookmarked,
+  );
+  // 2. 최근에 클릭한 레파지토리만 보기
+  const filterByRecentClicked = useRepoListStore(
+    (state) => state.filterByRecentClicked,
+  );
+
+  const [repos, setRepos] = useState<RepoListData[]>(initialRepos);
+
+  useEffect(() => {
+    const fetchRepos = async () => {
+      const params = new URLSearchParams({ username });
+      if (filterByBookmarked) {
+        params.append("favorite", "true");
+      }
+      if (filterByRecentClicked) {
+        params.append("clickedAt", "true");
+      }
+      const filteredRepos = await getRepoListFromDB(params);
+      setRepos(filteredRepos);
+    };
+
+    fetchRepos();
+  }, [filterByBookmarked, filterByRecentClicked, username, initialRepos]);
+
+  // 3. 필터링 적용
   const [filterType, setFilterType] = useState<string>("");
   const [sortType, setSortType] = useState<string>("");
 
   const filteredAndSortedRepos = useMemo(() => {
-    let result = [...initialRepos];
+    let result = [...repos];
+
+    if (filterByBookmarked) {
+      result = result.filter((repo) => repo.favorite);
+    }
 
     // 검사 여부 필터링
     if (filterType && filterType !== "-1") {
@@ -47,9 +82,9 @@ export default function RepoList({
     }
 
     return result;
-  }, [filterType, sortType, initialRepos]);
+  }, [filterType, sortType, repos]);
 
-  // 2. 페이징 적용
+  // 4. 페이징 적용
   const [currPage, setCurrPage] = useState(1);
   const totalPages = Math.ceil(
     filteredAndSortedRepos?.length / ITEMS_PER_MY_PAGE,
@@ -63,7 +98,7 @@ export default function RepoList({
   const currentRepos = filteredAndSortedRepos?.slice(startIndex, endIndex);
 
   return (
-    <section className="flex flex-col gap-y-12">
+    <section className="mt-5 flex flex-col gap-y-12">
       <div className="inline-flex h-11 items-center justify-between">
         <h2 className="text-[2rem] font-medium -tracking-[0.01em] text-gray-dark">
           Library
@@ -75,7 +110,7 @@ export default function RepoList({
       </div>
       <div className="flex-between-center relative grid grid-cols-3 grid-rows-3 gap-x-6 gap-y-12 1150:grid-cols-4">
         {currentRepos.map((repo) => (
-          <Repo key={repo.repositoryName} {...repo} />
+          <Repo key={repo.repositoryName} username={username} {...repo} />
         ))}
       </div>
 

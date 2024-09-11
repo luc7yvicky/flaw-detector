@@ -4,7 +4,7 @@
 
 @layer base {
   hr {
-    @apply h-[0.063rem] w-full border-0 bg-[#BABABA];
+    @apply h-[0.063rem] w-full border-0 bg-line-light;
   }
 }
 

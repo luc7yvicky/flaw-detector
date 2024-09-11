@@ -1,7 +1,10 @@
+export type detectedStatus = "done" | "onProgress" | "notChecked";
+
 export type RepoListData = {
   id: number;
   repositoryName: string;
-  detectedStatus: "done" | "onProgress" | "notChecked";
+  detectedStatus: detectedStatus;
+  favorite: boolean;
   createdAt: string;
   detectedAt?: string;
   filename?: string;
