@@ -6,15 +6,13 @@ import React from "react";
 import { IconArrow, IconChat } from "./Icons";
 
 const floatingVariants = cva(
-  "w-[76px] h-[76px] border-[1.46px] px-4 border-primary-500 rounded-full text-primary-500 flex-center-center flex-col z-20",
+  "w-[4.75rem] h-[4.75rem] border-[0.091rem] px-4 border-primary-500 rounded-full text-primary-500 flex-center-center flex-col z-20",
   {
     variants: {
       variant: {
         top: "text-lg font-normal tracking-[-1%]",
-        ask: "",
       },
     },
-    defaultVariants: { variant: "top" },
   },
 );
 

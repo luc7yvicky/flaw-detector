@@ -30,7 +30,6 @@ export default function LandingTopFloating() {
           onClick={() => {
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
-          variant="top"
           className="fixed bottom-36"
         />
       )}
