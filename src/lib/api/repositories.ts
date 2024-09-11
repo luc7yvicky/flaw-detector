@@ -129,8 +129,7 @@ export async function fetchRepoContents(
       throw new Error(`경로 ${path}에 대한 예상치 못한 응답입니다.`);
     }
 
-    const sortedData = sortDirectoryFirst(response.data);
-    return sortedData?.map((item: any): RepoContentItem => {
+    return response.data.map((item: any): RepoContentItem => {
       const baseItem = {
         name: item.name,
         path: item.path,
