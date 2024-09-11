@@ -14,9 +14,9 @@ export default function LandingHeroSection({
   const [_, startTransition] = useTransition();
 
   return (
-    <section className="flex-center-center min-h-dvh flex-col items-center bg-[url('/images/landingBg.png')] bg-cover bg-center text-[3.15rem] text-primary-500">
+    <section className="flex-center-center min-h-dvh flex-col items-center bg-[url('/images/landingBg.png')] bg-cover bg-center text-[3.75rem] leading-[4.538rem] tracking-[0.015em] text-primary-500">
       <span className="mb-5">Find your Flaw,</span>
-      <h1 className="mb-10 rounded-full border-4 border-primary-500 px-10 py-[1.2rem]">
+      <h1 className="mb-10 rounded-full border-4 border-primary-500 bg-white px-10 py-[1.156rem]">
         FlawDetector
       </h1>
       <p className="mb-[4rem] text-[1.5rem]">
@@ -27,7 +27,7 @@ export default function LandingHeroSection({
         <Link href="/repos">
           <Button
             shape="pill"
-            className="flex-center-center px-6 py-[0.688rem] text-[1.75rem] font-light leading-[2.118rem] -tracking-[0.01em]"
+            className="flex-center-center px-6 py-[0.688rem] text-center text-[1.75rem] font-light leading-[2.118rem] -tracking-[0.01em]"
           >
             파일 분석하러 가기
           </Button>

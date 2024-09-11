@@ -16,34 +16,20 @@ export type ArticleDetailProps = {
   showLabel?: boolean;
 } & ArticleListItem;
 
-export type RepoListData = {
-  id: number;
-  repositoryName: string;
-  detectedStatus: "done" | "onProgress" | "notChecked";
-  createdAt: string;
-  detectedAt?: string;
-  filename?: string;
-};
-
-export type RepoContentItem = {
-  name: string;
-  path: string;
-  type: "file" | "dir";
-  // processStatus?: "success" | "onCheck" | "onWait" | "error";
-  expanded?: boolean;
-  size?: number;
-  loadingStatus: "initial" | "loading" | "loaded" | "error";
-  items?: RepoItem[];
-  error?: string;
-};
-
-export type FileStatus = "onCheck" | "onWait" | "error" | "success" | null;
-
 export type CertCCTextBlock = { id: string; text: string };
+
+export type CnnvdTextBlock = {
+  text: string;
+};
 
 export type CertCCLocalizedTextBlock = {
   original: CertCCTextBlock[];
   translated: CertCCTextBlock[];
+};
+
+export type CnnvdLocalizedTextBlock = {
+  original: string;
+  translated: string;
 };
 
 // CERT/CC 게시글 내용
@@ -56,7 +42,12 @@ export type CertCCContent = {
 };
 
 // CNNVD 게시글 내용
-export type CnnvdContent = { block_id: string; text: string }[];
+export type CnnvdContent = {
+  description: CnnvdLocalizedTextBlock;
+  introduction: CnnvdLocalizedTextBlock;
+  vulnDetail: CnnvdLocalizedTextBlock;
+  remediation: CnnvdLocalizedTextBlock;
+};
 
 export type VulDBPost = {
   id: string;
@@ -67,8 +58,16 @@ export type VulDBPost = {
     original: string;
     translated: string;
   };
-  created_at: { seconds: number; nanoseconds: number };
-  updated_at?: { seconds: number; nanoseconds: number };
+  source_created_at: { seconds: number; nanoseconds: number }; //원문 게시글 등록일
+  created_at: { seconds: number; nanoseconds: number }; // firestore timestamp
+  source_updated_at?: { seconds: number; nanoseconds: number };
   content: CertCCContent | CnnvdContent;
   views: number;
+};
+
+export type VulDBPostWithChip = VulDBPost & { chip: "hot" | "new" | "" };
+
+export type VulDBPinnedInfo = {
+  userId: string;
+  postId: string;
 };

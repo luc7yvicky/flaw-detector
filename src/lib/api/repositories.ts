@@ -1,6 +1,10 @@
-import { OCTOKIT_TOKEN } from "@/lib/const";
-import { RepoContentItem, RepoListData } from "@/types/type";
+import { BASE_URL, OCTOKIT_TOKEN } from "@/lib/const";
+import { Mode } from "@/stores/useDetectedModeStore";
+import { FileResultProps, FileStatus } from "@/types/file";
+import { detectedStatus, RepoContentItem, RepoListData } from "@/types/repo";
 import { Octokit } from "@octokit/rest";
+import { sortDirectoryFirst } from "../utils";
+import { isIgnoredFile } from "../utils";
 
 type RepoListRawData = {
   id: number;
@@ -50,7 +54,7 @@ export async function fetchCodes(
   }
 }
 
-// 레포지토리 리스트를 불러옵니다.
+// 1. 레포지토리 리스트를 불러옵니다.
 export async function getRepoLists(username: string) {
   if (!username) {
     throw new Error("GitHub username이 존재하지 않습니다");
@@ -60,17 +64,24 @@ export async function getRepoLists(username: string) {
       username: username,
       headers: {
         "X-GitHub-Api-Version": "2022-11-28",
+        Authorization: `token ${OCTOKIT_TOKEN}`, // Github API 요청 한도 초과로 임시 추가
       },
     });
 
-    return data.map(
+    const repos = data.map(
       (repo: RepoListRawData): RepoListData => ({
         id: repo.id,
         repositoryName: repo.name,
         createdAt: repo.created_at ?? "",
         detectedStatus: "notChecked",
+        favorite: false,
       }),
     );
+
+    // 레포지토리 리스트 저장
+    await addRepoList(username, repos);
+
+    return repos;
   } catch (error) {
     console.error("레포지토리 목록을 읽어오는 데 실패했습니다:", error);
     throw error;
@@ -78,22 +89,24 @@ export async function getRepoLists(username: string) {
 }
 
 // 폴더의 하위 콘텐츠를 불러옵니다.
+type FolderItem = Extract<RepoContentItem, { type: "dir" }>;
+
 export async function expandFolder(
   username: string,
   repo: string,
-  folder: RepoContentItem,
-): Promise<RepoContentItem> {
-  if (folder.type !== "dir" || folder.loadingStatus === "loaded") {
+  folder: FolderItem,
+): Promise<FolderItem> {
+  if (folder.folderExpandStatus === "expanded") {
     return folder;
   }
 
   try {
-    folder.loadingStatus = "loading";
+    folder.folderExpandStatus = "expanding";
     folder.items = await fetchRepoContents(username, repo, folder.path);
-    folder.loadingStatus = "loaded";
+    folder.folderExpandStatus = "expanded";
     return folder;
   } catch (error) {
-    folder.loadingStatus = "error";
+    folder.folderExpandStatus = "error";
     folder.error =
       error instanceof Error
         ? error.message
@@ -102,7 +115,7 @@ export async function expandFolder(
   }
 }
 // 해당 경로의 content를 1depth만 읽어옵니다 (폴더/파일)
-async function fetchRepoContents(
+export async function fetchRepoContents(
   username: string,
   repo: string,
   path: string = "",
@@ -122,20 +135,32 @@ async function fetchRepoContents(
       throw new Error(`경로 ${path}에 대한 예상치 못한 응답입니다.`);
     }
 
-    // const sortedData = sortFilesAndDirs(response.data);
-    return response.data?.map(
-      (item: any): RepoContentItem => ({
+    return response.data.map((item: any): RepoContentItem => {
+      const baseItem = {
         name: item.name,
         path: item.path,
-        type: item.type,
-        loadingStatus: item.type === "file" ? "loaded" : "initial",
+        type: item.type as "file" | "dir",
         size: item.size,
-        items: item.type === "dir" ? [] : undefined,
-      }),
-    );
+      };
+
+      if (item.type === "dir") {
+        return {
+          ...baseItem,
+          type: "dir",
+          folderExpandStatus: "initial",
+          items: [],
+        };
+      } else {
+        return {
+          ...baseItem,
+          type: "file",
+          fileContentStatus: "initial",
+        };
+      }
+    });
   } catch (error) {
     throw new Error(
-      `${path}에 대한 레포 내용을 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
+      `${path} 레포 내용을 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
     );
   }
 }
@@ -152,3 +177,250 @@ export async function fetchRootStructure(username: string, repo: string) {
     throw error;
   }
 }
+
+// GitHub API 응답에 맞춘 타입 정의
+type GitHubTreeItem = {
+  path?: string;
+  mode?: string;
+  type?: string;
+  sha?: string;
+  size?: number;
+  url?: string;
+};
+
+export type RepoTreeItem = {
+  name: string;
+  path: string;
+  type: "file" | "directory";
+  size?: number;
+  sha: string;
+};
+export type RepoTreeResult = {
+  tree: RepoTreeItem[];
+  ignoredFiles: RepoTreeItem[];
+  ignoredCount: number;
+};
+
+// 타입 가드 함수
+function isValidTreeItem(
+  item: GitHubTreeItem,
+): item is Required<Pick<GitHubTreeItem, "path" | "type" | "sha">> &
+  Pick<GitHubTreeItem, "size"> {
+  return (
+    typeof item.path === "string" &&
+    typeof item.type === "string" &&
+    typeof item.sha === "string" &&
+    (item.size === undefined || typeof item.size === "number")
+  );
+}
+
+export async function getRepoTree(
+  owner: string,
+  repo: string,
+  branch: string = "main",
+): Promise<RepoTreeResult> {
+  try {
+    // 1. Get the latest commit SHA of the specified branch
+    const { data: refData } = await octokit.git.getRef({
+      owner,
+      repo,
+      ref: `heads/${branch}`,
+    });
+    const commitSha = refData.object.sha;
+
+    // 2. Get the tree SHA from the commit
+    const { data: commitData } = await octokit.git.getCommit({
+      owner,
+      repo,
+      commit_sha: commitSha,
+    });
+    const treeSha = commitData.tree.sha;
+
+    // 3. Get the full tree recursively
+    const { data: treeData } = await octokit.git.getTree({
+      owner,
+      repo,
+      tree_sha: treeSha,
+      recursive: "1",
+    });
+
+    const processedTree: RepoTreeItem[] = [];
+    const ignoredFiles: RepoTreeItem[] = [];
+
+    // 4. Process and filter the tree data
+    treeData.tree.forEach((item) => {
+      if (isValidTreeItem(item)) {
+        const processedItem: RepoTreeItem = {
+          name: item.path.split("/").pop() || item.path,
+          path: item.path,
+          type: item.type === "blob" ? "file" : "directory",
+          size: item.size,
+          sha: item.sha,
+        };
+
+        if (isIgnoredFile(item.path)) {
+          ignoredFiles.push(processedItem);
+        } else {
+          processedTree.push(processedItem);
+        }
+      }
+    });
+
+    return {
+      tree: processedTree,
+      ignoredFiles,
+      ignoredCount: ignoredFiles.length,
+    };
+  } catch (error) {
+    console.error("Error fetching repo tree:", error);
+    throw new Error(
+      `레포지토리 트리를 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
+    );
+  }
+}
+
+// 취약점 검사 결과 저장 (파일 단위)
+export const addFileResults = async (
+  username: string,
+  repo: string,
+  filePath: string,
+  results: FileResultProps[],
+) => {
+  try {
+    const res = await fetch("/api/repos/results", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username,
+        repo,
+        filePath,
+        results,
+      }),
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || "Failed to save results.");
+    }
+  } catch (err) {
+    console.error("Error adding results:", err);
+  }
+};
+
+// 파일의 취약점 검사 결과 조회
+export const getDetectedResultsByFile = async (
+  username: string,
+  filePath: string | null,
+): Promise<{ mode: Mode; results: FileResultProps[] | null }> => {
+  try {
+    const res = await fetch(
+      `/api/repos/results?username=${username}&filePath=${filePath}`,
+    );
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw Error("Failed to fetch results.");
+    }
+
+    if (data.results) {
+      return { mode: "detected", results: data.results };
+    } else {
+      return { mode: "undetected", results: data.message };
+    }
+  } catch (err) {
+    console.error("Error fetching results:", err);
+    throw err;
+  }
+};
+
+// 레포의 취약점 검사 결과 조회
+export const getDetectedResultsByRepo = async (
+  username: string,
+  repo: string | null,
+): Promise<{
+  status: FileStatus;
+  filePaths: string[];
+  // results?: FileResultProps[] | null;
+}> => {
+  try {
+    const res = await fetch(
+      `/api/repos/results?username=${username}&repo=${repo}`,
+    );
+    const data = await res.json();
+    if (!res.ok) {
+      throw Error("Failed to fetch results.");
+    }
+
+    if (data.results) {
+      return {
+        status: "success",
+        filePaths: data.results,
+      };
+    } else {
+      return { status: null, filePaths: [] };
+    }
+  } catch (err) {
+    console.error("Error fetching results:", err);
+    throw err;
+  }
+};
+
+// 2. 현재 사용자의 레파지토리 리스트 추가
+export const addRepoList = async (username: string, repos: RepoListData[]) => {
+  try {
+    await fetch(`${BASE_URL}/api/repos`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        repos: repos,
+      }),
+    });
+  } catch (err) {
+    console.error("Error adding document:", err);
+  }
+};
+
+// 3. 현재 사용자의 레파지토리 리스트 목록 조회
+export const getRepoListFromDB = async (params: URLSearchParams) => {
+  try {
+    const res = await fetch(`${BASE_URL}/api/repos?${params.toString()}`);
+    const data = await res.json();
+    return data.repos;
+  } catch (err) {
+    console.error("Error fetching document:", err);
+  }
+};
+
+// 레파지토리 검사 상태 변경
+export const updateRepoStatus = async (
+  username: string,
+  repo: string,
+  detectedStatus: detectedStatus,
+) => {
+  try {
+    const res = await fetch(`${BASE_URL}/api/repos`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        repoName: repo,
+        detectedStatus: detectedStatus,
+      }),
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json();
+      throw new Error(errorData.error || "Failed to save results.");
+    }
+  } catch (err) {
+    console.error("Error adding results:", err);
+  }
+};

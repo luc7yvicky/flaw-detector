@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
+import { cn, formatFileSize } from "@/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
-import { IconRoundedDoc } from "./Icons";
 import { useCallback } from "react";
+import { IconRoundedDoc } from "./Icons";
 
 const modalVariants = cva("relative flex flex-col bg-white ", {
   variants: {
@@ -17,8 +17,7 @@ const modalVariants = cva("relative flex flex-col bg-white ", {
         "w-[21.313rem] h-[13.125rem] top-[15.375rem] p-[2.5rem_3.75rem] rounded-[1.25rem]", //login
       medium:
         "w-[26.688rem] h-[24.063rem] top-[10rem] p-[3rem] gap-[3.313rem] rounded-[1.25rem]", //processing
-      large:
-        "w-[42.875rem] min-h-[29.875rem] p-[3rem] rounded-[1.25rem]", //selectFile
+      large: "w-[42.875rem] min-h-[29.875rem] p-[3rem] rounded-[1.25rem]", //selectFile
       extraLarge:
         "w-[61.563rem] h-[21.563rem] top-[10rem] p-[3.75rem] rounded-[2.5rem]", //inquirySubmitted
     },
@@ -48,46 +47,46 @@ type ModalVariant = keyof ModalVariantsConfig["variant"];
 
 //selectfile 모달에서 쓰이는 List, ListItem 컴포넌트
 type ListItemProps = {
-  title: string;
-  subtitle: string;
-  date: string;
+  name: string;
+  path: string;
+  size?: number;
 };
 
-export function ListItem({ title, subtitle, date }: ListItemProps) {
+export function ListItem({ name, path, size }: ListItemProps) {
   return (
-    <li className="grid h-11 w-full grid-cols-[1fr_1fr_4rem] items-center justify-between border border-b p-[0.625rem] last:border-0">
-      <div className="flex items-center">
-        <IconRoundedDoc className="mr-[0.625rem]" />
-        <div className="font-medium">{title}</div>
-      </div>
-      <div className="text-xs font-normal leading-[0.907rem] tracking-[-0.01em] text-[#9E9E9E]">
-        {subtitle}
+    <li className="grid h-11 w-full grid-cols-[1fr_1.5fr_4rem] gap-1 items-center justify-between border border-b p-[0.625rem] last:border-0">
+      <div className="truncate font-medium">{name}</div>
+      <div className="truncate text-xs font-normal leading-[0.907rem] tracking-[-0.01em] text-[#9E9E9E]">
+        {path}
       </div>
       <div className="text-xs leading-[0.907rem] tracking-[-0.01em] text-[#9E9E9E]">
-        {date}
+        {formatFileSize(size)}
       </div>
     </li>
   );
 }
-
 type ListProps = {
-  items: {
-    title: string;
-    subtitle: string;
-    date: string;
-  }[];
+  items: ListItemProps[];
+  totalFileCount: number;
+  ignoredCount: number;
 };
+export function List({ items, totalFileCount, ignoredCount }: ListProps) {
+  const processedCount = items.length;
 
-export function List({ items }: ListProps) {
   return (
-    <ul className="max-h-[16rem] w-[36.875rem] overflow-hidden overflow-y-scroll rounded-lg border border-[#bcbcbc]">
-      {items.map((item, index) => (
-        <ListItem key={index} {...item} />
-      ))}
-    </ul>
+    <div>
+      <div className="mb-2 text-sm">
+        총 {totalFileCount}개 파일 중 {processedCount}개 검사 예정 (무시된 파일:
+        {ignoredCount}개)
+      </div>
+      <ul className="max-h-[16rem] w-[36.875rem] overflow-hidden overflow-y-scroll rounded-lg border border-[#bcbcbc]">
+        {items.map((item, index) => (
+          <ListItem key={index} {...item} />
+        ))}
+      </ul>
+    </div>
   );
 }
-
 export type ModalProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof modalVariants> & {
     children?: React.ReactNode;
@@ -121,13 +120,19 @@ export function Modal({
 
   if (!isOpen) return null;
   return (
-    <div className="flex-center-center absolute inset-0 z-50">
+    <div
+      className={cn(
+        "flex-center-center inset-0 z-50",
+        variant === "login" ? "absolute" : "fixed",
+      )}
+    >
       {/* 로그인 모달이 아닐 때만 어두운 배경 처리*/}
       {variant !== "login" && (
+        // 어두운 배경 처리
         <div
           className="fixed inset-0 bg-black opacity-50"
           onClick={handleBackgroundClick}
-        ></div> // 어두운 배경 처리
+        />
       )}
       <div
         className={cn(modalVariants({ variant, size }), className)}

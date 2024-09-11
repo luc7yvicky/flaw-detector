@@ -1,28 +1,27 @@
-import { RepoContentItem } from "@/types/type";
+import { RepoContentItem } from "@/types/repo";
 import FileListItem from "./FileListItem";
-import { useState } from "react";
 
 export default function FileList({
   structure,
   onToggle,
-  isNested = false,
+  depth = 0,
   username,
   repo,
 }: {
   structure: RepoContentItem[];
   onToggle: (item: RepoContentItem) => void;
-  isNested: boolean;
+  depth?: number;
   username: string;
   repo: string;
 }) {
   return (
-    <ul className="scrollbar-hide max-h-[calc(100dvh-12rem)] overflow-y-scroll">
+    <ul className="w-full max-h-[calc(100dvh-12rem)] overflow-y-scroll overflow-x-hidden scrollbar-hide">
       {structure.map((item) => (
         <FileListItem
           key={item.path}
           item={item}
           onToggle={onToggle}
-          isNested={isNested}
+          depth={depth}
           username={username}
           repo={repo}
         />

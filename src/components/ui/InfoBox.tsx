@@ -1,4 +1,3 @@
-import { Children } from "react";
 import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
@@ -20,7 +19,7 @@ const infoBoxVariants = cva(
       },
     },
     defaultVariants: {
-      variant: "primary",
+      variant: "red",
     },
   },
 );
@@ -30,18 +29,21 @@ const infoBoxTitleVariants = cva("text-2xl font-semibold leading-[1.4]", {
     color: colorVariants,
   },
   defaultVariants: {
-    color: "primary",
+    color: "red",
   },
 });
 
-const infoBoxDescriptionVariants = cva("text-lg font-normal", {
-  variants: {
-    color: colorVariants,
+const infoBoxDescriptionVariants = cva(
+  "text-lg font-medium leading=[1.575rem] tracking-[1.5%]",
+  {
+    variants: {
+      color: colorVariants,
+    },
+    defaultVariants: {
+      color: "gray",
+    },
   },
-  defaultVariants: {
-    color: "gray",
-  },
-});
+);
 
 export type InfoBoxProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof infoBoxVariants>;
@@ -80,7 +82,11 @@ function InfoBoxTitle({
   ...props
 }: InfoBoxTextProps) {
   return (
-    <p className={cn(infoBoxTitleVariants({ color }), className)} {...props}>
+    <p
+      className={cn(infoBoxTitleVariants({ color }), className)}
+      {...props}
+      role="title"
+    >
       {children}
     </p>
   );
@@ -92,13 +98,11 @@ function InfoBoxDescriptionList({
   children,
   ...props
 }: InfoBoxTextProps) {
-  const listStlye =
-    Children.count(children) > 1 ? "ml-5 list-disc" : "list-none";
   return (
     <ul
       className={cn(
         infoBoxDescriptionVariants({ color }),
-        listStlye,
+        "ml-3 list-disc marker:text-xs",
         className,
       )}
       {...props}
@@ -114,9 +118,34 @@ function InfoBoxDescriptionListItem({
   ...props
 }: React.HTMLAttributes<HTMLLIElement>) {
   return (
-    <li className={cn(className)} {...props}>
+    <li
+      className={cn("ml-4", className)}
+      {...props}
+      role="vulnerability issue description"
+    >
       {children}
     </li>
+  );
+}
+
+function InfoBoxDescriptionText({
+  color,
+  className,
+  children,
+  ...props
+}: InfoBoxTextProps) {
+  return (
+    <p
+      className={cn(
+        "flex flex-col",
+        infoBoxDescriptionVariants({ color }),
+        className,
+      )}
+      {...props}
+      role="description"
+    >
+      {children}
+    </p>
   );
 }
 
@@ -126,4 +155,5 @@ export {
   InfoBoxTitle,
   InfoBoxDescriptionList,
   InfoBoxDescriptionListItem,
+  InfoBoxDescriptionText,
 };

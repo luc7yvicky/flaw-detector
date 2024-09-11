@@ -1,6 +1,11 @@
-import { cn } from "@/lib/utils";
-import { RepoContentItem } from "@/types/type";
+import { cn, getLanguage } from "@/lib/utils";
+import { useFileProcessStore } from "@/stores/useFileProcessStore";
+import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
+import { useFileViewerStore } from "@/stores/useFileViewerStore";
+import { RepoContentItem } from "@/types/repo";
+import { memo, useCallback, useMemo } from "react";
 import {
+  IconCaretLeft,
   IconDoc,
   IconDone,
   IconError,
@@ -10,129 +15,171 @@ import {
   IconStar,
 } from "../ui/Icons";
 import FileList from "./FileList";
-import {
-  useFileProcessStore,
-  useFileSelectionStore,
-  useFileViewerStore,
-} from "@/stores/store";
-import { memo, useCallback, useMemo, useState } from "react";
+import { useBookmarkStore } from "@/stores/useBookMarkStore";
 
 function FileListItem({
   item,
   onToggle,
-  isNested,
+  depth,
   username,
   repo,
 }: {
   item: RepoContentItem;
   onToggle: (item: RepoContentItem) => void;
-  isNested: boolean;
+  depth: number;
   username: string;
   repo: string;
 }) {
-  const { name, type, expanded, items, path } = item;
-  const fetchFileContent = useFileViewerStore(
-    (state) => state.fetchFileContent,
-  );
-  const setCurrentFile = useFileViewerStore((state) => state.setCurrentFile);
-  const currentFile = useFileViewerStore((state) => state.currentFile);
+  const { name, type, path } = item;
+  const { setCurrentFile, currentFile } = useFileViewerStore();
 
   const { toggleFileSelection, isFileSelected } = useFileSelectionStore();
   const { getFileStatus } = useFileProcessStore();
   const fileStatus = getFileStatus(item.path);
+  const { toggleBookmark, isBookmarked } = useBookmarkStore();
+  const isItemBookmarked = isBookmarked(item.path);
+
+  const isImage = useMemo(() => getLanguage(name) === "image", [name]);
 
   const handleCheckboxChange = () => {
-    toggleFileSelection(item.path, item.name);
+    if (!isImage) {
+      toggleFileSelection(item.path, item.name);
+      setCurrentFile(path);
+    }
   };
 
   const handleBookmark = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    // TODO: 북마크 로직 구현
-    console.log(`Bookmarked: ${name}`);
+    toggleBookmark(item.path);
   };
 
   const handleItemClick = useCallback(
-    async (e: React.MouseEvent<HTMLLIElement>) => {
+    (e: React.MouseEvent<HTMLLIElement>) => {
       e.stopPropagation();
       if (type === "dir") {
         onToggle(item);
+        console.log(item.folderExpandStatus);
       } else if (type === "file") {
         setCurrentFile(path);
-        await fetchFileContent(username, repo, path);
       }
     },
-    [item, onToggle, username, repo],
+    [item, onToggle, setCurrentFile, path, type],
   );
+
   const statusIcon = useMemo(() => {
     switch (fileStatus) {
       case "onCheck":
         return <IconOnProcess className="animate-spin" />; // 처리 중임을 더 명확하게 표시
       case "onWait":
-        return <IconOnWait color="fill-gray-default" />;
+        return <IconOnWait className="fill-gray-default" />;
       case "error":
         return <IconError />;
       case "success":
-        return <IconDone />;
+        return <IconDone className="fill-accent-cyan" />;
       default:
         return null;
     }
   }, [fileStatus]);
 
   const showNestedList = useMemo(
-    () => type === "dir" && expanded && items && items.length > 0,
-    [type, expanded, items],
+    () =>
+      type === "dir" &&
+      item.folderExpandStatus === "expanded" &&
+      item.items &&
+      item.items.length > 0,
+    [type, item],
   );
 
-  const isActive = type === "file" && path === currentFile;
+  // 깊이에 따른 padding 및 indicator (동적생성 이슈로 인라인스타일 지정)
+  const BASE_PADDING = 8;
+  const PADDING_INCREMENT = 16;
+
+  const depthIndicators = useMemo(() => {
+    return Array(depth)
+      .fill(0)
+      .map((_, index) => (
+        <span
+          key={index}
+          className="absolute bottom-0 top-0 inline-block h-full w-px bg-gray-300"
+          style={{
+            left: `${BASE_PADDING * 2 + index * PADDING_INCREMENT}px`,
+          }}
+        />
+      ));
+  }, [depth]);
 
   return (
     <>
       <li
+        title={name}
         className={cn(
-          "group/item flex cursor-pointer border-t border-line-default px-3 py-2 hover:bg-purple-light",
-          isNested && "pl-6",
-          // expanded && type === "dir" && "bg-purple-50",
-          isActive && "bg-primary-50",
+          "group/item relative flex w-full cursor-pointer border-b border-line-default p-2.5 py-[-1px] hover:bg-purple-light",
+          path === currentFile && "bg-primary-50",
         )}
+        style={{ paddingLeft: `${BASE_PADDING + depth * PADDING_INCREMENT}px` }}
         onClick={handleItemClick}
       >
-        <div className="flex w-full justify-between">
-          <div className="flex w-full">
-            <div
-              className="mr-2 flex items-center"
-              onClick={(e) => e.stopPropagation()}
-            >
+        {depthIndicators}
+        <div className="flex w-full">
+          <div
+            className="mr-2 flex items-center"
+            // onClick={(e) => e.stopPropagation()}
+          >
+            {type === "dir" ? (
+              <IconCaretLeft
+                className={cn(
+                  "inline-block size-4 rotate-180 fill-black",
+                  item.folderExpandStatus === "expanded" && "-rotate-90",
+                )}
+              />
+            ) : (
               <input
                 type="checkbox"
                 checked={isFileSelected(item.path)}
                 onChange={handleCheckboxChange}
+                disabled={isImage}
                 className={cn(
                   "size-4 accent-primary-500",
-                  // type === "dir" && "invisible",
+                  isImage && "cursor-not-allowed opacity-50",
                 )}
               />
-            </div>
-            <div className="mr-1 flex items-center">
-              {type === "file" ? <IconDoc /> : <IconFolder />}
-            </div>
-            <span>{name}</span>
+            )}
           </div>
-          {/* <div className="flex-center-center invisible">
+          <div className="mr-1 flex items-center">
+            {type === "file" ? <IconDoc /> : <IconFolder />}
+          </div>
+          <div className="shrink truncate">
+            {name}
+            {type === "dir" && item.folderExpandStatus === "expanding" && (
+              <span className="ml-1">...</span>
+            )}
+          </div>
+          <div
+            className={cn(
+              "flex-center-center invisible ml-auto",
+              isItemBookmarked && "visible",
+            )}
+          >
             <button
               className="group-hover/item:visible"
               onClick={handleBookmark}
             >
-              <IconStar className="fill-primary-300" />
+              <IconStar
+                filled={isItemBookmarked}
+                className={
+                  isItemBookmarked ? "text-primary-500" : "text-primary-300"
+                }
+              />
             </button>
-          </div> */}
-          {fileStatus && statusIcon}
+          </div>
+          {fileStatus && <div className="ml-auto flex pl-1"> {statusIcon}</div>}
         </div>
       </li>
-      {showNestedList && items && (
+      {showNestedList && type === "dir" && item.items && (
         <FileList
-          structure={items}
+          structure={item.items}
           onToggle={onToggle}
-          isNested
+          depth={depth + 1}
           username={username}
           repo={repo}
         />

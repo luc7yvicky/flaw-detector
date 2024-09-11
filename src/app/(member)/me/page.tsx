@@ -10,7 +10,7 @@ export default async function MyPage() {
   const session = await auth();
 
   return (
-    <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
+    <div className="mb-[7.75rem] flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <TitleBar
         title="Profile Information"
         align="center"
@@ -23,8 +23,9 @@ export default async function MyPage() {
             <Profile />
             <form action={logout}>
               <Button
-                variant="outlined"
-                className="flex-center-center px-5 py-4 text-2xl font-medium"
+                variant="filled-light-purple"
+                shape="rounded"
+                className="flex-center-center px-5 py-4 font-medium"
               >
                 로그아웃
               </Button>

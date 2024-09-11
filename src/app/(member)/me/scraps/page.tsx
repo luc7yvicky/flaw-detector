@@ -1,14 +1,13 @@
 "use client";
 
 import ClippingArticle from "@/components/me/ClippingArticle";
-import Button from "@/components/ui/Button";
 import Dropdown from "@/components/ui/Dropdown";
-import { IconPlus } from "@/components/ui/Icons";
+import Pagination from "@/components/ui/Pagination";
 import TitleBar from "@/components/ui/TitleBar";
-import { ITEMS_PER_MY_PAGE } from "@/lib/const";
-import { ArticleDetailProps } from "@/types/type";
+import { ITEMS_PER_MY_PAGE, PAGES_PER_GROUP } from "@/lib/const";
+import { ArticleDetailProps } from "@/types/post";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 
 const dummyClippingArticles: ArticleDetailProps[] = [
   {
@@ -182,19 +181,16 @@ const dummyClippingArticles: ArticleDetailProps[] = [
 ];
 
 export default function ScrapsPage() {
-  const [currPage, setCurrPage] = useState<number>(1);
-  const [articles, setArticles] = useState<ArticleDetailProps[]>([]);
-
   // 1. 필터링 적용
-  const [filterType, setFilterType] = useState<string>("");
+  // const [filterType, setFilterType] = useState<string>(""); // 구현 예정
   const [sortType, setSortType] = useState<string>("");
 
-  useEffect(() => {
-    let filteredArticles = [...articles];
+  const articles = useMemo(() => {
+    let initialArticles = [...dummyClippingArticles];
 
     // 정렬
     if (sortType) {
-      filteredArticles.sort((a, b) => {
+      initialArticles.sort((a, b) => {
         switch (sortType) {
           case "latest":
             return (
@@ -214,21 +210,22 @@ export default function ScrapsPage() {
       });
     }
 
-    setArticles(filteredArticles);
-  }, [filterType, sortType, articles]);
+    return initialArticles;
+  }, [sortType]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setArticles(
-        dummyClippingArticles?.slice(0, currPage * ITEMS_PER_MY_PAGE),
-      );
-    }, 500);
+  // 2. 페이징 적용
+  const [currPage, setCurrPage] = useState<number>(1);
+  const totalPages = Math.ceil(articles.length / ITEMS_PER_MY_PAGE);
+  const currentGroup = Math.ceil(currPage / PAGES_PER_GROUP);
+  const startPage = (currentGroup - 1) * PAGES_PER_GROUP + 1;
+  const endPage = Math.min(startPage + PAGES_PER_GROUP - 1, totalPages);
 
-    return () => clearTimeout(timer);
-  }, [currPage]);
+  const startIndex = (currPage - 1) * ITEMS_PER_MY_PAGE;
+  const endIndex = startIndex + ITEMS_PER_MY_PAGE;
+  const currentArticles = articles.slice(startIndex, endIndex);
 
   return (
-    <div className="flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
+    <div className="mb-[7.75rem] flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <TitleBar
         title="Clipping articles"
         align="center"
@@ -241,32 +238,28 @@ export default function ScrapsPage() {
             Library
           </h2>
           <div className="inline-flex gap-x-[0.563rem]">
-            <Dropdown type="type" onSelectFilter={setFilterType} />
+            {/* <Dropdown type="type" onSelectFilter={setFilterType} /> */}
             <Dropdown type="sort" onSelectFilter={setSortType} />
           </div>
         </div>
 
         <div className="flex-between-center relative grid grid-cols-3 gap-6">
-          {articles?.map((article) => (
+          {currentArticles?.map((article) => (
             <Link href={`/vuldb/items/${article.id}`} key={article.id}>
               <ClippingArticle {...article} />
             </Link>
           ))}
         </div>
 
-        {dummyClippingArticles.length > currPage * ITEMS_PER_MY_PAGE && (
-          <div className="flex-center-center">
-            <Button
-              variant="outlined"
-              shape="rounded"
-              className="flex-center-center w-[7.688rem] gap-x-1 border py-5 text-xl font-normal"
-              onClick={() => setCurrPage((prev) => prev + 1)}
-            >
-              <span>더보기</span>
-              <IconPlus />
-            </Button>
-          </div>
-        )}
+        <div className="flex-center-center w-full">
+          <Pagination
+            currentPage={currPage}
+            totalPages={totalPages}
+            startPage={startPage}
+            endPage={endPage}
+            setCurrentPage={setCurrPage}
+          />
+        </div>
       </article>
     </div>
   );
