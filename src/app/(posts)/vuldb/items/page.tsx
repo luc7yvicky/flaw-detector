@@ -75,10 +75,10 @@ export default async function VulDBPage() {
     return (
       <div className="relative mx-auto mb-[1.188rem] mt-[1.688rem] flex min-h-[2445px] w-[82.063rem] flex-col gap-[4.75rem]">
         <VulDBImageCardContainer posts={top3RecentPosts} />
-        <Search />
+        <Search initialPosts={postsWithChips} />
         <div className="flex justify-between">
-          <VulDBDashboard posts={sortedPostsByDate} />
-          <RealTimeTopic />
+          {/* <VulDBDashboard posts={sortedPostsByDate} /> */}
+          {/* <RealTimeTopic /> */}
         </div>
       </div>
     );
