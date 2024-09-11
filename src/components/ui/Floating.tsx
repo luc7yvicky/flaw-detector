@@ -1,0 +1,45 @@
+"use client";
+
+import { cn } from "@/lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
+import React from "react";
+import { IconArrow, IconChat } from "./Icons";
+
+const floatingVariants = cva(
+  "w-[76px] h-[76px] border-[1.46px] px-4 border-primary-500 rounded-full text-primary-500 flex-center-center flex-col",
+  {
+    variants: {
+      variant: {
+        top: "text-lg font-normal tracking-[-1%]",
+        ask: "",
+      },
+    },
+    defaultVariants: { variant: "top" },
+  },
+);
+
+export type FloatingProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+  VariantProps<typeof floatingVariants> & {};
+
+const Floating = React.forwardRef<HTMLButtonElement, FloatingProps>(
+  ({ className, variant, type, ...props }, ref) => {
+    return (
+      <button
+        type="button"
+        className={cn(
+          floatingVariants({ variant }),
+          className,
+          "text-primary-500 hover:bg-primary-500 hover:text-white",
+        )}
+        ref={ref}
+        {...props}
+      >
+        {variant === "top" ? <IconArrow /> : <IconChat />}
+        {variant === "top" && "TOP"}
+      </button>
+    );
+  },
+);
+Floating.displayName = "Floating";
+
+export { Floating };
