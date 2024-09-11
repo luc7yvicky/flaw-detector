@@ -11,6 +11,7 @@ const floatingVariants = cva(
     variants: {
       variant: {
         top: "text-lg font-normal tracking-[-1%]",
+        chat: "",
       },
     },
   },
