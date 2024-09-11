@@ -24,7 +24,7 @@ export default function LandingFeatureSection() {
       <div className="absolute right-[18.337rem] z-10 h-[23.875rem] w-[23.788rem] gap-[0.625rem] rounded-lg bg-white p-[5.813rem_5.938rem] shadow-[0rem_3.75rem_3.75rem_-1.5rem_#6100FF40]">
         <IconBug />
       </div>
-      <SquareBackground className="rolling-square" />
+      <SquareBackground className="animate-roll-around-y" />
     </section>
   );
 }
