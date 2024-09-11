@@ -60,3 +60,27 @@
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-in-out;
 }
+
+@keyframes rollAroundY {
+  0% {
+    transform: translate(200px, 0px) rotate(0deg); /* 시작 위치: 오른쪽 상단 */
+  }
+  25% {
+    transform: translate(50px, 150px) rotate(-90deg); /* 반원 중간 */
+  }
+  50% {
+    transform: translate(-100px, 200px) rotate(-180deg); /* 왼쪽으로 이동 */
+  }
+  75% {
+    transform: translate(50px, 250px) rotate(-270deg); /* 반원 마지막 */
+  }
+}
+
+/* 애니메이션 클래스 정의 */
+.rolling-square {
+  animation: rollAroundY 5s linear infinite; /* 애니메이션 설정 */
+  transform-origin: center center; /* 회전 중심을 정사각형의 중앙으로 설정 */
+  position: absolute; /* 절대 위치 지정 */
+  top: 0; /* 상단 정렬 */
+  right: 0; /* 오른쪽 정렬 */
+}

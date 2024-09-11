@@ -63,6 +63,18 @@ const config: Config = {
           dark: "#ADADAD",
         },
       },
+      keyframes: {
+        rollAroundY: {
+          "0%": { transform: "translate(0px, 0px) rotate(0deg)" },
+          "25%": { transform: "translate(-212px, 150px) rotate(-90deg)" },
+          "50%": { transform: "translate(-300px, 300px) rotate(-180deg)" },
+          "75%": { transform: "translate(-212px, 450px) rotate(-270deg)" },
+          "100%": { transform: "translate(0px, 600px) rotate(-360deg)" },
+        },
+      },
+      animation: {
+        "roll-around-y": "rollAroundY 5s linear infinite",
+      },
     },
   },
   plugins: [require("tailwind-scrollbar-hide")],
