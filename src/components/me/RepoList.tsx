@@ -108,7 +108,7 @@ export default function RepoList({
           <Dropdown type="sort" onSelectFilter={setSortType} />
         </div>
       </div>
-      <div className="flex-between-center relative grid grid-cols-4 grid-rows-3 gap-x-6 gap-y-12">
+      <div className="flex-between-center relative grid grid-cols-3 grid-rows-3 gap-x-6 gap-y-12 1150:grid-cols-4">
         {currentRepos.map((repo) => (
           <Repo key={repo.repositoryName} username={username} {...repo} />
         ))}

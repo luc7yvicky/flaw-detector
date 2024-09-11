@@ -27,7 +27,7 @@ export default function LandingHeroSection({
         <Link href="/repos">
           <Button
             shape="pill"
-            className="flex-center-center px-6 py-[0.688rem] text-[1.75rem] font-light leading-[2.118rem] -tracking-[0.01em]"
+            className="flex-center-center px-6 py-[0.688rem] text-center text-[1.75rem] font-light leading-[2.118rem] -tracking-[0.01em]"
           >
             파일 분석하러 가기
           </Button>

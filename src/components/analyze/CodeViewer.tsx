@@ -163,7 +163,7 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
         <SyntaxHighlighter
           language={data?.type === "code" ? data.language : "text"}
           style={highlighterStyle}
-          // showLineNumbers
+          showLineNumbers
           wrapLines
           className="p-11"
           PreTag={({ children, ...props }) => (

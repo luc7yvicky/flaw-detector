@@ -1,13 +1,16 @@
 "use client";
 
+import { getDetectedResultsByRepo } from "@/lib/api/repositories";
 import { useExpandFolder } from "@/lib/queries/useExpandFolder";
+import { cn } from "@/lib/utils";
+import { useBookmarkStore } from "@/stores/useBookMarkStore";
+import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { FolderItem, RepoContentItem } from "@/types/repo";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { IconList } from "../ui/Icons";
 import FileList from "./FileList";
-import { getDetectedResultsByRepo } from "@/lib/api/repositories";
-import { useFileProcessStore } from "@/stores/useFileProcessStore";
 
 export default function FileExplorer({
   initialStructure,
@@ -31,9 +34,26 @@ export default function FileExplorer({
   );
   const setStatus = useFileProcessStore((state) => state.setFileStatus);
 
-  const [structure, setStructure] =
-    useState<RepoContentItem[]>(initialStructure);
+  const sortListRef = useRef<HTMLDivElement>(null);
+  const { isBookmarked, bookmarks } = useBookmarkStore();
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        sortListRef.current &&
+        !sortListRef.current.contains(event.target as Node)
+      ) {
+        setIsSortListOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // 해당 레파지토리의 검사 결과 여부 조회
   useEffect(() => {
     const getResults = async () => {
       try {
@@ -53,6 +73,11 @@ export default function FileExplorer({
 
     getResults();
   }, []);
+
+  const [structure, setStructure] =
+    useState<RepoContentItem[]>(initialStructure);
+  const [sortOption, setSortOption] = useState<SortOption>("folder");
+  const [isSortListOpen, setIsSortListOpen] = useState(false);
 
   // 레포 이동시 초기화
   useEffect(() => {
@@ -130,20 +155,112 @@ export default function FileExplorer({
     [],
   );
 
+  useEffect(() => {
+    if (sortOption === "bookmark") {
+      setStructure((prevStructure) => [...prevStructure]); // 새로운 배열을 생성하여 리렌더링 트리거
+    }
+  }, [bookmarks, sortOption]);
+
+  const sortItems = useCallback(
+    (items: RepoContentItem[], option: SortOption) => {
+      return [...items].sort((a, b) => {
+        if (option === "folder") {
+          if (a.type === "dir" && b.type !== "dir") return -1;
+          if (a.type !== "dir" && b.type === "dir") return 1;
+        }
+        if (option === "file") {
+          if (a.type === "file" && b.type !== "file") return -1;
+          if (a.type !== "file" && b.type === "file") return 1;
+        }
+        if (option === "bookmark") {
+          const isABookmarked = useBookmarkStore
+            .getState()
+            .isBookmarked(a.path);
+          const isBBookmarked = useBookmarkStore
+            .getState()
+            .isBookmarked(b.path);
+          if (isABookmarked && !isBBookmarked) return -1;
+          if (!isABookmarked && isBBookmarked) return 1;
+        }
+        return a.name.localeCompare(b.name);
+      });
+    },
+    [],
+  );
+
+  const sortedStructure = useMemo(
+    () => sortItems(structure, sortOption),
+    [structure, sortOption, sortItems, bookmarks],
+  );
+
+  const handleSortChange = (option: SortOption) => {
+    setSortOption(option);
+    setIsSortListOpen(false);
+  };
+
   return (
-    <div className="overflow-hidden rounded-lg border border-line-default">
+    <div className="w-full overflow-hidden rounded-lg border border-line-default">
       <div className="flex items-center border-b border-line-default bg-purple-light px-3 py-5 text-xl">
-        <div className="flex items-center">
-          <span>Files</span>
+        <div className="flex w-full items-center justify-between">
+          <h3>Files</h3>
+          <div className="relative">
+            <IconList
+              className="cursor-pointer"
+              onClick={() => setIsSortListOpen(!isSortListOpen)}
+            />
+            {isSortListOpen && (
+              <div className="absolute right-0 top-full z-50 mt-1">
+                <SortOptionList
+                  selectedOption={sortOption}
+                  onOptionSelect={handleSortChange}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
       <FileList
-        structure={structure}
+        structure={sortedStructure}
         onToggle={handleToggle}
         depth={0}
         username={username}
         repo={repo}
       />
     </div>
+  );
+}
+
+export type SortOption = "file" | "folder" | "bookmark";
+
+interface SortOptionListProps {
+  selectedOption: SortOption;
+  onOptionSelect: (option: SortOption) => void;
+}
+
+const options: { value: SortOption; label: string }[] = [
+  { value: "file", label: "파일순" },
+  { value: "folder", label: "폴더순" },
+  { value: "bookmark", label: "북마크순" },
+];
+
+function SortOptionList({
+  selectedOption,
+  onOptionSelect,
+}: SortOptionListProps) {
+  return (
+    <ul className="z-100 w-[100px] overflow-hidden rounded-lg border border-line-default bg-white shadow-md">
+      {options.map((option) => (
+        <li
+          key={option.value}
+          className={cn(
+            "cursor-pointer px-3 py-2 text-sm transition-colors hover:bg-purple-light",
+            selectedOption === option.value && "bg-purple-50",
+          )}
+          onClick={() => onOptionSelect(option.value)}
+        >
+          {option.label}
+        </li>
+      ))}
+    </ul>
   );
 }

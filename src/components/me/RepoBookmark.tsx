@@ -1,7 +1,7 @@
 "use client";
 
-import { memo, useCallback, useEffect, useState } from "react";
-import { IconFilledStar, IconStar } from "../ui/Icons";
+import { memo, useCallback, useState } from "react";
+import { IconStar } from "../ui/Icons";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
 
@@ -51,7 +51,7 @@ function RepoBookmark({
       onClick={onToggleFavorite}
     >
       {isSelected ? (
-        <IconFilledStar className="size-8 fill-primary-200" />
+        <IconStar className="size-8 fill-primary-200" />
       ) : (
         <IconStar className="size-8 bg-white fill-primary-100" />
       )}

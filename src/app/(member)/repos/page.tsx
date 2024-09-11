@@ -22,7 +22,7 @@ export default async function ReposPage() {
   const repos: RepoListData[] = await getRepoListFromDB(params);
 
   return (
-    <div className="mb-[8.536rem] flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
+    <div className="mb-[8.536rem] flex w-full min-w-[64rem] max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <Image
         src="/images/myReposBg.png"
         alt="my repos bg"

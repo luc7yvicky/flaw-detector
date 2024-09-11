@@ -30,6 +30,7 @@ const config: Config = {
           blue: "#6DB0FF",
           orange: "#FFD542",
           green: "#00C308",
+          cyan: "#17E0D4",
         },
         purple: {
           light: "#FAF8FF",
@@ -65,6 +66,29 @@ const config: Config = {
           light: "#E6E6E6",
           dark: "#ADADAD",
         },
+      },
+      screens: {
+        "1150": "71.875rem",
+      },
+      keyframes: {
+        rollAroundY: {
+          "0%": { transform: "translate(195px, 0px) rotate(0deg)" },
+          "25%": {
+            transform: "translate(145px, 30px) rotate(-90deg)",
+          },
+          "50%": {
+            transform: "translate(115px, 60px) rotate(-180deg)",
+          },
+          "75%": {
+            transform: "translate(145px, 30px) rotate(-270deg)",
+          },
+          "100%": {
+            transform: "translate(195px, 0px) rotate(-360deg)",
+          },
+        },
+      },
+      animation: {
+        "roll-around-y": "rollAroundY 5s linear infinite",
       },
     },
   },

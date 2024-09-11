@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body
-        className={`${pretendard.variable} font-pretendard ${inter.className}`}
+        className={`${pretendard.variable} font-pretendard ${inter.className} min-w-[64rem]`}
       >
         <Header />
         <main className="min-h-[calc(100dvh-136px)]">
