@@ -4,7 +4,7 @@ import { IconBug } from "../ui/Icons";
 
 export default function LandingFeatureSection() {
   return (
-    <section className="flex-end-center relative max-h-screen min-h-dvh w-full bg-primary-50 bg-cover bg-center text-primary-500">
+    <section className="flex-end-center relative max-h-screen min-h-dvh w-full overflow-hidden bg-primary-50 bg-cover bg-center text-primary-500">
       <article className="absolute left-[12rem] h-[29.5rem] w-[41rem]">
         <h2 className="flex-col-start-center w-full space-y-3 text-[5rem] font-bold leading-[6.051rem] tracking-[-0.01em]">
           <span>쉽고 편하게</span>
