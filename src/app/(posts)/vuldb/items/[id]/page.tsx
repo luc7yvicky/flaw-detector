@@ -21,7 +21,7 @@ export default async function VulnerabilityDBDetailPage({
   const userId = session?.user.userId;
 
   return (
-    <div className="relative mx-auto mb-[8.596rem] mt-[2.063rem] flex w-[120rem] flex-col items-center gap-[3.75rem] px-[1rem]">
+    <div className="relative mx-auto mb-[8.596rem] mt-[2.063rem] flex max-w-[120rem] flex-col items-center gap-[3.75rem] px-[1rem]">
       <ArticleDetail post={post} userId={userId} />
       {/* <VulnerabilityGrid /> */}
       <SimilarInfoPosts posts={posts} postId={postId} userId={userId} />
