@@ -13,7 +13,7 @@ export default async function ReposPage() {
   const repos: RepoListData[] = await getRepoLists(session?.user?.username);
 
   return (
-    <div className="mb-[8.536rem] flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
+    <div className="mb-[8.536rem] flex w-full min-w-[64rem] max-w-[82.125rem] flex-col gap-y-[7.75rem] px-[1rem]">
       <div className="flex-col-center-center mt-[3.5rem] gap-y-5">
         <span className="text-[3.75rem] font-light leading-[1.2] -tracking-[0.01em] text-primary-500">
           containing code files
