@@ -32,8 +32,13 @@ export default async function SettingsPage() {
           <div className="flex w-full flex-col gap-y-12 text-2xl -tracking-[0.01em]">
             <h2 className="font-semibold">알림</h2>
             <div className="flex-between-center w-full">
-              <span className="font-normal">이메일로 알림 받기</span>
-              <Switch />
+              <p className="flex gap-x-3">
+                <span className="font-normal">이메일로 알림 받기</span>
+                <span className="text-gray-default">
+                  (준비 중인 기능입니다.)
+                </span>
+              </p>
+              <Switch variant="disabled" />
             </div>
           </div>
         </section>
