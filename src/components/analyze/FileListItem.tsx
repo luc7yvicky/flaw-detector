@@ -41,12 +41,15 @@ function FileListItem({
 
   const isImage = useMemo(() => getLanguage(name) === "image", [name]);
 
-  const handleCheckboxChange = () => {
-    if (!isImage) {
-      toggleFileSelection(item.path, item.name);
-      setCurrentFile(path);
-    }
-  };
+  const handleCheckboxChange = useCallback(
+    (e: React.MouseEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+      if (type === "file" && !isImage) {
+        toggleFileSelection(item.path, item.name);
+      }
+    },
+    [type, isImage, item.path, item.name, toggleFileSelection],
+  );
 
   const handleBookmark = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -133,16 +136,22 @@ function FileListItem({
                 )}
               />
             ) : (
-              <input
-                type="checkbox"
-                checked={isFileSelected(item.path)}
-                onChange={handleCheckboxChange}
-                disabled={isImage}
-                className={cn(
-                  "size-4 accent-primary-500",
-                  isImage && "cursor-not-allowed opacity-50",
-                )}
-              />
+              <div
+                className="relative flex size-7 items-center justify-center"
+                onClick={handleCheckboxChange}
+              >
+                <input
+                  type="checkbox"
+                  checked={isFileSelected(item.path)}
+                  onChange={() => {}}
+                  disabled={isImage}
+                  className={cn(
+                    "size-4 accent-primary-500",
+                    isImage && "cursor-not-allowed opacity-50",
+                  )}
+                />
+                <div className="absolute inset-0" />
+              </div>
             )}
           </div>
           <div className="mr-1 flex items-center">
