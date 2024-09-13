@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        pretendard: ["var(--font-pretendard)"],
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -27,6 +30,7 @@ const config: Config = {
           blue: "#6DB0FF",
           orange: "#FFD542",
           green: "#00C308",
+          cyan: "#17E0D4",
         },
         purple: {
           light: "#FAF8FF",
@@ -62,6 +66,34 @@ const config: Config = {
           light: "#E6E6E6",
           dark: "#ADADAD",
         },
+      },
+      screens: {
+        "1150": "71.875rem",
+      },
+      keyframes: {
+        scrollLeft: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-100%)" },
+        },
+        rollAroundY: {
+          "0%": { transform: "translate(195px, 0px) rotate(0deg)" },
+          "25%": {
+            transform: "translate(145px, 30px) rotate(-90deg)",
+          },
+          "50%": {
+            transform: "translate(115px, 60px) rotate(-180deg)",
+          },
+          "75%": {
+            transform: "translate(145px, 30px) rotate(-270deg)",
+          },
+          "100%": {
+            transform: "translate(195px, 0px) rotate(-360deg)",
+          },
+        },
+      },
+      animation: {
+        "scroll-left": "scrollLeft 10s linear infinite",
+        "roll-around-y": "rollAroundY 5s linear infinite",
       },
     },
   },

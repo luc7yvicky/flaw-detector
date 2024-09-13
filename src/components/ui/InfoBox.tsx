@@ -34,7 +34,7 @@ const infoBoxTitleVariants = cva("text-2xl font-semibold leading-[1.4]", {
 });
 
 const infoBoxDescriptionVariants = cva(
-  "text-lg font-medium leading=[1.575rem] spacing-[1.5%]",
+  "text-lg font-medium leading=[1.575rem] tracking-[1.5%]",
   {
     variants: {
       color: colorVariants,

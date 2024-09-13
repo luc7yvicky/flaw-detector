@@ -135,34 +135,106 @@ export const getLanguage = (filename: string) => {
   }
 };
 
-/* 폴더 -> 파일 순 정렬 */
-export const sortDirectoryFirst = (
-  data: Array<{ name: string; type: "dir" | "file" | "submodule" | "symlink" }>,
-): Array<{ name: string; type: "dir" | "file" | "submodule" | "symlink" }> => {
-  const sortedData = data.sort((a, b) => {
-    if (a.type === "dir" && b.type !== "dir") {
-      return -1;
-    }
-
-    // 나머지 경우는 원래 순서 유지
-    return 0;
-  });
-
-  return sortedData;
-};
-
 /* json으로 파싱되기 전 문자열에 포함되어 있는 정규식, 작은따옴표 처리 */
 export const convertEscapedCharacterToRawString = (str: string) => {
-  let rawString;
+  return str
+    .replace(/\/([^\/]+)\/g/g, "\\\\/$1\\\\/g") // 정규식 문자열을 두 개의 백슬래시로 감싸기
+    .replace(/'/g, `\\"`) // 싱글 쿼테이션
+    .replace(/\/"/g, `/\\"`) // 슬래쉬 + 더블 쿼테이션
+    .replace(/</g, "\\u003C") // '<' 문자
+    .replace(/>/g, "\\u003E"); // '>' 문자
+};
 
-  // 정규식 문자열을 두 개의 백슬래시로 감싸주기
-  rawString = str.replace(/\/([^\/]+)\/g/g, "\\\\/$1\\\\/g");
+// 분석 제외 파일 리스트
+export const ignoredFiles = [
+  // 시스템 파일
+  ".DS_Store",
+  "Thumbs.db",
+  "desktop.ini",
 
-  // 싱글 쿼테이션을 앞에 백슬래시 + 더블 쿼테이션 조합으로 대체
-  rawString = rawString.replace(/'/g, `\\"`);
+  // 버전 컨트롤 시스템 파일
+  ".git",
+  ".gitignore",
+  ".gitattributes",
+  ".svn",
+  ".hg",
 
-  // 슬래시 + 더블 쿼테이션을 앞에 슬래시 + 백슬래시 + 더블 쿼테이션 조합으로 대체
-  rawString = rawString.replace(/\/"/g, `/\\"`);
+  // 빌드 산출물 및 의존성
+  "node_modules",
+  "vendor",
+  "bower_components",
+  "build",
+  "dist",
+  "out",
 
-  return rawString;
+  // 로그 파일
+  "*.log",
+
+  // 임시 파일
+  "*.tmp",
+  "*.temp",
+  "*.swp",
+  "*.swo",
+  "*~",
+
+  // IDE 및 에디터 설정 파일
+  ".vscode",
+  ".idea",
+  "*.sublime-project",
+  "*.sublime-workspace",
+  ".project",
+  ".settings",
+
+  // 패키지 매니저 락 파일 (취약점 분석에 따라 포함/제외 결정)
+  // 'package-lock.json',
+  // 'yarn.lock',
+  // 'composer.lock',
+
+  // 문서 및 이미지 파일
+  "*.md",
+  "*.txt",
+  "*.pdf",
+  "*.doc",
+  "*.docx",
+  "*.jpg",
+  "*.jpeg",
+  "*.png",
+  "*.gif",
+  "*.svg",
+
+  // 압축 파일
+  "*.zip",
+  "*.rar",
+  "*.tar.gz",
+
+  // 기타 설정 파일
+  ".env.example",
+  ".editorconfig",
+  ".prettierrc",
+  ".eslintrc",
+
+  // 테스트 커버리지 리포트
+  "coverage",
+
+  // 특정 언어나 프레임워크 관련 파일
+  "__pycache__",
+  "*.pyc",
+  ".pytest_cache",
+  ".mypy_cache",
+  ".rspec",
+  "Gemfile.lock",
+];
+
+export function isIgnoredFile(path: string): boolean {
+  return ignoredFiles.some((pattern) => {
+    if (pattern.startsWith("*")) {
+      return path.endsWith(pattern.slice(1));
+    }
+    return path === pattern || path.includes(`/${pattern}`);
+  });
+}
+
+export const formatFileSize = (size: number | undefined): string => {
+  if (size === undefined) return "";
+  return `${(size / 1024).toFixed(2)} KB`;
 };

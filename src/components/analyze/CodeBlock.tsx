@@ -26,7 +26,7 @@ export default function CodeBlock({
   return (
     <div
       className={cn(
-        "leading=[1.575rem] spacing-[1.5%] my-[0.625rem] max-w-[88rem] rounded-[0.625rem] bg-neutral-80 text-lg",
+        "leading=[1.575rem] my-[0.625rem] max-w-[88rem] rounded-[0.625rem] bg-neutral-80 text-lg tracking-[1.5%]",
         className,
       )}
       onMouseOver={() => setIsMouseOverCodeBlock(true)}
@@ -38,7 +38,7 @@ export default function CodeBlock({
           <button
             onClick={onClickCopy}
             className={cn(
-              "relative flex items-center gap-x-[0.625rem] transition-all hover:text-white",
+              "relative flex items-center gap-x-[0.625rem] transition-all hover:fill-white hover:text-white",
               isCopied && "transition-shadow duration-200 ease-in-out",
             )}
             disabled={isCopied}
@@ -48,7 +48,9 @@ export default function CodeBlock({
             ) : (
               <IconCopy />
             )}
-            <span>{isCopied ? "복사완료" : "코드복사"}</span>
+            <span className={isCopied ? "text-white" : ""}>
+              {isCopied ? "복사완료" : "코드복사"}
+            </span>
           </button>
         )}
       </div>

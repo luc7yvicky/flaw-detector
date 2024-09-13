@@ -6,7 +6,7 @@ export default function CustomerService({ className }: { className?: string }) {
   return (
     <section
       className={cn(
-        "mx-auto flex h-[50.813rem] w-full max-w-[96.125rem] justify-between",
+        "mx-auto flex h-[50.813rem] w-full max-w-[96.125rem] justify-between px-[1rem]",
         className,
       )}
     >

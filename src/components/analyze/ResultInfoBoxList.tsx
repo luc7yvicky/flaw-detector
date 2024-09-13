@@ -27,7 +27,7 @@ const ResultInfoBoxList: React.FC<ResultListProps> = ({
       ) : (
         // 취약점 검출 X
         <div className="flex-col-center-center h-[32.563rem] w-full gap-y-[0.625rem]">
-          <h3 className="spacing-[0.015em] text-[2rem] font-semibold leading-[2.8rem] text-gray-dark">
+          <h3 className="text-[2rem] font-semibold leading-[2.8rem] tracking-[0.015em] text-gray-dark">
             검출된 취약점이 없어요.
           </h3>
           <p className="flex-col-center-center text-2xl font-normal leading-[2.1rem] text-gray-default">

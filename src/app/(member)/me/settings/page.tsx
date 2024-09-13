@@ -1,10 +1,12 @@
+import { auth } from "@/auth";
+import LogoutButton from "@/components/me/LogoutButton";
 import Profile from "@/components/me/Profile";
-import Button from "@/components/ui/Button";
 import Switch from "@/components/ui/Switch";
 import TitleBar from "@/components/ui/TitleBar";
-import { logout } from "@/lib/actions";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const session = await auth();
+
   return (
     <div className="mb-[7.75rem] flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <TitleBar title="Settings" align="center" className="mb-0 mt-[4.5rem]" />
@@ -13,14 +15,7 @@ export default function SettingsPage() {
         <section className="flex flex-col gap-y-20">
           <div className="flex-between-center h-[6.688rem] gap-4">
             <Profile />
-            <form action={logout}>
-              <Button
-                variant="outlined"
-                className="flex-center-center px-5 py-4 text-2xl font-medium"
-              >
-                로그아웃
-              </Button>
-            </form>
+            <LogoutButton username={session?.user?.username} />
           </div>
           <hr />
         </section>
