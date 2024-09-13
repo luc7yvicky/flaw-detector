@@ -50,10 +50,6 @@ export default function RepoList({
   const filteredAndSortedRepos = useMemo(() => {
     let result = [...repos];
 
-    if (filterByBookmarked) {
-      result = result.filter((repo) => repo.favorite);
-    }
-
     // 검사 여부 필터링
     if (filterType && filterType !== "-1") {
       result = result.filter((repo) => repo.detectedStatus === filterType);
@@ -110,7 +106,7 @@ export default function RepoList({
       </div>
 
       {initialRepos.length === 0 ? (
-        <div className="flex-col-center-center 1150:h-[30.75rem] w-full gap-y-[0.625rem]">
+        <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
           <p className="text-[2rem] font-semibold leading-[2.8rem] tracking-[0.015em] text-gray-dark">
             Github에 레포지토리가 존재하지 않습니다.
           </p>
@@ -119,13 +115,13 @@ export default function RepoList({
           </p>
         </div>
       ) : currentRepos.length == 0 ? (
-        <div className="flex-col-center-center 1150:h-[30.75rem] w-full gap-y-[0.625rem]">
+        <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
           <p className="text-[2rem] font-semibold leading-[2.8rem] tracking-[0.015em] text-gray-dark">
             조건에 맞는 레포지토리가 없습니다.
           </p>
         </div>
       ) : (
-        <div className="flex-between-center 1150:grid-cols-4 relative grid grid-cols-3 grid-rows-3 gap-x-6 gap-y-12">
+        <div className="flex-between-center relative grid grid-cols-3 grid-rows-3 gap-x-6 gap-y-12 1150:grid-cols-4">
           {currentRepos.map((repo) => (
             <Repo key={repo.repositoryName} username={username} {...repo} />
           ))}
