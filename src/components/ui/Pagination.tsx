@@ -42,7 +42,7 @@ const Pagination: React.FC<PaginationProps> = ({
           <IconCaretLeft className="fill-default" />
         </button>
       ) : (
-        currentPage < totalPages && <div></div>
+        currentPage < totalPages && <div className="w-8"></div>
       )}
       {/* Page Numbers */}
       {pages.map((page) => (

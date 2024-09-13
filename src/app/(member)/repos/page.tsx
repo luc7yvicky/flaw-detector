@@ -53,7 +53,7 @@ export default async function ReposPage() {
       <div className="flex flex-col gap-y-7">
         <section className="flex flex-col gap-y-20">
           <Link href="/me" className="pointer-events-none">
-            <div className="flex-between-center pointer-events-auto h-fit gap-4 rounded-[2.625rem] bg-neutral-5 p-8">
+            <div className="flex-between-center pointer-events-auto h-fit gap-4 rounded-[2.625rem] bg-neutral-5 p-8 hover:bg-[#ededed]">
               <Profile />
               <IconCaretLeft className="fill-[rgba(52, 51, 48, 1)] size-12 rotate-180" />
             </div>
