@@ -2,26 +2,16 @@ import * as logger from "firebase-functions/logger";
 import { db } from ".";
 import { VulDBPost } from "./type";
 
-const logDocuments = (snapshot: FirebaseFirestore.QuerySnapshot) => {
-  snapshot.forEach((doc) => {
-    logger.info(
-      `Document in 'posts' collection found: ${doc.id} => ${JSON.stringify(doc.data())}`,
-    );
-  });
-};
-
-export const getAndLogDocuments = async (): Promise<void> => {
+export const checkIfCrawlingDataExists = async (pageUrl: string) => {
   try {
-    const postsSnapshot = await db.collection("posts").get();
-
-    if (postsSnapshot.empty) {
-      logger.info("No documents found in 'posts' collection.");
-    } else {
-      logDocuments(postsSnapshot);
-    }
+    const snapshot = await db
+      .collection("posts")
+      .where("page_url", "==", pageUrl)
+      .get();
+    return !snapshot.empty;
   } catch (error) {
-    logger.error("Error fetching documents from Firestore:", error);
-    throw new Error("Failed to retrieve documents");
+    logger.error("Error checking if crawling data exists:", error);
+    throw new Error("Failed to check crawling data existence");
   }
 };
 
@@ -29,9 +19,14 @@ export async function addVulDBPost(post: VulDBPost): Promise<VulDBPost> {
   try {
     const newPostRef = db.collection("posts").doc();
 
+    const now = Date.now();
+    const seconds = Math.floor(now / 1000);
+    const nanoseconds = (now % 1000) * 1000000;
+
     const newPost = {
       ...post,
       id: newPostRef.id,
+      created_at: { seconds, nanoseconds },
     };
 
     await newPostRef.set(newPost);

@@ -1,10 +1,8 @@
 import * as logger from "firebase-functions/logger";
 import { v4 as uuidv4 } from "uuid";
-import {
-  WEB_CRAWLING_CERT_CC_URL,
-  WEB_CRAWLING_SEARCH_KEYWORD,
-} from "./../const";
 import { initBrowser } from "./config";
+import { WEB_CRAWLING_CERT_CC_URL, WEB_CRAWLING_SEARCH_KEYWORD } from "./const";
+import { checkIfCrawlingDataExists } from "./firebase";
 
 export const startCertCCWebCrawling = async () => {
   const browser = await initBrowser();
@@ -19,20 +17,15 @@ export const startCertCCWebCrawling = async () => {
 
   // 크롤링 키워드 입력
   await page.type("input[name='wordSearch']", WEB_CRAWLING_SEARCH_KEYWORD);
-  logger.info(`검색 키워드 입력: ${WEB_CRAWLING_SEARCH_KEYWORD}`);
 
   await new Promise((r) => setTimeout(r, 3000));
 
-  // 최신 게시글을 가져오기 위해 checkbox 클릭
+  // checkbox 클릭
   const Checkbox2024Selector = "input[type='checkbox'][value='2024']";
-  const Checkbox2023Selector = "input[type='checkbox'][value='2023']";
 
   await page.waitForSelector(Checkbox2024Selector);
-  await page.waitForSelector(Checkbox2023Selector);
 
-  logger.info("체크박스를 클릭합니다.");
-
-  // 체크박스 상태 확인 및 초기화
+  // checkbox 상태 확인 및 초기화
   const is2024Checked = await page.$eval(
     Checkbox2024Selector,
     (el) => (el as HTMLInputElement).checked,
@@ -43,19 +36,6 @@ export const startCertCCWebCrawling = async () => {
   await page.click(Checkbox2024Selector);
 
   await new Promise((r) => setTimeout(r, 2000));
-
-  const is2023Checked = await page.$eval(
-    Checkbox2023Selector,
-    (el) => (el as HTMLInputElement).checked,
-  );
-  if (is2023Checked) {
-    await page.click(Checkbox2023Selector);
-  }
-  await page.click(Checkbox2023Selector);
-
-  await new Promise((r) => setTimeout(r, 3000));
-
-  logger.info("체크박스 설정 완료");
 
   // 페이지네이션을 고려하여 게시글 링크 수집
   let hasNextPage = true;
@@ -68,10 +48,14 @@ export const startCertCCWebCrawling = async () => {
       return links.map((link) => (link as HTMLAnchorElement).href);
     });
 
-    logger.info(`링크 수집 로그입니다. ${postLinks.length} `);
-
-    // 각 게시물 링크를 방문하여 내용 크롤링
+    // 수집된 링크 중 Firestore에 이미 존재하는 데이터 필터링
     for (let link of postLinks) {
+      const isStored = await checkIfCrawlingDataExists(link);
+      if (isStored) {
+        // logger.info(`이미 저장된 데이터입니다. 링크: ${link}`);
+        continue;
+      }
+
       const postDetailPage = await browser.newPage();
       await page.setDefaultNavigationTimeout(0);
       await postDetailPage.goto(link, {
@@ -240,7 +224,10 @@ export const startCertCCWebCrawling = async () => {
           text: item.text,
         }));
       postData.content.impact.original = postData.content.impact.original.map(
-        (item) => ({ id: uuidv4(), text: item.text }),
+        (item) => ({
+          id: uuidv4(),
+          text: item.text,
+        }),
       );
       postData.content.solution.original =
         postData.content.solution.original.map((item) => ({
@@ -249,6 +236,7 @@ export const startCertCCWebCrawling = async () => {
         }));
 
       posts.push({
+        id: uuidv4(),
         label: "기타",
         source: "CERT/CC",
         page_url: link,
@@ -257,19 +245,13 @@ export const startCertCCWebCrawling = async () => {
         ...postData,
       });
 
-      logger.info(`크롤링된 게시물 데이터: ${JSON.stringify(posts, null, 2)}`);
-
       await postDetailPage.close();
     }
 
     const nextPageButton = await page.$("li.pagination-next > a");
     if (nextPageButton) {
-      logger.info("다음 버튼을 클릭합니다.");
-
       try {
         await Promise.all([nextPageButton.click(), page.waitForNavigation()]);
-
-        logger.info("다음 페이지로 이동합니다.");
       } catch (error: any) {
         logger.error(`페이지 네비게이션 오류: ${error.message}`);
         console.error("Navigation error:", error.message);
@@ -285,4 +267,5 @@ export const startCertCCWebCrawling = async () => {
   logger.info(`크롤링 완료. 총 ${posts.length}개의 게시물을 수집했습니다.`);
 
   await browser.close();
+  return posts;
 };

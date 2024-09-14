@@ -37,7 +37,6 @@ export const generateLlamaText = async (user_message: string) => {
 
   try {
     const token = await getLlamaAPItoken();
-    logger.info(`토큰 발급에 성공했습니다: ${token}`);
 
     const response = await axios.post(
       LLAMA_API_URL,

@@ -4,22 +4,15 @@ import * as logger from "firebase-functions/logger";
 import { MemoryOption } from "firebase-functions/v2/options";
 import { onSchedule } from "firebase-functions/v2/scheduler";
 import { SCHEDULE_EXPRESSION } from "./const";
-import { generateLlamaText } from "./llama3";
-import { startCertCCWebCrawling } from "./web-crawling/certCC";
+import { startCertCCWebCrawling } from "./crawling";
+import { translatePost } from "./translate";
+import { VulDBPost } from "./type";
+import { addVulDBPost } from "./firebase";
 
 initializeApp({
   credential: applicationDefault(),
 });
 export const db = getFirestore();
-
-// export const handleScheduledPostUpdate = onSchedule(
-//   SCHEDULE_EXPRESSION,
-//   async () => {
-//     await getAndLogDocuments();
-//     const addedPost = await addVulDBPost(examplePost);
-//     logger.info(`New post added: ${JSON.stringify(addedPost)}`);
-//   },
-// );
 
 export const handleScheduledCrawlingCertCC = onSchedule(
   {
@@ -35,17 +28,22 @@ export const handleScheduledCrawlingCertCC = onSchedule(
   },
   async () => {
     try {
-      logger.info("텍스트 생성 시작합니다.");
-      const generatedText = await generateLlamaText(
-        "Firebase Cloud Functions에 대해 알려주세요.",
+      const posts = await startCertCCWebCrawling();
+      const translatedPosts = await translatePost(posts as VulDBPost[]);
+      const newPosts = await addPostsToFirestore(
+        translatedPosts as VulDBPost[],
       );
-      logger.info(`텍스트 생성 성공했습니다: ${generatedText}`);
-
-      logger.info("웹 크롤링 시작합니다."); // 시작 로그
-      await startCertCCWebCrawling();
-      logger.info("웹 크롤링 끝났습니다."); // 종료 로그
+      logger.info("새로운 게시글이 추가되었습니다.", newPosts);
     } catch (error) {
       logger.error("에러가 발생했습니다.", error);
     }
   },
 );
+
+export const addPostsToFirestore = async (translatedPosts: VulDBPost[]) => {
+  if (translatedPosts) {
+    translatedPosts.map(async (post: VulDBPost) => {
+      return await addVulDBPost(post);
+    });
+  }
+};

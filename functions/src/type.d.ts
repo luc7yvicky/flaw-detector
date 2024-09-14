@@ -1,19 +1,35 @@
-export type TextBlock = { id: string; text: string };
+export type CertCCTextBlock = { id: string; text: string };
 
-export type LocalizedTextBlock = {
-  original: TextBlock[];
-  translated: TextBlock[];
+export type CnnvdTextBlock = {
+  text: string;
 };
 
+export type CertCCLocalizedTextBlock = {
+  original: CertCCTextBlock[];
+  translated: CertCCTextBlock[];
+};
+
+export type CnnvdLocalizedTextBlock = {
+  original: string;
+  translated: string;
+};
+
+// CERT/CC 게시글 내용
 export type CertCCContent = {
-  overview: LocalizedTextBlock;
-  description: LocalizedTextBlock;
-  impact: LocalizedTextBlock;
-  solution: LocalizedTextBlock;
+  overview: CertCCLocalizedTextBlock;
+  description: CertCCLocalizedTextBlock;
+  impact: CertCCLocalizedTextBlock;
+  solution: CertCCLocalizedTextBlock;
   cveIDs: string[];
 };
 
-export type CnnvdContent = { block_id: string; text: string }[];
+// CNNVD 게시글 내용
+export type CnnvdContent = {
+  description: CnnvdLocalizedTextBlock;
+  introduction: CnnvdLocalizedTextBlock;
+  vulnDetail: CnnvdLocalizedTextBlock;
+  remediation: CnnvdLocalizedTextBlock;
+};
 
 export type VulDBPost = {
   id: string;
@@ -24,9 +40,9 @@ export type VulDBPost = {
     original: string;
     translated: string;
   };
+  source_created_at: { seconds: number; nanoseconds: number }; //원문 게시글 등록일
   created_at: { seconds: number; nanoseconds: number };
   source_updated_at?: { seconds: number; nanoseconds: number };
-  source_created_at: { seconds: number; nanoseconds: number };
   content: CertCCContent | CnnvdContent;
   views: number;
 };
