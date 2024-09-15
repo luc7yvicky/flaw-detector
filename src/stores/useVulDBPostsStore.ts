@@ -2,16 +2,8 @@ import { VulDBPostWithChip } from "@/types/post";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-/**  필요한 필드(id와 chip만)를 추출하는 함수 */
-const extractIdAndChip = (posts: VulDBPostWithChip[]) => {
-  return posts.map((post) => ({
-    id: post.id,
-    chip: post.chip,
-  }));
-};
-
 interface VulDBPostsState {
-  vulDBPostsWithChip: { id: string; chip: string }[];
+  vulDBPostsWithChip: VulDBPostWithChip[];
   setVulDBPostsWithChip: (vulDBPostsWithChip: VulDBPostWithChip[]) => void;
 }
 
@@ -20,7 +12,7 @@ export const useVulDBPostsStore = create<VulDBPostsState>()(
     (set) => ({
       vulDBPostsWithChip: [],
       setVulDBPostsWithChip: (vulDBPostsWithChip) =>
-        set({ vulDBPostsWithChip: extractIdAndChip(vulDBPostsWithChip) }),
+        set({ vulDBPostsWithChip }),
     }),
     {
       name: "vuldb-posts-store",

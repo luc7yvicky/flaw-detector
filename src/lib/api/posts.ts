@@ -1,19 +1,14 @@
 import { VulDBPost } from "@/types/post";
 import {
   collection,
-  deleteDoc,
   doc,
-  getDoc,
   getDocs,
   increment,
   limit,
   orderBy,
   query,
-  setDoc,
   updateDoc,
-  where,
 } from "firebase/firestore";
-import { revalidatePath } from "next/cache";
 import db from "../../../firebaseConfig";
 
 /**
@@ -57,37 +52,6 @@ export async function getAllPosts(): Promise<VulDBPost[]> {
 }
 
 /**
- * Firestore에 새로운 post를 추가합니다.
- * @returns Promise<VulDBPost>
- */
-export async function addPost(newPost: VulDBPost): Promise<VulDBPost> {
-  try {
-    const postsCollection = collection(db, "posts");
-    const newPostRef = doc(postsCollection);
-
-    const now = Date.now();
-    const seconds = Math.floor(now / 1000);
-    const nanoseconds = (now % 1000) * 1000000;
-
-    const postToSave = {
-      ...newPost,
-      created_at: { seconds, nanoseconds },
-      id: newPostRef.id,
-    };
-
-    if (newPost.source_updated_at) {
-      postToSave["source_updated_at"] = newPost.source_updated_at;
-    }
-
-    await setDoc(newPostRef, postToSave);
-    return postToSave;
-  } catch (error) {
-    console.error("Error in savePost:", error);
-    throw new Error("Failed to save post.");
-  }
-}
-
-/**
  * Firestore에서 post의 views를 업데이트합니다.
  */
 export async function increasePostViews(postId: string): Promise<void> {
@@ -100,30 +64,6 @@ export async function increasePostViews(postId: string): Promise<void> {
   } catch (error) {
     console.error("Error updating post views:", error);
     throw new Error("Failed to update post views.");
-  }
-}
-
-/**
- * Firestore에서 post를 가져옵니다.
- * @returns Promise<VulDBPost>
- */
-export async function getPostById(postId: string) {
-  if (!postId) {
-    return null;
-  }
-
-  try {
-    const docRef = doc(db, "posts", postId);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-      return docSnap.data();
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.error("Error getting post by id:", error);
-    throw new Error("Failed to get post by id.");
   }
 }
 
@@ -169,20 +109,3 @@ export async function getLatestPosts(
     throw new Error("Failed to get latest posts.");
   }
 }
-
-/**
- * Firestore에서 source가 CERT/CC 혹은 CNNVD인 문서를 삭제합니다.
- */
-export const deletePostsBySource = async (source: "CERT/CC" | "CNNVD") => {
-  const postsRef = collection(db, "posts");
-  const q = query(postsRef, where("source", "==", source));
-
-  const querySnapshot = await getDocs(q);
-
-  querySnapshot.forEach((document) => {
-    const docRef = doc(db, "posts", document.id);
-    deleteDoc(docRef);
-  });
-
-  console.log(`${querySnapshot.size}개의 문서가 삭제되었습니다.`);
-};
