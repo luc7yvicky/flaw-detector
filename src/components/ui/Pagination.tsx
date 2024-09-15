@@ -25,9 +25,15 @@ const Pagination: React.FC<PaginationProps> = ({
   );
 
   return (
-    <div className={cn("flex items-center gap-[0.625rem]", className)}>
+    <div
+      className={cn(
+        "grid grid-flow-col grid-cols-12 gap-[0.625rem]",
+        `grid-cols-${pages.length + 2}`,
+        className,
+      )}
+    >
       {/* Render Previous Page button only if there's a previous page */}
-      {currentPage > 1 && (
+      {currentPage > 1 ? (
         <button
           onClick={() => setCurrentPage(currentPage - 1)}
           className="text-center text-[1rem] font-normal leading-6 tracking-[-0.011em] text-gray-dark focus:outline-none"
@@ -35,6 +41,8 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           <IconCaretLeft className="fill-default" />
         </button>
+      ) : (
+        currentPage < totalPages && <div className="w-8"></div>
       )}
       {/* Page Numbers */}
       {pages.map((page) => (
@@ -52,7 +60,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </button>
       ))}
       {/* Render Next Page button only if there's a next page */}
-      {currentPage < totalPages && (
+      {currentPage < totalPages ? (
         <button
           onClick={() => setCurrentPage(currentPage + 1)}
           className="text-center text-[1rem] font-normal leading-6 tracking-[-0.011em] focus:outline-none"
@@ -60,6 +68,8 @@ const Pagination: React.FC<PaginationProps> = ({
         >
           <IconCaretLeft className="fill-default rotate-180" />
         </button>
+      ) : (
+        currentPage > 1 && <div className="w-8"></div>
       )}
     </div>
   );

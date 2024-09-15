@@ -1,11 +1,21 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Dispatch, SetStateAction, useState } from "react";
+import { forwardRef, useRef, useState } from "react";
 import { IconCaretDown, IconCheck } from "./Icons";
+import useOutsideClick from "@/hooks/useOutsideClick";
 
 export type DropdownProps = React.HTMLAttributes<HTMLDivElement> & {
   type: "type" | "sort";
+  onSelectFilter: React.Dispatch<React.SetStateAction<string>>;
+};
+
+type DropdownMenuProps = {
+  options: Option[];
+  selectedIndex: number;
+  setSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onChange: React.Dispatch<React.SetStateAction<string>>;
 };
 
 export type Option = { id: string; name: string; value: string };
@@ -32,65 +42,58 @@ const getOptions = (type: string): Option[] => {
   }
 };
 
-function DropdownMenu({
-  options,
-  selectedIndex,
-  setSelectedIndex,
-  setIsOpen,
-  onChange,
-}: {
-  options: Option[];
-  selectedIndex: number;
-  setSelectedIndex: React.Dispatch<React.SetStateAction<number>>;
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  onChange: (value: string) => void;
-}) {
-  const onClickOption = (index: number) => {
-    const newIndex = index === selectedIndex ? -1 : index;
-    setSelectedIndex(newIndex);
-    setIsOpen(false); // close dropdown
-    onChange(newIndex === -1 ? "-1" : options[index].value);
-  };
-
-  return (
-    <ul
-      className={cn(
-        "absolute top-[3.25rem] z-10 w-full overflow-hidden rounded-lg bg-white shadow-[0_0.125rem_1rem_0_rgba(0,0,0,0.25)]",
-      )}
-      role="menu"
-      aria-label="menu"
-    >
-      {options?.map(({ id, name, value }, index) => (
-        <li
-          key={id}
-          className={cn(
-            "flex-center-center h-[2.438rem] w-full bg-white px-[0.6rem] py-[0.469rem] transition-all duration-300 first:rounded-t-lg last:rounded-b-lg",
-            selectedIndex === index
-              ? "cursor-default justify-between bg-purple-dark"
-              : "hover:bg-purple-light",
-            name.length > 3 && "px-[0.1rem]",
-          )}
-          onClick={() => onClickOption(index)}
-          value={value}
-          role="menu item"
-          aria-label="menu item"
-        >
-          {selectedIndex === index && <IconCheck width={20} height={20} />}
-          {name}
-        </li>
-      ))}
-    </ul>
-  );
-}
+const DropdownMenu = forwardRef<HTMLUListElement, DropdownMenuProps>(
+  ({ options, selectedIndex, setSelectedIndex, setIsOpen, onChange }, ref) => {
+    const onClickOption = (index: number) => {
+      const newIndex = index === selectedIndex ? -1 : index;
+      setSelectedIndex(newIndex);
+      setIsOpen(false); // close dropdown
+      onChange(newIndex === -1 ? "-1" : options[index].value);
+    };
+    return (
+      <ul
+        className={cn(
+          "absolute top-[3.25rem] z-10 w-full overflow-hidden rounded-lg bg-white shadow-[0_0.125rem_1rem_0_rgba(0,0,0,0.25)]",
+        )}
+        role="menu"
+        aria-label="menu"
+        ref={ref}
+      >
+        {options?.map(({ id, name, value }, index) => (
+          <li
+            key={id}
+            className={cn(
+              "flex-center-center h-[2.438rem] w-full bg-white px-[0.6rem] py-[0.469rem] transition-all duration-300 first:rounded-t-lg last:rounded-b-lg",
+              selectedIndex === index
+                ? "cursor-default justify-between bg-purple-dark"
+                : "hover:bg-purple-light",
+              name.length > 3 && "px-[0.1rem]",
+            )}
+            onClick={() => onClickOption(index)}
+            value={value}
+            role="menu-item"
+            aria-label="menu item"
+          >
+            {selectedIndex === index && <IconCheck width={20} height={20} />}
+            {name}
+          </li>
+        ))}
+      </ul>
+    );
+  },
+);
+DropdownMenu.displayName = "DropdownMenu";
 
 export default function Dropdown({
   type,
-  className,
   onSelectFilter,
+  className,
   ...props
-}: DropdownProps & { onSelectFilter: Dispatch<SetStateAction<string>> }) {
+}: DropdownProps) {
+  const menuRef = useRef<HTMLUListElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  useOutsideClick(menuRef, () => setIsOpen(false));
 
   return (
     <div
@@ -116,6 +119,7 @@ export default function Dropdown({
           setSelectedIndex={setSelectedIndex}
           setIsOpen={setIsOpen}
           onChange={onSelectFilter}
+          ref={menuRef}
         />
       )}
     </div>
