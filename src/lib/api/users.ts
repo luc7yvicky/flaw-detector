@@ -12,6 +12,7 @@ import {
 } from "firebase/firestore";
 import { User } from "next-auth";
 import db from "../../../firebaseConfig";
+import { FILE_INSPECTION_STATUS_KEY } from "../const";
 
 /**
  * Firestore에 새로운 user를 추가합니다.
@@ -134,6 +135,11 @@ export async function deleteUserData(username: string): Promise<void> {
     reposSnapshot.forEach(async (doc) => {
       await deleteDoc(doc.ref);
     });
+
+    // 4. 로컬 스토리지 안의 데이터 삭제
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(FILE_INSPECTION_STATUS_KEY);
+    }
 
     console.log(`유저 ${username}의 모든 정보를 삭제했습니다.`);
   } catch (error) {
