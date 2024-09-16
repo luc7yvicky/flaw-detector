@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { useDetectedModeStore } from "@/stores/useDetectedModeStore";
 import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
-import { use, useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert } from "../ui/Alert";
 import CodeResultsList from "./CodeResultsList";
 import CodeViewer from "./CodeViewer";

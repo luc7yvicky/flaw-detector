@@ -81,7 +81,7 @@ export const Alert = ({
   className,
   ...props
 }: { username: string } & AlertType) => {
-  const repoName = useFileViewerStore((state) => state.currentRepo);
+  // const repoName = useFileViewerStore((state) => state.currentRepo);
   const filePath = useFileViewerStore((state) => state.currentFile);
   const setMode = useDetectedModeStore((state) => state.setMode);
   const setResults = useFileProcessStore(
@@ -99,7 +99,7 @@ export const Alert = ({
   const onClickToResults = async () => {
     try {
       onClose();
-      
+
       const { mode, results } = await getDetectedResultsByFile(
         username,
         filePath,
