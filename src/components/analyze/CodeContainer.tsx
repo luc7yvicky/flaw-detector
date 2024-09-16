@@ -17,6 +17,7 @@ type CodeContainerProps = {
 export default function CodeContainer({ username, repo }: CodeContainerProps) {
   // 현재 파일의 검사 여부
   const currentFile = useFileViewerStore((state) => state.currentFile);
+  const fileStatuses = useFileProcessStore((state) => state.fileStatuses);
   const getFileStatus = useFileProcessStore((state) => state.getFileStatus);
   const status = currentFile ? getFileStatus(currentFile) : null;
 
@@ -27,6 +28,10 @@ export default function CodeContainer({ username, repo }: CodeContainerProps) {
   const results = useFileProcessStore((state) => state.fileDetectedResults);
 
   const [isAlertOpen, setIsAlertOpen] = useState(true);
+
+  useEffect(() => {
+    console.log("status", fileStatuses.values().next().value);
+  }, [fileStatuses]);
 
   useEffect(() => {
     if (currentFile) {

@@ -78,13 +78,13 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
         get().setFileStatus(file.path, "onCheck");
         const content = await fetchCodes(username, repo, file.path);
 
-        // LLM 분석 수행
-        const res = await generateLlm("analyze", content);
-        // 파싱 가능한 문자열로 변환 (JSON)
-        const jsonStr = convertEscapedCharacterToRawString(res);
         try {
+          // LLM 분석 수행
+          const res = await generateLlm("analyze", content);
+          // 파싱 가능한 문자열로 변환 (JSON)
+          const jsonStr = convertEscapedCharacterToRawString(res);
           // 파싱
-          const data = JSON.parse(jsonStr);
+          const data = await JSON.parse(jsonStr);
 
           const results: FileResultProps[] = data.map(
             (result: FileResultProps) => ({
@@ -98,6 +98,7 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
 
           // 결과 저장
           get().setFileDetectedResults(results);
+
           try {
             // 결과 DB에 저장
             await addFileResults(username, repo, file.path, results);
@@ -109,11 +110,16 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
           get().setFileStatus(file.path, "error");
         }
 
+        try {
+          // 파일 검사 상태 저장
+          await updateRepoStatus(username, repo, "done");
+        } catch (err) {
+          console.error(`Error updating repo status:`, err);
+          get().setFileStatus(file.path, "error");
+        }
+
         // 파일 검사 상태 변경
         get().setFileStatus(file.path, "success");
-        
-        // 파일 검사 상태 저장
-        await updateRepoStatus(username, repo, "onProgress");
       } catch (error) {
         get().setFileStatus(file.path, "error");
         console.error(`Error processing file ${file.name}:`, error);
