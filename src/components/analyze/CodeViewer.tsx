@@ -105,7 +105,7 @@ export default function CodeViewer({
   return (
     <div
       className={cn(
-        "relative h-full w-full overflow-hidden overflow-x-scroll rounded-lg border border-[#c3c3c3]",
+        "relative h-full w-full overflow-hidden rounded-lg border border-[#c3c3c3]",
         className,
       )}
     >
