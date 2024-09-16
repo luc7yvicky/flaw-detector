@@ -1,5 +1,5 @@
 import { auth } from "@/auth";
-import CodeViewer from "@/components/analyze/CodeViewer";
+import CodeContainer from "@/components/analyze/CodeContainer";
 import FileListServer from "@/components/analyze/FileListServer";
 import RunInspectButton from "@/components/analyze/RunInspectButton";
 import {
@@ -38,7 +38,7 @@ export default async function RepoPage({
           </Status>
           <FileListServer repo={repo} username={username} />
         </div>
-        <CodeViewer username={username} repo={repo} />
+        <CodeContainer username={username} repo={repo} />
       </div>
     </section>
   );

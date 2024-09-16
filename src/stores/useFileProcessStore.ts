@@ -10,7 +10,7 @@ import { v4 as uuidv4 } from "uuid";
 import { create } from "zustand";
 import { FILE_INSPECTION_STATUS_KEY } from "../lib/const";
 
-// 파일 검사 여부 -> 로컬 스토리지에 저장
+// 파일 검사 여부 있는 경우, 로컬 스토리지에 저장
 const saveFileStatusesToLocalStorage = (
   fileStatuses: Map<string, FileStatus>,
 ) => {
@@ -38,7 +38,7 @@ interface FileProcessState {
   fileDetectedResults: FileResultProps[] | FileResultFailProps | null;
   isInspectionRunning: boolean;
   setFileStatus: (path: string, status: FileStatus) => void;
-  getFileStatus: (path: string) => FileStatus;
+  getFileStatus: (path: string) => FileStatus | null;
   resetFileStatuses: () => void;
   setCurrentDetectedFile: (path: string | null) => void;
   setFileDetectedResults: (results: FileResultProps[] | null) => void;
@@ -73,31 +73,45 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
   processFiles: async (files, username, repo, action) => {
     const processFile = async (file: { path: string; name: string }) => {
       try {
+        // 파일 검사 상태 초기화
+        get().setFileDetectedResults(null);
         get().setFileStatus(file.path, "onCheck");
         const content = await fetchCodes(username, repo, file.path);
 
         // LLM 분석 수행
         const res = await generateLlm("analyze", content);
-        console.log("res", res);
         // 파싱 가능한 문자열로 변환 (JSON)
         const jsonStr = convertEscapedCharacterToRawString(res);
-        console.log("jsonStr", jsonStr);
-        // 파싱
-        const data = JSON.parse(jsonStr);
-        const results: FileResultProps[] = data.map(
-          (result: FileResultProps) => ({
-            ...result,
-            id: uuidv4(),
-          }),
-        );
-        // 결과 대상 파일 저장
-        get().setCurrentDetectedFile(file.path);
-        // 결과 저장
-        get().setFileDetectedResults(results);
-        // 결과 DB에 저장
-        await addFileResults(username, repo, file.path, results);
+        try {
+          // 파싱
+          const data = JSON.parse(jsonStr);
+
+          const results: FileResultProps[] = data.map(
+            (result: FileResultProps) => ({
+              ...result,
+              id: uuidv4(),
+            }),
+          );
+
+          // 결과 대상 파일 저장
+          get().setCurrentDetectedFile(file.path);
+
+          // 결과 저장
+          get().setFileDetectedResults(results);
+          try {
+            // 결과 DB에 저장
+            await addFileResults(username, repo, file.path, results);
+          } catch (err) {
+            get().setFileStatus(file.path, "error");
+          }
+        } catch (error) {
+          console.error(`Error parsing JSON:`, error);
+          get().setFileStatus(file.path, "error");
+        }
+
         // 파일 검사 상태 변경
         get().setFileStatus(file.path, "success");
+        
         // 파일 검사 상태 저장
         await updateRepoStatus(username, repo, "onProgress");
       } catch (error) {

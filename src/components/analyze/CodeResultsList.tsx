@@ -1,27 +1,18 @@
 import { FileResultFailProps, FileResultProps } from "@/types/file";
-import { Dispatch, SetStateAction } from "react";
-import ResultInfoBox from "./ResultInfoBox";
+import CodeResultsListItem from "./CodeResultsListItem";
 
-type ResultListProps = {
+type CodeResultsListProps = {
   results: FileResultProps[] | FileResultFailProps;
-  setDetectedLines: Dispatch<SetStateAction<number[]>>;
 };
 
-const ResultInfoBoxList: React.FC<ResultListProps> = ({
-  results,
-  setDetectedLines,
-}) => {
+const CodeResultsList = ({ results }: CodeResultsListProps) => {
   return (
     <div className="mt-10 flex flex-col gap-y-6">
       {Array.isArray(results) ? (
         // 취약점 검출 O
         <>
           {results.map((result, index) => (
-            <ResultInfoBox
-              key={index}
-              setLines={setDetectedLines}
-              {...result}
-            />
+            <CodeResultsListItem key={index} {...result} />
           ))}
         </>
       ) : (
@@ -40,4 +31,4 @@ const ResultInfoBoxList: React.FC<ResultListProps> = ({
   );
 };
 
-export default ResultInfoBoxList;
+export default CodeResultsList;
