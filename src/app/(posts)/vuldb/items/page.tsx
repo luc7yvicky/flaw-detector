@@ -38,6 +38,7 @@ const applyChips = (posts: VulDBPost[]): VulDBPostWithChip[] => {
     return {
       ...post,
       chip,
+      isScrapped: false,
     };
   });
 };
