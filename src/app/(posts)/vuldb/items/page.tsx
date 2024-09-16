@@ -1,8 +1,10 @@
+import { auth } from "@/auth";
 import RealTimeTopic from "@/components/vulnerability-db/RealTimeTopic";
 import Search from "@/components/vulnerability-db/Search";
 import VulDBDashboard from "@/components/vulnerability-db/VulDBDashboard";
 import VulDBImageCardContainer from "@/components/vulnerability-db/VulDBImageCardContainer";
 import { getAllPosts } from "@/lib/api/posts";
+import { getUserPinnedPosts } from "@/lib/api/users";
 import { VulDBPost, VulDBPostWithChip } from "@/types/post";
 import { Timestamp } from "firebase/firestore";
 
@@ -43,6 +45,12 @@ const applyChips = (posts: VulDBPost[]): VulDBPostWithChip[] => {
 export default async function VulDBPage() {
   try {
     const posts = (await getAllPosts()) || [];
+    const session = await auth();
+    const userId = session?.user?.userId;
+
+    if (!userId) return null;
+
+    const postsWithScrap = await getUserPinnedPosts(userId);
 
     if (posts.length === 0) {
       return (
@@ -75,7 +83,7 @@ export default async function VulDBPage() {
     return (
       <div className="relative mx-auto mb-[1.188rem] mt-[1.688rem] flex min-h-[2445px] w-[82.063rem] flex-col gap-[4.75rem] px-[1rem]">
         <VulDBImageCardContainer posts={top3RecentPosts} />
-        <Search initialPosts={postsWithChips} />
+        <Search initialPosts={postsWithChips} postsWithScrap={postsWithScrap} />
         <div className="flex justify-between">
           {/* <VulDBDashboard posts={sortedPostsByDate} /> */}
           {/* <RealTimeTopic /> */}

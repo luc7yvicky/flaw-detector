@@ -5,14 +5,22 @@ import { persist } from "zustand/middleware";
 interface VulDBPostsState {
   vulDBPostsWithChip: VulDBPostWithChip[];
   setVulDBPostsWithChip: (vulDBPostsWithChip: VulDBPostWithChip[]) => void;
+  updateScrappedPosts: (scrappedPostIds: string[]) => void;
 }
 
 export const useVulDBPostsStore = create<VulDBPostsState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       vulDBPostsWithChip: [],
       setVulDBPostsWithChip: (vulDBPostsWithChip) =>
         set({ vulDBPostsWithChip }),
+      updateScrappedPosts: (scrappedPostIds) => {
+        const updatedPosts = get().vulDBPostsWithChip.map((post) => ({
+          ...post,
+          isScrapped: scrappedPostIds.includes(post.id),
+        }));
+        set({ vulDBPostsWithChip: updatedPosts });
+      },
     }),
     {
       name: "vuldb-posts-store",

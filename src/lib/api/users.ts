@@ -1,9 +1,10 @@
-import { VulDBPinnedInfo } from "@/types/post";
+import { VulDBPinnedInfo, VulDBPinnedPosts, VulDBPost } from "@/types/post";
 import {
   arrayUnion,
   collection,
   deleteDoc,
   doc,
+  getDoc,
   getDocs,
   query,
   setDoc,
@@ -51,6 +52,34 @@ export async function addUser(newUser: User): Promise<void> {
       err,
     );
     throw new Error("Failed to save user.");
+  }
+}
+
+/**
+ * 로그인한 사용자가 스크랩한 게시물 정보를 불러옵니다.
+ */
+export async function getUserPinnedPosts(userId: number): Promise<any | null> {
+  if (!userId) {
+    return null;
+  }
+
+  try {
+    const usersCollection = collection(db, "users");
+    const userIdQuery = query(usersCollection, where("userId", "==", userId));
+
+    const querySnapshot = await getDocs(userIdQuery);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
+      const pinnedPosts = userDoc.data().pinnedPosts || [];
+      return pinnedPosts;
+    } else {
+      console.log(`No user found with userId: ${userId}`);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching pinned posts:", error);
+    return null;
   }
 }
 
