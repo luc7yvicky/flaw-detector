@@ -3,7 +3,7 @@ import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { RepoContentItem } from "@/types/repo";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import {
   IconCaretLeft,
   IconDoc,
@@ -12,10 +12,10 @@ import {
   IconFolder,
   IconOnProcess,
   IconOnWait,
-  IconStar,
 } from "../ui/Icons";
 import FileList from "./FileList";
 import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore.ts";
+import dynamic from "next/dynamic";
 
 function FileListItem({
   item,
@@ -33,6 +33,9 @@ function FileListItem({
   const { name, type, path } = item;
   const { setCurrentFile, currentFile } = useFileViewerStore();
   const { toggleFileSelection, isFileSelected } = useFileSelectionStore();
+  const isCheckboxShow = useFileSelectionStore((state) =>
+    state.isCheckboxShow(),
+  );
   const { getFileStatus } = useFileProcessStore();
   const { isFileBookmarked, toggleFileBookmark } = useFileBookmarkStore();
 
@@ -40,6 +43,12 @@ function FileListItem({
 
   const isImage = useMemo(() => getLanguage(name) === "image", [name]);
   const isBookmarked = isFileBookmarked(repo, path);
+
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const handleCheckboxChange = () => {
     if (!isImage) {
@@ -106,6 +115,13 @@ function FileListItem({
       ));
   }, [depth]);
 
+  const IconStar = dynamic(
+    () => import("../ui/Icons").then((mod) => mod.IconStar),
+    {
+      ssr: false,
+    },
+  );
+
   return (
     <>
       <li
@@ -132,7 +148,10 @@ function FileListItem({
               />
             ) : (
               <div
-                className="relative flex size-7 items-center justify-center"
+                className={cn(
+                  "relative flex items-center justify-center",
+                  isCheckboxShow ? "size-7" : "ml-3 size-0",
+                )}
                 onClick={handleCheckboxChange}
               >
                 <input
@@ -143,6 +162,7 @@ function FileListItem({
                   className={cn(
                     "size-4 accent-primary-500",
                     isImage && "cursor-not-allowed opacity-50",
+                    isCheckboxShow ? "block" : "hidden",
                   )}
                 />
                 <div className="absolute inset-0" />
@@ -158,24 +178,26 @@ function FileListItem({
               <span className="ml-1">...</span>
             )}
           </div>
-          <div
-            className={cn(
-              "flex-center-center invisible ml-auto",
-              isBookmarked && "visible",
-            )}
-          >
-            <button
-              className="group-hover/item:visible"
-              onClick={handleBookmark}
+          {isMounted && type === "file" && (
+            <div
+              className={cn(
+                "flex-center-center invisible ml-auto",
+                isBookmarked && "visible",
+              )}
             >
-              <IconStar
-                filled={isBookmarked}
-                className={
-                  isBookmarked ? "text-primary-500" : "text-primary-300"
-                }
-              />
-            </button>
-          </div>
+              <button
+                className="group-hover/item:visible"
+                onClick={handleBookmark}
+              >
+                <IconStar
+                  filled={isBookmarked}
+                  className={
+                    isBookmarked ? "text-primary-500" : "text-primary-300"
+                  }
+                />
+              </button>
+            </div>
+          )}
           {fileStatus && <div className="ml-auto flex pl-1"> {statusIcon}</div>}
         </div>
       </li>

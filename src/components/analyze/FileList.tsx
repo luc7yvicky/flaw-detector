@@ -61,19 +61,26 @@ export default function FileList({
     <ul className="max-h-[calc(100dvh-12rem)] w-full overflow-x-hidden overflow-y-scroll scrollbar-hide">
       {sortOption === "bookmark" && (
         <>
-          <li className="border-b border-line-default px-4 py-2 text-sm text-gray-500">
-            Bookmarks
+          <li className="flex justify-between border-b border-line-default px-4 py-2 text-sm text-gray-500">
+            <span>Bookmarks</span> <span>{bookmarkedFiles.length}</span>
           </li>
-          {bookmarkedFiles.map((item) => (
-            <FileListItem
-              key={item.path}
-              item={item}
-              onToggle={onToggle}
-              depth={0}
-              username={username}
-              repo={repo}
-            />
-          ))}
+          {bookmarkedFiles.length > 0 ? (
+            bookmarkedFiles.map((item) => (
+              <FileListItem
+                key={item.path}
+                item={item}
+                onToggle={onToggle}
+                depth={0}
+                username={username}
+                repo={repo}
+              />
+            ))
+          ) : (
+            <li className="border-b border-line-default px-4 py-2 text-center text-sm text-gray-500">
+              북마크된 파일이 없습니다.
+            </li>
+          )}
+
           {bookmarkedFiles.length > 0 && (
             <li className="border-b border-line-default px-4 py-2 text-sm text-gray-500">
               All Files

@@ -6,7 +6,7 @@ import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { FolderItem, RepoContentItem } from "@/types/repo";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FileList from "./FileList";
-import { IconList } from "../ui/Icons";
+import { IconList, IconMultiSelect } from "../ui/Icons";
 import { cn } from "@/lib/utils";
 import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore.ts";
 
@@ -29,6 +29,10 @@ export default function FileExplorer({
   const setCurrentRepo = useFileViewerStore((state) => state.setCurrentRepo);
   const resetFileSelection = useFileSelectionStore(
     (state) => state.resetFileSelection,
+  );
+
+  const toggleCheckboxShow = useFileSelectionStore(
+    (state) => state.toggleCheckboxShow,
   );
 
   const [structure, setStructure] =
@@ -108,19 +112,29 @@ export default function FileExplorer({
       <div className="flex items-center border-b border-line-default bg-purple-light px-3 py-5 text-xl">
         <div className="flex w-full items-center justify-between">
           <h3>Files</h3>
-          <div className="relative">
-            <IconList
+          <div className="flex gap-3.5">
+            <div
               className="cursor-pointer"
-              onClick={() => setIsSortListOpen(!isSortListOpen)}
-            />
-            {isSortListOpen && (
-              <div className="absolute right-0 top-full z-50 mt-1">
-                <SortOptionList
-                  selectedOption={sortOption}
-                  onOptionSelect={handleSortChange}
-                />
-              </div>
-            )}
+              onClick={toggleCheckboxShow}
+              title="파일 다중 선택 활성화"
+            >
+              <IconMultiSelect />
+            </div>
+            <div className="relative" title="리스트 정렬 옵션">
+              <IconList
+                className="cursor-pointer"
+                onClick={() => setIsSortListOpen(!isSortListOpen)}
+              />
+              {isSortListOpen && (
+                <div className="absolute right-0 top-full z-50 mt-1">
+                  <SortOptionList
+                    selectedOption={sortOption}
+                    onOptionSelect={handleSortChange}
+                    onClose={() => setIsSortListOpen(false)}
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -136,11 +150,12 @@ export default function FileExplorer({
   );
 }
 
-export type SortOption = "file" | "folder" | "bookmark";
+export type SortOption = "file" | "folder" | "bookmark" | undefined;
 
 interface SortOptionListProps {
   selectedOption: SortOption;
   onOptionSelect: (option: SortOption) => void;
+  onClose: () => void;
 }
 
 const options: { value: SortOption; label: string }[] = [
@@ -152,9 +167,28 @@ const options: { value: SortOption; label: string }[] = [
 function SortOptionList({
   selectedOption,
   onOptionSelect,
+  onClose,
 }: SortOptionListProps) {
+  const ref = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [onOptionSelect]);
+
   return (
-    <ul className="z-100 w-[100px] overflow-hidden rounded-lg border border-line-default bg-white shadow-md">
+    <ul
+      ref={ref}
+      className="z-100 w-[100px] overflow-hidden rounded-lg border border-line-default bg-white shadow-md"
+    >
       {options.map((option) => (
         <li
           key={option.value}
@@ -162,7 +196,10 @@ function SortOptionList({
             "cursor-pointer px-3 py-2 text-sm transition-colors hover:bg-purple-light",
             selectedOption === option.value && "bg-purple-50",
           )}
-          onClick={() => onOptionSelect(option.value)}
+          onClick={() => {
+            onOptionSelect(option.value); // 선택한 옵션을 상위로 전달
+            onClose(); // 선택 후 리스트 닫기
+          }}
         >
           {option.label}
         </li>
