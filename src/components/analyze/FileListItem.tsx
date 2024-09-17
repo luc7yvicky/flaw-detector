@@ -15,7 +15,7 @@ import {
   IconStar,
 } from "../ui/Icons";
 import FileList from "./FileList";
-import { useBookmarkStore } from "@/stores/useBookMarkStore";
+import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore.ts";
 
 function FileListItem({
   item,
@@ -32,28 +32,24 @@ function FileListItem({
 }) {
   const { name, type, path } = item;
   const { setCurrentFile, currentFile } = useFileViewerStore();
-
   const { toggleFileSelection, isFileSelected } = useFileSelectionStore();
   const { getFileStatus } = useFileProcessStore();
+  const { isFileBookmarked, toggleFileBookmark } = useFileBookmarkStore();
+
   const fileStatus = getFileStatus(item.path);
-  const { toggleBookmark, isBookmarked } = useBookmarkStore();
-  const isItemBookmarked = isBookmarked(item.path);
 
   const isImage = useMemo(() => getLanguage(name) === "image", [name]);
+  const isBookmarked = isFileBookmarked(repo, path);
 
-  const handleCheckboxChange = useCallback(
-    (e: React.MouseEvent<HTMLDivElement>) => {
-      e.stopPropagation();
-      if (type === "file" && !isImage) {
-        toggleFileSelection(item.path, item.name);
-      }
-    },
-    [type, isImage, item.path, item.name, toggleFileSelection],
-  );
+  const handleCheckboxChange = () => {
+    if (!isImage) {
+      toggleFileSelection(item.path, item.name);
+    }
+  };
 
   const handleBookmark = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    toggleBookmark(item.path);
+    toggleFileBookmark(repo, path);
   };
 
   const handleItemClick = useCallback(
@@ -61,7 +57,6 @@ function FileListItem({
       e.stopPropagation();
       if (type === "dir") {
         onToggle(item);
-        console.log(item.folderExpandStatus);
       } else if (type === "file") {
         setCurrentFile(path);
       }
@@ -166,7 +161,7 @@ function FileListItem({
           <div
             className={cn(
               "flex-center-center invisible ml-auto",
-              isItemBookmarked && "visible",
+              isBookmarked && "visible",
             )}
           >
             <button
@@ -174,9 +169,9 @@ function FileListItem({
               onClick={handleBookmark}
             >
               <IconStar
-                filled={isItemBookmarked}
+                filled={isBookmarked}
                 className={
-                  isItemBookmarked ? "text-primary-500" : "text-primary-300"
+                  isBookmarked ? "text-primary-500" : "text-primary-300"
                 }
               />
             </button>
