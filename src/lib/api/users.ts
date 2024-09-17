@@ -37,7 +37,7 @@ export async function addUser(newUser: User): Promise<void> {
     }
 
     // 최초로 로그인한 유저의 document 생성
-    const newUserRef = doc(usersCollection);
+    const newUserRef = doc(usersCollection, newUser.username);
     const userToSave = {
       ...newUser,
       id: newUserRef.id,
