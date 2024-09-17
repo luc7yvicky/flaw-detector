@@ -38,9 +38,6 @@ const alertType = {
     descriptions: ["오류가 발생했습니다.", "다시 시도해주세요."],
     button: {
       text: "다시 검사하기",
-      action: () => {
-        console.log("검사 함수 호출");
-      },
     },
   },
   success: {
@@ -63,7 +60,6 @@ type AlertProperty = {
   descriptions: string[];
   button?: {
     text: string;
-    action?: () => void;
   };
 };
 
@@ -81,12 +77,18 @@ export const Alert = ({
   className,
   ...props
 }: { username: string } & AlertType) => {
-  // const repoName = useFileViewerStore((state) => state.currentRepo);
+  const repoName = useFileViewerStore((state) => state.currentRepo);
   const filePath = useFileViewerStore((state) => state.currentFile);
   const setMode = useDetectedModeStore((state) => state.setMode);
+  const processFile = useFileProcessStore((state) => state.processFile);
   const setResults = useFileProcessStore(
     (state) => state.setFileDetectedResults,
   );
+
+  const file = {
+    path: filePath ?? "",
+    name: filePath?.split("/").pop() ?? "",
+  };
 
   if (!status) {
     return null;
@@ -113,6 +115,10 @@ export const Alert = ({
     } catch (err) {
       console.error("Error fetching results:", err);
     }
+  };
+
+  const onClickToRetry = async () => {
+    await processFile(username, repoName, file);
   };
 
   return (
@@ -148,7 +154,7 @@ export const Alert = ({
                 variant="filled"
                 shape="rounded"
                 className="w-full rounded-[0.75rem] py-3 text-2xl font-medium leading-[2.1rem]"
-                onClick={button.action}
+                onClick={onClickToRetry}
               >
                 {button.text}
               </Button>
