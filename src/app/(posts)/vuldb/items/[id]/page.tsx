@@ -2,7 +2,6 @@ import { auth } from "@/auth";
 import { Floating } from "@/components/ui/Floating";
 import ArticleDetail from "@/components/vulnerability-db/ArticleDetail";
 import SimilarInfoPosts from "@/components/vulnerability-db/SimilarInfoPosts";
-import { getAllPosts } from "@/lib/api/posts";
 import { redirectIfNotLoggedIn } from "@/lib/redirect";
 
 export default async function VulnerabilityDBDetailPage({

@@ -4,9 +4,6 @@ import {
   doc,
   getDocs,
   increment,
-  limit,
-  orderBy,
-  query,
   updateDoc,
 } from "firebase/firestore";
 import db from "../../../firebaseConfig";

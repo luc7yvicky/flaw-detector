@@ -1,11 +1,10 @@
-import { VulDBPinnedInfo, VulDBPinnedPosts, VulDBPost } from "@/types/post";
+import { VulDBPinnedInfo } from "@/types/post";
 import {
   arrayRemove,
   arrayUnion,
   collection,
   deleteDoc,
   doc,
-  getDoc,
   getDocs,
   query,
   setDoc,

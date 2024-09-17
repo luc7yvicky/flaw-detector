@@ -1,7 +1,5 @@
 import { auth } from "@/auth";
-import RealTimeTopic from "@/components/vulnerability-db/RealTimeTopic";
 import Search from "@/components/vulnerability-db/Search";
-import VulDBDashboard from "@/components/vulnerability-db/VulDBDashboard";
 import VulDBImageCardContainer from "@/components/vulnerability-db/VulDBImageCardContainer";
 import { getAllPosts } from "@/lib/api/posts";
 import { getUserPinnedPosts } from "@/lib/api/users";
