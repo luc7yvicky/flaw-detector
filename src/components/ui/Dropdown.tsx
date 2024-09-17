@@ -102,9 +102,8 @@ export default function Dropdown({
   const menuRef = useRef<HTMLUListElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-  useOutsideClick([menuRef, buttonRef], () => {
-    setIsOpen(false);
-  });
+
+  useOutsideClick([menuRef, buttonRef], () => setIsOpen(false));
 
   return (
     <div

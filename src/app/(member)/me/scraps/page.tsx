@@ -19,7 +19,13 @@ export default async function ScrapsPage() {
       throw new Error("Failed to fetch scrapped article data from server.");
     }
 
-    articles = await res.json();
+    const data = await res.json();
+
+    if (!!data.status) {
+      error = data.message;
+    }
+
+    articles = data;
   } catch (err) {
     error = "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요.";
     throw new Error(`Failed to fetch scrapped article data ${err}`);
@@ -32,7 +38,7 @@ export default async function ScrapsPage() {
         align="center"
         className="mb-0 mt-[4.5rem]"
       />
-      {articles.length !== 0 ? (
+      {Array.isArray(articles) && articles.length !== 0 ? (
         <ScrappedArticleList initialArticles={articles} />
       ) : (
         <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
