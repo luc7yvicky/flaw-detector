@@ -71,8 +71,9 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json(pinnedPosts);
   } catch (err) {
     return NextResponse.json({
-      status: 400,
-      body: "Bad Request: username is required.",
+      status: 500,
+      message:
+        "Internal Server Error: An error occurred while fetching pinned posts.",
     });
   }
 }
