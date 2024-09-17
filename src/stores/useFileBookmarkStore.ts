@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
 interface FileBookmark {
   repoName: string;
@@ -70,7 +70,7 @@ export const useFileBookmarkStore = create<FileBookmarkState>()(
     }),
     {
       name: "file-bookmarks-storage",
-      getStorage: () => localStorage,
+      storage: createJSONStorage(() => localStorage),
     },
   ),
 );
