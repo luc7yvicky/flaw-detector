@@ -112,7 +112,7 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
 
         try {
           // 파일 검사 상태 저장
-          await updateRepoStatus(username, repo, "done");
+          await updateRepoStatus(username, repo, "onProgress");
         } catch (err) {
           console.error(`Error updating repo status:`, err);
           get().setFileStatus(file.path, "error");
