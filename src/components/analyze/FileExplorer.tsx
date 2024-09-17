@@ -8,7 +8,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import FileList from "./FileList";
 import { IconList, IconMultiSelect } from "../ui/Icons";
 import { cn } from "@/lib/utils";
-import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore.ts";
 
 export default function FileExplorer({
   initialStructure,

@@ -14,7 +14,7 @@ import {
   IconOnWait,
 } from "../ui/Icons";
 import FileList from "./FileList";
-import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore.ts";
+import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore";
 import dynamic from "next/dynamic";
 
 function FileListItem({
@@ -150,7 +150,7 @@ function FileListItem({
               <div
                 className={cn(
                   "relative flex items-center justify-center",
-                  isCheckboxShow ? "size-7" : "ml-3 size-0",
+                  isCheckboxShow ? "size-7" : "ml-3 h-7 w-0",
                 )}
                 onClick={handleCheckboxChange}
               >

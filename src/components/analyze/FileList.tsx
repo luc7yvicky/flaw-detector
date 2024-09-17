@@ -1,6 +1,6 @@
 import { RepoContentItem } from "@/types/repo";
 import FileListItem from "./FileListItem";
-import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore.ts";
+import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore";
 import { useMemo } from "react";
 
 type BookmarkedFile = {
