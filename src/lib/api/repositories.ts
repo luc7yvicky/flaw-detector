@@ -213,12 +213,22 @@ function isValidTreeItem(
   );
 }
 
+// 기본 브랜치 가져오기
+async function getDefaultBranch(owner: string, repo: string): Promise<string> {
+  const { data } = await octokit.rest.repos.get({ owner, repo });
+  return data.default_branch;
+}
+
 export async function getRepoTree(
   owner: string,
   repo: string,
-  branch: string = "main",
+  branch?: string,
 ): Promise<RepoTreeResult> {
   try {
+    if (!branch) {
+      branch = await getDefaultBranch(owner, repo);
+    }
+
     // 1. Get the latest commit SHA of the specified branch
     const { data: refData } = await octokit.git.getRef({
       owner,
