@@ -140,9 +140,18 @@ export const convertEscapedCharacterToRawString = (str: string) => {
   return str
     .replace(/\/([^\/]+)\/g/g, "\\\\/$1\\\\/g") // 정규식 문자열을 두 개의 백슬래시로 감싸기
     .replace(/'/g, `\\"`) // 싱글 쿼테이션
-    .replace(/\/"/g, `/\\"`) // 슬래쉬 + 더블 쿼테이션
     .replace(/</g, "\\u003C") // '<' 문자
     .replace(/>/g, "\\u003E"); // '>' 문자
+  // .replace(/\\/g, "\\\\") // 백슬래시 이스케이프 처리
+  // .replace(/\n/g, "\\n") // 줄바꿈 문자 이스케이프 처리
+  // .replace(/\r/g, "\\r") // 캐리지 리턴 문자 이스케이프 처리
+  // .replace(/\t/g, "\\t") // 탭 문자 이스케이프 처리
+  // .replace(/\\u([a-fA-F0-9]{4})/g, (match, p1) => {
+  //   // 유니코드 이스케이프 시퀀스 처리
+  //   return String.fromCharCode(parseInt(p1, 16));
+  // })
+  // .replace(/[\b]/g, "\\b") // JSON에서 특별한 의미를 가지는 제어 문자 이스케이프 처리
+  // .replace(/\f/g, "\\f");
 };
 
 // 분석 제외 파일 리스트
