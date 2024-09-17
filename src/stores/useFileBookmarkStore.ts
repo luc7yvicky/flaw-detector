@@ -15,6 +15,7 @@ interface FileBookmarkState {
   isFileBookmarked: (repoName: string, filePath: string) => boolean;
   getFileBookmarksForRepo: (repoName: string) => string[];
   setCurrentRepo: (repo: string) => void;
+  clearAllBookmarks: () => void; 
 }
 
 export const useFileBookmarkStore = create<FileBookmarkState>()(
@@ -67,7 +68,9 @@ export const useFileBookmarkStore = create<FileBookmarkState>()(
           .fileBookmarks.filter((bookmark) => bookmark.repoName === repoName)
           .map((bookmark) => bookmark.filePath),
       setCurrentRepo: (repo) => set({ currentRepo: repo }),
+      clearAllBookmarks: () => set({ fileBookmarks: [] }), 
     }),
+    
     {
       name: "file-bookmarks-storage",
       storage: createJSONStorage(() => localStorage),
