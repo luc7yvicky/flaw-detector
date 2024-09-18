@@ -1,5 +1,6 @@
 import { VulDBPinnedInfo } from "@/types/post";
 import {
+  arrayRemove,
   arrayUnion,
   collection,
   deleteDoc,
@@ -56,6 +57,34 @@ export async function addUser(newUser: User): Promise<void> {
 }
 
 /**
+ * 로그인한 사용자가 스크랩한 게시물 정보를 불러옵니다.
+ */
+export async function getUserPinnedPosts(userId: number): Promise<any | null> {
+  if (!userId) {
+    return null;
+  }
+
+  try {
+    const usersCollection = collection(db, "users");
+    const userIdQuery = query(usersCollection, where("userId", "==", userId));
+
+    const querySnapshot = await getDocs(userIdQuery);
+
+    if (!querySnapshot.empty) {
+      const userDoc = querySnapshot.docs[0];
+      const pinnedPosts = userDoc.data().pinnedPosts || [];
+      return pinnedPosts;
+    } else {
+      console.log(`No user found with userId: ${userId}`);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching pinned posts:", error);
+    return null;
+  }
+}
+
+/**
  * Firestore의 user 문서에 pinnedPost를 추가합니다.
  * @returns Promise<void>
  */
@@ -79,6 +108,44 @@ export async function addPinnedPostToUser(
       const docRef = querySnapshot.docs[0].ref;
 
       await updateDoc(docRef, { pinnedPosts: arrayUnion(pinnedInfo.postId) });
+
+      console.log("User document successfully updated with pinnedPosts.");
+    } else {
+      console.log("[Alert] User does not exist in Firestore.");
+    }
+  } catch (err) {
+    console.error(
+      "[Error] Failed to update the user document with pinnedPosts: ",
+      err,
+    );
+    throw new Error("Failed to save the pinnedPost for the user.");
+  }
+}
+
+/**
+ * Firestore의 user 문서에서 pinnedPost를 삭제합니다.
+ * @returns Promise<void>
+ */
+export async function deletePinnedPostFromUser(
+  pinnedInfo: VulDBPinnedInfo,
+): Promise<void> {
+  if (!db) {
+    console.error("Firestore is not initialized.");
+    return;
+  }
+
+  try {
+    const usersCollection = collection(db, "users");
+    const userIdQuery = query(
+      usersCollection,
+      where("userId", "==", pinnedInfo.userId),
+    );
+
+    const querySnapshot = await getDocs(userIdQuery);
+    if (!querySnapshot.empty) {
+      const docRef = querySnapshot.docs[0].ref;
+
+      await updateDoc(docRef, { pinnedPosts: arrayRemove(pinnedInfo.postId) });
 
       console.log("User document successfully updated with pinnedPosts.");
     } else {

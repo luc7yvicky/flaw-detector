@@ -9,7 +9,9 @@ import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore";
 
 export default function LogoutButton({ username }: { username: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const clearAllBookmarks = useFileBookmarkStore((state) => state.clearAllBookmarks);
+  const clearAllBookmarks = useFileBookmarkStore(
+    (state) => state.clearAllBookmarks,
+  );
 
   const onClickLogout = async () => {
     try {
