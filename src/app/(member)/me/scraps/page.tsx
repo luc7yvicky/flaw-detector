@@ -21,7 +21,7 @@ export default async function ScrapsPage() {
 
     const data = await res.json();
 
-    if (!!data.status) {
+    if (data.status) {
       error = data.message;
     }
 
