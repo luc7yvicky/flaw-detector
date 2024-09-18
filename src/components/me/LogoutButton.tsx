@@ -5,14 +5,17 @@ import Button from "../ui/Button";
 import { Modal, ModalTitle } from "../ui/Modal";
 import { signOut } from "next-auth/react";
 import { deleteUserData } from "@/lib/api/users";
+import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore";
 
 export default function LogoutButton({ username }: { username: string }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const clearAllBookmarks = useFileBookmarkStore((state) => state.clearAllBookmarks);
 
   const onClickLogout = async () => {
     try {
       await deleteUserData(username);
       await signOut();
+      clearAllBookmarks();
     } catch (err) {
       console.error("Error during logout process: ", err);
     }

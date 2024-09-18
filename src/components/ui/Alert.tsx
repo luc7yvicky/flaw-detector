@@ -1,9 +1,10 @@
 "use client";
 
+import { getDetectedResultsByFile } from "@/lib/api/repositories";
 import { cn } from "@/lib/utils";
 import { useDetectedModeStore } from "@/stores/useDetectedModeStore";
+import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
-import { useState } from "react";
 import Button from "./Button";
 import {
   IconArrowsCounterClockwise,
@@ -12,8 +13,6 @@ import {
   IconHourGlass,
   IconThinClose,
 } from "./Icons";
-import { getDetectedResultsByFile } from "@/lib/api/repositories";
-import { useFileProcessStore } from "@/stores/useFileProcessStore";
 
 const alertType = {
   onCheck: {
@@ -39,9 +38,6 @@ const alertType = {
     descriptions: ["오류가 발생했습니다.", "다시 시도해주세요."],
     button: {
       text: "다시 검사하기",
-      action: () => {
-        console.log("검사 함수 호출");
-      },
     },
   },
   success: {
@@ -64,27 +60,35 @@ type AlertProperty = {
   descriptions: string[];
   button?: {
     text: string;
-    action?: () => void;
   };
 };
 
 type AlertType = {
   status: keyof typeof alertType | null;
+  isOpen: boolean;
+  onClose: () => void;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export const Alert = ({
   username,
   status = "onWait",
+  isOpen,
+  onClose,
   className,
   ...props
 }: { username: string } & AlertType) => {
-  const [isOpen, setIsOpen] = useState(true);
   const repoName = useFileViewerStore((state) => state.currentRepo);
   const filePath = useFileViewerStore((state) => state.currentFile);
   const setMode = useDetectedModeStore((state) => state.setMode);
+  const processFile = useFileProcessStore((state) => state.processFile);
   const setResults = useFileProcessStore(
     (state) => state.setFileDetectedResults,
   );
+
+  const file = {
+    path: filePath ?? "",
+    name: filePath?.split("/").pop() ?? "",
+  };
 
   if (!status) {
     return null;
@@ -96,69 +100,71 @@ export const Alert = ({
 
   const onClickToResults = async () => {
     try {
+      onClose();
+
       const { mode, results } = await getDetectedResultsByFile(
         username,
         filePath,
       );
 
-      setMode(mode);
-      setResults(results);
-      window.history.replaceState({}, "", `/repos/${repoName}/${filePath}`);
-      setIsOpen(false);
+      if (filePath) {
+        setMode(filePath, mode);
+        setResults(results);
+        // window.history.replaceState({}, "", `/repos/${repoName}/${filePath}`);
+      }
     } catch (err) {
       console.error("Error fetching results:", err);
     }
   };
 
+  const onClickToRetry = async () => {
+    await processFile(username, repoName, file);
+  };
+
   return (
-    <>
-      {isOpen && (
-        <div
-          className={cn(
-            "absolute right-0 top-0 z-30 flex h-fit w-full max-w-[30.875rem] justify-between gap-x-[1.125rem] rounded-2xl bg-white p-8 shadow-[0_0.75rem_2.656rem_0_rgba(0,0,0,0.12)]",
-            className,
-          )}
-          {...props}
-        >
-          <div className="flex basis-12 justify-center">{icon}</div>
+    isOpen && (
+      <div
+        className={cn(
+          "absolute right-0 top-0 z-30 flex h-fit w-full max-w-[30.875rem] justify-between gap-x-[1.125rem] rounded-2xl bg-white p-8 shadow-[0_0.75rem_2.656rem_0_rgba(0,0,0,0.12)]",
+          className,
+        )}
+        {...props}
+      >
+        <div className="flex basis-12 justify-center">{icon}</div>
 
-          <div className="flex grow flex-col gap-y-4 text-xl font-medium leading-7">
-            <h4>{title}</h4>
-            <p className="flex flex-col text-[1.125rem] text-gray-default">
-              {descriptions.map((desc, index) => (
-                <span key={index}>{desc}</span>
-              ))}
-            </p>
-            {button &&
-              (status === "success" ? (
-                <Button
-                  variant="filled"
-                  shape="rounded"
-                  className="w-full rounded-[0.75rem] py-3 text-2xl font-medium leading-[2.1rem]"
-                  onClick={onClickToResults}
-                >
-                  {button.text}
-                </Button>
-              ) : (
-                <Button
-                  variant="filled"
-                  shape="rounded"
-                  className="w-full rounded-[0.75rem] py-3 text-2xl font-medium leading-[2.1rem]"
-                  onClick={button.action}
-                >
-                  {button.text}
-                </Button>
-              ))}
-          </div>
-
-          <div className="shrink-0 basis-8">
-            <IconThinClose
-              className="size-8 cursor-pointer"
-              onClick={() => setIsOpen(false)}
-            />
-          </div>
+        <div className="flex grow flex-col gap-y-4 text-xl font-medium leading-7">
+          <h4>{title}</h4>
+          <p className="flex flex-col text-[1.125rem] text-gray-default">
+            {descriptions.map((desc, index) => (
+              <span key={index}>{desc}</span>
+            ))}
+          </p>
+          {button &&
+            (status === "success" ? (
+              <Button
+                variant="filled"
+                shape="rounded"
+                className="w-full rounded-[0.75rem] py-3 text-2xl font-medium leading-[2.1rem]"
+                onClick={onClickToResults}
+              >
+                {button.text}
+              </Button>
+            ) : (
+              <Button
+                variant="filled"
+                shape="rounded"
+                className="w-full rounded-[0.75rem] py-3 text-2xl font-medium leading-[2.1rem]"
+                onClick={onClickToRetry}
+              >
+                {button.text}
+              </Button>
+            ))}
         </div>
-      )}
-    </>
+
+        <div className="shrink-0 basis-8">
+          <IconThinClose className="size-8 cursor-pointer" onClick={onClose} />
+        </div>
+      </div>
+    )
   );
 };

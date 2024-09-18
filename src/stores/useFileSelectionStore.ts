@@ -11,6 +11,9 @@ interface FileSelectionState {
   getSelectedFiles: () => Array<{ path: string; name: string }>;
   initializeSelectedFilesStatus: () => void;
   resetFileSelection: () => void;
+  checkboxShow: boolean;
+  isCheckboxShow: () => boolean;
+  toggleCheckboxShow: () => void;
 }
 
 export const useFileSelectionStore = create<FileSelectionState>((set, get) => ({
@@ -49,4 +52,8 @@ export const useFileSelectionStore = create<FileSelectionState>((set, get) => ({
     });
   },
   resetFileSelection: () => set({ selectedFiles: new Map() }),
+  checkboxShow: false,
+  isCheckboxShow: () => get().checkboxShow,
+  toggleCheckboxShow: () =>
+    set((state) => ({ checkboxShow: !state.checkboxShow })),
 }));

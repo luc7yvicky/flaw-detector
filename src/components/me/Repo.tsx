@@ -1,6 +1,5 @@
 import { cn, formatDatetimeToYYMMDD } from "@/lib/utils";
 import { RepoListData } from "@/types/repo";
-import { SessionProvider } from "next-auth/react";
 import Link from "next/link";
 import { memo } from "react";
 import Button from "../ui/Button";
@@ -58,30 +57,28 @@ function Repo({
   return (
     <Card key={id} className="group relative">
       <CardHeader>
-        <SessionProvider>
-          {detectedStatus !== "notChecked" ? (
-            <>
-              <div className="flex-between-center">
-                {labelStatus[detectedStatus] && (
-                  <Label variant={labelStatus[detectedStatus]}>
-                    {detectedStatus === "done" ? "검사완료" : "검사중"}
-                  </Label>
-                )}
-                <RepoBookmark repo={repositoryName} isBookmarked={favorite} />
-              </div>
-              <CardTitle size="big" className="leading-[2.45rem]">
-                {repositoryName}
-              </CardTitle>
-            </>
-          ) : (
+        {detectedStatus !== "notChecked" ? (
+          <>
             <div className="flex-between-center">
-              <CardTitle size="big" className="leading-[2.45rem]">
-                {repositoryName}
-              </CardTitle>
+              {labelStatus[detectedStatus] && (
+                <Label variant={labelStatus[detectedStatus]}>
+                  {detectedStatus === "done" ? "검사완료" : "검사중"}
+                </Label>
+              )}
               <RepoBookmark repo={repositoryName} isBookmarked={favorite} />
             </div>
-          )}
-        </SessionProvider>
+            <CardTitle size="big" className="leading-[2.45rem]">
+              {repositoryName}
+            </CardTitle>
+          </>
+        ) : (
+          <div className="flex-between-center">
+            <CardTitle size="big" className="leading-[2.45rem]">
+              {repositoryName}
+            </CardTitle>
+            <RepoBookmark repo={repositoryName} isBookmarked={favorite} />
+          </div>
+        )}
       </CardHeader>
       <CardFooter>
         <Link href={`/repos/${repositoryName}`} className="basis-[9.153rem]">
