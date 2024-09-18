@@ -49,7 +49,9 @@ export default function CodeContainer({ username, repo }: CodeContainerProps) {
   }, [currentFile, results, setMode]);
 
   return (
-    <section className={cn("relative w-full")}>
+    <section
+      className={cn("relative w-full overflow-y-auto overflow-x-hidden")}
+    >
       {/* 코드 뷰어 */}
       <CodeViewer
         username={username}
