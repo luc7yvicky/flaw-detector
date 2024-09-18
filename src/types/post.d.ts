@@ -49,7 +49,10 @@ export type VulDBPost = {
   views: number;
 };
 
-export type VulDBPostWithChip = VulDBPost & { chip: "hot" | "new" | "" };
+export type VulDBPostWithChip = VulDBPost & {
+  chip: "hot" | "new" | "";
+  isScrapped: boolean;
+};
 
 export type VulDBPinnedInfo = {
   userId: string;
@@ -61,4 +64,9 @@ export type ArticleListItem = {
   title: string;
   label: VulDBPostLabel;
   createdAt: Date;
+};
+
+export type VulDBPinnedPosts = {
+  userId: string;
+  pinnedPosts: string[];
 };
