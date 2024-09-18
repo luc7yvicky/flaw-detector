@@ -112,18 +112,11 @@ export default function FileExplorer({
         <div className="flex w-full items-center justify-between">
           <h3>Files</h3>
           <div className="flex gap-3.5">
-            <div
-              className="cursor-pointer"
-              onClick={toggleCheckboxShow}
-              title="파일 다중 선택 활성화"
-            >
+            <button onClick={toggleCheckboxShow} title="파일 다중 선택 활성화">
               <IconMultiSelect />
-            </div>
-            <div className="relative" title="리스트 정렬 옵션">
-              <IconList
-                className="cursor-pointer"
-                onClick={() => setIsSortListOpen(!isSortListOpen)}
-              />
+            </button>
+            <button className="relative" title="리스트 정렬 옵션">
+              <IconList onClick={() => setIsSortListOpen(!isSortListOpen)} />
               {isSortListOpen && (
                 <div className="absolute right-0 top-full z-50 mt-1">
                   <SortOptionList
@@ -133,7 +126,7 @@ export default function FileExplorer({
                   />
                 </div>
               )}
-            </div>
+            </button>
           </div>
         </div>
       </div>
