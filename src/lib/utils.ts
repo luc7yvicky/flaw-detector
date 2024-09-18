@@ -140,7 +140,6 @@ export const convertEscapedCharacterToRawString = (str: string) => {
   return str
     .replace(/\/([^\/]+)\/g/g, "\\\\/$1\\\\/g") // 정규식 문자열을 두 개의 백슬래시로 감싸기
     .replace(/'/g, `\\"`) // 싱글 쿼테이션
-    .replace(/\/"/g, `/\\"`) // 슬래쉬 + 더블 쿼테이션
     .replace(/</g, "\\u003C") // '<' 문자
     .replace(/>/g, "\\u003E"); // '>' 문자
 };

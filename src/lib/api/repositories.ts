@@ -420,6 +420,6 @@ export const updateRepoStatus = async (
       throw new Error(errorData.error || "Failed to save results.");
     }
   } catch (err) {
-    console.error("Error adding results:", err);
+    console.error("Error occurs updating results status:", err);
   }
 };

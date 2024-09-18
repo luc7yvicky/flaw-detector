@@ -68,17 +68,17 @@ export async function PATCH(req: NextRequest) {
       });
     }
 
-    if (!favorite) {
+    if (favorite) {
       // 북마크 여부 저장
       repoData.repos[repoIndex].favorite = favorite;
     }
 
-    if (!clickedAt) {
+    if (clickedAt) {
       // 클릭한 시간 저장
       repoData.repos[repoIndex].clickedAt = clickedAt;
     }
 
-    if (!detectedStatus) {
+    if (detectedStatus) {
       // 검사 상태 저장
       repoData.repos[repoIndex].detectedStatus = detectedStatus;
     }

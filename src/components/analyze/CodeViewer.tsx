@@ -1,16 +1,11 @@
 "use client";
 
-import { getDetectedResultsByFile } from "@/lib/api/repositories";
 import { useFileContent } from "@/lib/queries/useFileContent";
 import { cn } from "@/lib/utils";
-import { useDetectedModeStore } from "@/stores/useDetectedModeStore";
-import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
-import { Alert } from "../ui/Alert";
 import { IconMagnifierWithPlus } from "../ui/Icons";
-import ResultInfoBoxList from "./ResultInfoBoxList";
 
 const SyntaxHighlighter = dynamic(
   () => import("react-syntax-highlighter").then((mod) => mod.Prism),
@@ -22,30 +17,23 @@ interface CodeViewerProps {
   repo: string;
 }
 
-export default function CodeViewer({ username, repo }: CodeViewerProps) {
+export default function CodeViewer({
+  username,
+  repo,
+  className,
+}: CodeViewerProps & React.HTMLAttributes<HTMLDivElement>) {
   const codeRef = useRef<HTMLPreElement>(null);
 
-  const mode = useDetectedModeStore((state) => state.mode);
-  const setMode = useDetectedModeStore((state) => state.setMode);
   const { currentFile, setCurrentFile, setCurrentRepo } = useFileViewerStore();
+  const detectedLines = useFileViewerStore((state) => state.detectedLines);
+
   const { data, isLoading, error } = useFileContent(
     username,
     repo,
     currentFile,
   );
-  const getFileStatus = useFileProcessStore((state) => state.getFileStatus);
-  const setFileStatus = useFileProcessStore((state) => state.setFileStatus);
-  const results = useFileProcessStore((state) => state.fileDetectedResults);
-  const setResults = useFileProcessStore(
-    (state) => state.setFileDetectedResults,
-  );
-  const filePath = useFileProcessStore((state) => state.currentDetectedFile);
-  const status = currentFile ? getFileStatus(currentFile) : null;
 
   const [highlighterStyle, setHighlighterStyle] = useState({});
-  const [hasAlertBeenSet, setHasAlertBeenSet] = useState(false);
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [detectedLines, setDetectedLines] = useState<number[]>([]);
 
   useEffect(() => {
     setCurrentFile(null);
@@ -57,37 +45,6 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
       (mod) => setHighlighterStyle(mod.default),
     );
   }, []);
-
-  // 검사 결과가 있는 파일에 한해서 취약점 검사 결과 조회
-  useEffect(() => {
-    setMode("undetected");
-    setResults(null);
-
-    const getResults = async () => {
-      try {
-        const { mode, results } = await getDetectedResultsByFile(
-          username,
-          currentFile,
-        );
-        setMode(mode);
-        setResults(results);
-      } catch (err) {
-        console.error("Error fetching detected results:", err);
-      }
-    };
-
-    if (currentFile && status === "success") {
-      getResults();
-    }
-  }, [currentFile]);
-
-  // 검사 상태에 따른 Alert 출력
-  useEffect(() => {
-    if (currentFile === filePath && status) {
-      setIsAlertOpen(true);
-      setHasAlertBeenSet(true);
-    }
-  }, [status]);
 
   // 위치 보기 하이라이트
   useEffect(() => {
@@ -138,7 +95,7 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
 
   if (!data && !isLoading && !error) {
     return (
-      <div className="flex-center-center w-full flex-col gap-8 rounded-lg border border-[#c3c3c3]">
+      <div className="flex-center-center size-full flex-col gap-8 rounded-lg border border-[#c3c3c3]">
         <IconMagnifierWithPlus />
         <div className="text-2xl text-primary-500">파일을 선택하세요</div>
       </div>
@@ -148,46 +105,29 @@ export default function CodeViewer({ username, repo }: CodeViewerProps) {
   return (
     <div
       className={cn(
-        "w-full overflow-x-scroll",
-        results && mode === "detected" && "min-h-dvh",
+        "relative h-full w-full overflow-hidden rounded-lg border border-[#c3c3c3]",
+        className,
       )}
     >
-      {/* 코드 뷰어 */}
-      <div
-        className={cn(
-          "relative h-full w-full overflow-hidden rounded-lg border border-[#c3c3c3]",
-          results && mode === "detected" && "h-full max-h-[34.688rem]",
+      {/* <ProcessStatus status={status} /> */}
+      <SyntaxHighlighter
+        language={data?.type === "code" ? data.language : "text"}
+        style={highlighterStyle}
+        showLineNumbers
+        wrapLines
+        className="p-11"
+        PreTag={({ children, ...props }) => (
+          <pre
+            {...props}
+            className="!m-0 h-full w-full max-w-full !overflow-x-auto"
+            ref={codeRef}
+          >
+            {children}
+          </pre>
         )}
       >
-        {/* <ProcessStatus status={status} /> */}
-        <SyntaxHighlighter
-          language={data?.type === "code" ? data.language : "text"}
-          style={highlighterStyle}
-          showLineNumbers
-          wrapLines
-          className="p-11"
-          PreTag={({ children, ...props }) => (
-            <pre
-              {...props}
-              className="!m-0 h-full w-full max-w-full !overflow-x-auto"
-              ref={codeRef}
-            >
-              {children}
-            </pre>
-          )}
-        >
-          {renderContent()}
-        </SyntaxHighlighter>
-        {isAlertOpen && <Alert username={username} status={status} />}
-      </div>
-
-      {/* 검사 결과 */}
-      {results && mode === "detected" && (
-        <ResultInfoBoxList
-          results={results}
-          setDetectedLines={setDetectedLines}
-        />
-      )}
+        {renderContent()}
+      </SyntaxHighlighter>
     </div>
   );
 }
