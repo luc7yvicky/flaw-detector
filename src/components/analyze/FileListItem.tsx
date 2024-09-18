@@ -78,7 +78,7 @@ function FileListItem({
       case "onCheck":
         return <IconOnProcess className="animate-spin" />; // 처리 중임을 더 명확하게 표시
       case "onWait":
-        return <IconOnWait className="fill-gray-default" />;
+        return <IconOnWait className="text-gray-default" />;
       case "error":
         return <IconError />;
       case "success":
@@ -198,7 +198,9 @@ function FileListItem({
               </button>
             </div>
           )}
-          {fileStatus && <div className="ml-auto flex pl-1"> {statusIcon}</div>}
+          {fileStatus && (
+            <div className="flex-center-center pl-1"> {statusIcon}</div>
+          )}
         </div>
       </li>
       {showNestedList && type === "dir" && item.items && (
