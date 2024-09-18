@@ -23,7 +23,9 @@ export const useVulDBPostsStore = create<VulDBPostsState>()(
       updateScrappedPosts: (scrappedPostIds) => {
         const updatedPosts = get().vulDBPostsWithChip.map((post) => ({
           ...post,
-          isScrapped: scrappedPostIds.includes(post.id),
+          isScrapped: scrappedPostIds
+            ? scrappedPostIds.includes(post.id)
+            : false,
         }));
         set({ vulDBPostsWithChip: updatedPosts });
       },
