@@ -6,7 +6,7 @@ import { IconCaretDown, IconCheck } from "./Icons";
 import useOutsideClick from "@/hooks/useOutsideClick";
 
 export type DropdownProps = React.HTMLAttributes<HTMLDivElement> & {
-  type: "type" | "sort";
+  type: "type" | "sort" | "label";
   onSelectFilter: React.Dispatch<React.SetStateAction<string>>;
 };
 
@@ -25,6 +25,12 @@ const typeOptions: Option[] = [
   { id: "1", name: "검사중", value: "onProgress" },
 ];
 
+const labelOptions: Option[] = [
+  { id: "0", name: "보고서", value: "취약성 보고서" },
+  { id: "1", name: "알림", value: "취약성 알림" },
+  { id: "2", name: "기타", value: "기타" },
+];
+
 const sortOptions: Option[] = [
   { id: "0", name: "최신순", value: "latest" },
   { id: "1", name: "오래된순", value: "oldest" },
@@ -35,6 +41,8 @@ const getOptions = (type: string): Option[] => {
   switch (type) {
     case "type":
       return typeOptions;
+    case "label":
+      return labelOptions;
     case "sort":
       return sortOptions;
     default:
@@ -90,10 +98,12 @@ export default function Dropdown({
   className,
   ...props
 }: DropdownProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
-  useOutsideClick(menuRef, () => setIsOpen(false));
+
+  useOutsideClick([menuRef, buttonRef], () => setIsOpen(false));
 
   return (
     <div
@@ -108,8 +118,9 @@ export default function Dropdown({
           "inline-flex h-[2.75rem] w-full items-center justify-between rounded-lg border border-gray-default px-[0.625rem] py-[0.625rem] text-xl text-gray-dark outline-0",
         )}
         onClick={() => setIsOpen(!isOpen)}
+        ref={buttonRef}
       >
-        <span>{type === "type" ? "Type" : type === "sort" ? "Sort" : ""}</span>
+        <span>{type === "sort" ? "Sort" : "Type"}</span>
         <IconCaretDown />
       </button>
       {isOpen && (

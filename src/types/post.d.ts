@@ -1,21 +1,3 @@
-export type ArticleListItem = {
-  id: string;
-  title: string;
-  createdAt: string;
-  labelVariant?:
-    | "hot"
-    | "new"
-    | "clipping"
-    | "clipping-notify"
-    | "clipping-warning";
-  labelText?: string;
-};
-
-export type ArticleDetailProps = {
-  content?: string;
-  showLabel?: boolean;
-} & ArticleListItem;
-
 export type CertCCTextBlock = { id: string; text: string };
 
 export type CnnvdTextBlock = {
@@ -49,9 +31,11 @@ export type CnnvdContent = {
   remediation: CnnvdLocalizedTextBlock;
 };
 
+export type VulDBPostLabel = "기타" | "취약성 보고서" | "취약성 알림";
+
 export type VulDBPost = {
   id: string;
-  label: "기타" | "취약성 보고서" | "취약성 알림";
+  label: VulDBPostLabel;
   source: "CERT/CC" | "CNNVD";
   page_url: string;
   title: {
@@ -70,4 +54,11 @@ export type VulDBPostWithChip = VulDBPost & { chip: "hot" | "new" | "" };
 export type VulDBPinnedInfo = {
   userId: string;
   postId: string;
+};
+
+export type ArticleListItem = {
+  id: string;
+  title: string;
+  label: VulDBPostLabel;
+  createdAt: Date;
 };

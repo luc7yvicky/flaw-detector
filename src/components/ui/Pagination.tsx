@@ -27,8 +27,8 @@ const Pagination: React.FC<PaginationProps> = ({
   return (
     <div
       className={cn(
-        "grid grid-flow-col grid-cols-12 gap-[0.625rem]",
-        `grid-cols-${pages.length + 2}`,
+        "grid grid-flow-col gap-[0.625rem]",
+        pages.length !== 1 && `grid-cols-${pages.length + 2}`,
         className,
       )}
     >
