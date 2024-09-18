@@ -90,10 +90,15 @@ const config: Config = {
             transform: "translate(195px, 0px) rotate(-360deg)",
           },
         },
+        round: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(360deg)" },
+        },
       },
       animation: {
         "scroll-left": "scrollLeft 10s linear infinite",
         "roll-around-y": "rollAroundY 5s linear infinite",
+        round: "round 1.7s infinite ease",
       },
     },
   },
