@@ -1,3 +1,5 @@
+"use client";
+
 import { cn, getLanguage } from "@/lib/utils";
 import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
@@ -126,6 +128,7 @@ function FileListItem({
     <>
       <li
         title={name}
+        key={`${repo}-${path}`}
         className={cn(
           "group/item relative flex w-full cursor-pointer border-b border-line-default p-2.5 py-[-1px] hover:bg-purple-light",
           path === currentFile && "bg-primary-50",
