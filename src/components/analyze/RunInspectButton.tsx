@@ -100,8 +100,8 @@ export default function RunInspectButton({
         }
         setIsInspectionRunning(true);
         // TODO: 파일 처리 분산화 로직
-        console.log(allFiles);
-        // await processFiles(allFiles, username, repo, "analyze");
+        // console.log(allFiles);
+        await processFiles(allFiles, username, repo, "analyze");
         console.log(
           `전체 레포지토리 처리가 완료되었습니다. ${repoTreeResult.ignoredCount}개의 파일이 무시되었습니다.`,
         );
