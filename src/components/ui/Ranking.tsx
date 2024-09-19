@@ -22,6 +22,10 @@ const renderTopics = (
   topics: string[] | SearchKeyword[],
   haveSearchKeywords: boolean,
 ) => {
+  if (!topics || topics.length === 0) {
+    return <li>데이터를 불러오는 데 실패했습니다.</li>;
+  }
+
   return topics.map((topic, index) => {
     const topicName = typeof topic === "string" ? topic : topic.keyword;
 
@@ -45,6 +49,8 @@ export const Ranking: React.FC<RankingProps> = ({
   topSearchKeywords,
   ...props
 }) => {
+  const hasKeywords = topSearchKeywords && topSearchKeywords.length > 0;
+
   return (
     <ul
       className={cn(
@@ -53,7 +59,7 @@ export const Ranking: React.FC<RankingProps> = ({
       )}
       {...props}
     >
-      {topSearchKeywords.length > 0 ? (
+      {hasKeywords ? (
         renderTopics(topSearchKeywords, true)
       ) : (
         <>

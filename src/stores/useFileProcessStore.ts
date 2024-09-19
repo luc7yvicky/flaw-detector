@@ -9,6 +9,7 @@ import { FileResultFailProps, FileResultProps, FileStatus } from "@/types/file";
 import { v4 as uuidv4 } from "uuid";
 import { create } from "zustand";
 import { FILE_INSPECTION_STATUS_KEY } from "../lib/const";
+import JSON5 from "json5";
 
 // 파일 검사 여부 있는 경우, 로컬 스토리지에 저장
 const saveFileStatusesToLocalStorage = (
@@ -88,7 +89,7 @@ export const useFileProcessStore = create<FileProcessState>((set, get) => ({
         // 파싱 가능한 문자열로 변환 (JSON)
         const jsonStr = convertEscapedCharacterToRawString(res);
         // 파싱
-        const data = await JSON.parse(jsonStr);
+        const data = await JSON5.parse(jsonStr);
 
         const results: FileResultProps[] = data.map(
           (result: FileResultProps) => ({
