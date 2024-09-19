@@ -2,6 +2,21 @@
 
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { cva, VariantProps } from "class-variance-authority";
+import { IconClose } from "./Icons";
+
+const switchVariants = cva("flex h-8 w-14 items-center rounded-[6.25rem]", {
+  variants: {
+    variant: {
+      default: "cursor-pointer",
+      disabled:
+        "border-2 border-primary-200 bg-purple-light opacity-50 cursor-not-allowed",
+    },
+  },
+  defaultVariants: {
+    variant: "default",
+  },
+});
 
 function SwitchThumb({ isActive }: { isActive: boolean }) {
   return (
@@ -25,10 +40,25 @@ function SwitchThumb({ isActive }: { isActive: boolean }) {
   );
 }
 
+function SwitchDisabledThumb() {
+  return (
+    <div
+      className={cn(
+        "relative h-6 w-6 rounded-[50%] transition-transform duration-300 active:scale-110 disabled:cursor-not-allowed disabled:bg-primary-200 disabled:bg-opacity-50",
+        "flex-center-center ml-[0.125rem] bg-[#1D1B20]",
+      )}
+    >
+      <IconClose className="h-[1rem] w-[1rem] fill-purple-light opacity-50" />
+    </div>
+  );
+}
+
 export default function Switch({
+  variant,
   className,
   ...props
-}: React.HTMLAttributes<HTMLButtonElement>) {
+}: React.HTMLAttributes<HTMLButtonElement> &
+  VariantProps<typeof switchVariants>) {
   const [isActive, setIsActive] = useState(false);
 
   const trackStyles = {
@@ -39,14 +69,20 @@ export default function Switch({
   return (
     <button
       className={cn(
-        "flex h-8 w-14 cursor-pointer items-center rounded-[6.25rem]",
-        isActive ? trackStyles["active"] : trackStyles["inactive"],
+        switchVariants({ variant }),
+        variant !== "disabled" &&
+          (isActive ? trackStyles["active"] : trackStyles["inactive"]),
         className,
       )}
-      onClick={() => setIsActive(!isActive)}
+      onClick={() => variant !== "disabled" && setIsActive(!isActive)}
+      disabled={variant === "disabled"}
       {...props}
     >
-      <SwitchThumb isActive={isActive} />
+      {variant === "disabled" ? (
+        <SwitchDisabledThumb />
+      ) : (
+        <SwitchThumb isActive={isActive} />
+      )}
     </button>
   );
 }

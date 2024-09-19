@@ -56,14 +56,27 @@ export const formatTimestampAsDateTime = (timestamp: {
   return `${year}.${month}.${day} ${hours}:${minutes}:${seconds}`;
 };
 
-/** ISO 8601 형식(YYYY-MM-DDtHH:mm:ss)에서 문자열('YY.MM.DD')로 변환합니다. */
-export const formatDatetimeToYYMMDD = (datetime: string) => {
+/** ISO 8601 날짜 형식에서 문자열('YY.MM.DD')로 변환합니다. */
+export const formatDatetimeToYYMMDD = (datetime: string | Date) => {
   const date = new Date(datetime);
   const YY = date.getFullYear().toString().slice(2);
   const MM = String(date.getMonth() + 1).padStart(2, "0");
   const DD = String(date.getDate()).padStart(2, "0");
 
   return `${YY}.${MM}.${DD}`;
+};
+
+/** ISO 8601 날짜 형식에서 문자열('YYYY.MM.DD hh:mm:ss')로 변환합니다. */
+export const formatDateToYYYYMMDDhhmmss = (prevDate: Date): string => {
+  const date = new Date(prevDate);
+  const YYYY = date.getFullYear().toString();
+  const MM = (date.getMonth() + 1).toString().padStart(2, "0");
+  const DD = date.getDate().toString().padStart(2, "0");
+  const hh = date.getHours().toString().padStart(2, "0");
+  const mm = date.getMinutes().toString().padStart(2, "0");
+  const ss = date.getSeconds().toString().padStart(2, "0");
+
+  return `${YYYY}.${MM}.${DD} ${hh}:${mm}:${ss}`;
 };
 
 /* 선택한 파일의 확장자로 작성 언어를 리턴하여 코드 하이라이터의 속성으로 사용합니다*/
@@ -140,7 +153,6 @@ export const convertEscapedCharacterToRawString = (str: string) => {
   return str
     .replace(/\/([^\/]+)\/g/g, "\\\\/$1\\\\/g") // 정규식 문자열을 두 개의 백슬래시로 감싸기
     .replace(/'/g, `\\"`) // 싱글 쿼테이션
-    .replace(/\/"/g, `/\\"`) // 슬래쉬 + 더블 쿼테이션
     .replace(/</g, "\\u003C") // '<' 문자
     .replace(/>/g, "\\u003E"); // '>' 문자
 };
