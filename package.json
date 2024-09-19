@@ -20,6 +20,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "firebase": "^10.13.0",
+    "json5": "^2.2.3",
     "next": "14.2.5",
     "next-auth": "5.0.0-beta.20",
     "nodemailer": "^6.9.15",

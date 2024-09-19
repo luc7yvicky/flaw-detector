@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
-import BookmarkButton from "@/components/me/BookmarkButton";
 import Profile from "@/components/me/Profile";
-import RecentFilesButton from "@/components/me/RecentFilesButton";
+import RepoFilterButton from "@/components/me/RepoFilterButton";
 import RepoList from "@/components/me/RepoList";
 import { IconCaretLeft } from "@/components/ui/Icons";
 import TitleBar from "@/components/ui/TitleBar";
@@ -61,8 +60,8 @@ export default async function ReposPage() {
         </section>
 
         <section className="flex-between-center gap-x-[1.313rem]">
-          <RecentFilesButton />
-          <BookmarkButton />
+          <RepoFilterButton type="recent-files" />
+          <RepoFilterButton type="bookmark" />
         </section>
 
         <Suspense fallback={<div>Loading repos...</div>}>

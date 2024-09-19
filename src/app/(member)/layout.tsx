@@ -1,4 +1,5 @@
 import { redirectIfNotLoggedIn } from "@/lib/redirect";
+import { SessionProvider } from "next-auth/react";
 
 export default async function MemberLayout({
   children,
@@ -6,7 +7,7 @@ export default async function MemberLayout({
   await redirectIfNotLoggedIn("/login");
   return (
     <div className="flex-col-center relative mx-auto w-full">
-      {children}
+      <SessionProvider>{children}</SessionProvider>
     </div>
   );
 }
