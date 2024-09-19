@@ -16,12 +16,12 @@ import {
 
 const alertType = {
   onCheck: {
-    icon: <IconArrowsCounterClockwise />,
+    icon: <IconArrowsCounterClockwise className="animate-round" />,
     title: "검사 중...",
     descriptions: ["코드가 많을수록 처리시간이 길어집니다."],
   },
   onWait: {
-    icon: <IconHourGlass />,
+    icon: <IconHourGlass className="animate-round" />,
     title: "검사 대기 중",
     descriptions: [
       "순차적으로 파일 검사가 진행됩니다.",
@@ -99,9 +99,9 @@ export const Alert = ({
   ] as AlertProperty;
 
   const onClickToResults = async () => {
-    try {
-      onClose();
+    onClose();
 
+    try {
       const { mode, results } = await getDetectedResultsByFile(
         username,
         filePath,
@@ -118,7 +118,11 @@ export const Alert = ({
   };
 
   const onClickToRetry = async () => {
-    await processFile(username, repoName, file);
+    try {
+      await processFile(username, repoName, file);
+    } catch (err) {
+      console.error("Error retrying:", err);
+    }
   };
 
   return (
