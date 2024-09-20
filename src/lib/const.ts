@@ -32,6 +32,13 @@ export const ITEMS_PER_DB_PAGE = 5;
 export const ITEMS_PER_MY_PAGE = 12;
 export const PAGES_PER_GROUP = 10;
 
+export const NAME_VALIDATION_MESSAGE =
+  "이름은 공백 없이 한글 또는 영어로 2자 이상이어야 합니다.";
+export const EMAIL_VALIDATION_MESSAGE = "이메일 형식이 유효하지 않습니다.";
+export const MESSAGE_VALIDATION_MESSAGE = "메세지는 5자 이상이어야 합니다.";
+export const SERVER_ERROR_MESSAGE =
+  "서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.";
+
 export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability";
 
 export const WEB_CRAWLING_CERT_CC_API_URL = `${BASE_URL}/api/web-crawling/cert-cc`;
