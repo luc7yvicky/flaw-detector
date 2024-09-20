@@ -23,11 +23,11 @@ import {
 type RequestState = "idle" | "loading" | "success" | "error";
 type InvalidField = "name" | "email" | "message";
 
-const ValidationError = ({
+function ValidationError({
   invalidField,
 }: {
   invalidField: InvalidField | null;
-}) => {
+}) {
   const validationMessages: { [key in InvalidField]: string } = {
     name: NAME_VALIDATION_MESSAGE,
     email: EMAIL_VALIDATION_MESSAGE,
@@ -43,11 +43,48 @@ const ValidationError = ({
       {validationMessages[invalidField]}
     </p>
   );
-};
+}
+
+function ContactSuccessModal({
+  requestState,
+  setRequestState,
+}: {
+  requestState: RequestState;
+  setRequestState: React.Dispatch<React.SetStateAction<RequestState>>;
+}) {
+  const router = useRouter();
+
+  return (
+    <Modal
+      variant="inquirySubmitted"
+      size="extraLarge"
+      isOpen={requestState === "success"}
+      className="top-0 border border-primary-500"
+    >
+      <ModalTitleWrapper variant="inquirySubmitted">
+        <ModalTitle size="big" weight="bold">
+          문의를 보냈어요!
+        </ModalTitle>
+        <ModalDescription size="big" className="font-medium text-[#8F8F8F]">
+          문의를 성공적으로 전송했어요. 빠른 시일 내에 답변해드릴게요.
+        </ModalDescription>
+      </ModalTitleWrapper>
+      <Button
+        type="button"
+        onClick={() => {
+          setRequestState("idle");
+          router.push("/");
+        }}
+        className="mt-14 h-14 w-[20.938rem] rounded-2xl text-[1.25rem] tracking-[-0.011em]"
+      >
+        홈으로 가기
+      </Button>
+    </Modal>
+  );
+}
 
 export default function ContactForm() {
   const { data: session } = useSession();
-  const router = useRouter();
   const [invalidField, setInvalidField] = useState<InvalidField | null>(null);
   const [requestState, setRequestState] = useState<RequestState>("idle");
 
@@ -211,31 +248,10 @@ export default function ContactForm() {
       </Button>
 
       {/* Modal for SUCCESS */}
-      <Modal
-        variant="inquirySubmitted"
-        size="extraLarge"
-        isOpen={requestState === "success"}
-        className="top-0 border border-primary-500"
-      >
-        <ModalTitleWrapper variant="inquirySubmitted">
-          <ModalTitle size="big" weight="bold">
-            문의를 보냈어요!
-          </ModalTitle>
-          <ModalDescription size="big" className="font-medium text-[#8F8F8F]">
-            문의를 성공적으로 전송했어요. 빠른 시일 내에 답변해드릴게요.
-          </ModalDescription>
-        </ModalTitleWrapper>
-        <Button
-          type="button"
-          onClick={() => {
-            setRequestState("idle");
-            router.push("/");
-          }}
-          className="mt-14 h-14 w-[20.938rem] rounded-2xl text-[1.25rem] tracking-[-0.011em]"
-        >
-          홈으로 가기
-        </Button>
-      </Modal>
+      <ContactSuccessModal
+        requestState={requestState}
+        setRequestState={setRequestState}
+      />
     </form>
   );
 }
