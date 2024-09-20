@@ -13,12 +13,10 @@ export async function POST(request: NextRequest) {
   const email = formData.get("email");
   const message = formData.get("message");
 
-  const namePattern = /^[a-zA-Z가-힣]+$/;
   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   if (
     typeof name !== "string" ||
-    !namePattern.test(name.trim()) ||
     name.includes(" ") ||
     name.trim().length < 2
   ) {
