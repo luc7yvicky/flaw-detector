@@ -39,7 +39,7 @@ function ValidationError({
   }
 
   return (
-    <p className="text-lg font-semibold text-red-500">
+    <p className="mt-1 text-lg font-semibold text-red-500">
       {validationMessages[invalidField]}
     </p>
   );
@@ -166,11 +166,11 @@ export default function ContactForm() {
     <form
       onSubmit={onSubmitForm}
       className={cn(
-        "flex h-full w-[61.563rem] flex-col gap-8 rounded-[2.5rem] border border-primary-500 bg-white p-[3.75rem]",
+        "flex h-full w-[61.563rem] flex-col gap-8 rounded-[2.5rem] border border-primary-500 bg-white px-[3.75rem] py-12",
       )}
     >
       <div>
-        <h3 className="mb-6 text-2xl font-bold leading-9">문의하기</h3>
+        <h3 className="mb-4 text-2xl font-bold leading-9">문의하기</h3>
         <p className="text-base font-medium tracking-[-0.011em] text-[#8F8F8F]">
           문의하고싶은 내용을 구체적으로 작성해주셔야 피드백이 정상적으로
           반영됩니다.
@@ -234,18 +234,19 @@ export default function ContactForm() {
           <ValidationError invalidField="message" />
         )}
       </div>
+      <div>
+        {/* Message for SERVER ERROR */}
+        {requestState === "error" && (
+          <p className="mb-2 text-lg font-semibold text-red-500">
+            {SERVER_ERROR_MESSAGE}
+          </p>
+        )}
 
-      {/* Message for SERVER ERROR */}
-      {requestState === "error" && (
-        <p className="text-lg font-semibold text-red-500">
-          {SERVER_ERROR_MESSAGE}
-        </p>
-      )}
-
-      {/* Button for SUBMIT */}
-      <Button type="submit" className="py-[0.813rem] text-lg">
-        {requestState === "loading" ? "전송 중..." : "문의 보내기"}
-      </Button>
+        {/* Button for SUBMIT */}
+        <Button type="submit" className="w-full py-[0.813rem] text-lg">
+          {requestState === "loading" ? "전송 중..." : "문의 보내기"}
+        </Button>
+      </div>
 
       {/* Modal for SUCCESS */}
       <ContactSuccessModal

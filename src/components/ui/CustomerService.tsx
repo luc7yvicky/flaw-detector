@@ -12,7 +12,7 @@ export default function CustomerService({ className }: { className?: string }) {
     >
       <div className="h-full w-[28.125rem]">
         <h2 className="text-6xl font-bold leading-[5.625rem] tracking-tighter text-primary-500">
-          서비스이용에
+          서비스 이용에
           <br />
           문제가 생겼나요?
         </h2>
