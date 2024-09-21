@@ -15,7 +15,7 @@ export default function LandingDemoSection() {
             <Button
               variant="filled"
               shape="rounded"
-              className="absolute top-[15.7%] z-50 translate-x-[42%] whitespace-nowrap bg-primary-300 px-[0.625rem] py-2 font-normal shadow-[0_1.5rem_2.25rem_0_rgba(0,0,0,0.25)]"
+              className="absolute top-[15.7%] z-40 translate-x-[42%] whitespace-nowrap bg-primary-300 px-[0.625rem] py-2 font-normal shadow-[0_1.5rem_2.25rem_0_rgba(0,0,0,0.25)]"
             >
               SectionBusinessForever from
               "@/components/section-business-forever";
@@ -23,14 +23,14 @@ export default function LandingDemoSection() {
             <Button
               variant="filled"
               shape="rounded"
-              className="absolute top-[29%] z-50 translate-x-[56.5%] bg-primary-300 px-[0.625rem] py-2 font-normal shadow-[0_1.5rem_2.25rem_0_rgba(0,0,0,0.25)]"
+              className="absolute top-[29%] z-40 translate-x-[56.5%] bg-primary-300 px-[0.625rem] py-2 font-normal shadow-[0_1.5rem_2.25rem_0_rgba(0,0,0,0.25)]"
             >
               "flex flex-col items-center py-36 min-h-screen"
             </Button>
             <Button
               variant="filled"
               shape="rounded"
-              className="absolute bottom-[27.4%] z-50 translate-x-[27%] bg-primary-300 px-[0.625rem] py-2 font-normal shadow-[0_1.5rem_2.25rem_0_rgba(0,0,0,0.25)]"
+              className="absolute bottom-[27.4%] z-40 translate-x-[27%] bg-primary-300 px-[0.625rem] py-2 font-normal shadow-[0_1.5rem_2.25rem_0_rgba(0,0,0,0.25)]"
             >
               Card className
             </Button>

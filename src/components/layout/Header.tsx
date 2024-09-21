@@ -50,9 +50,10 @@ export default function Header() {
   return (
     <header
       className={cn(
-        "h-[8.5rem] w-full antialiased",
-        isDocsPage &&
-          "fixed top-0 z-20 w-full border-b border-white bg-transparent text-white backdrop-blur-md",
+        "top-0 z-50 h-[8.5rem] w-full antialiased",
+        isDocsPage
+          ? "fixed border-b border-white bg-transparent text-white backdrop-blur-md"
+          : "sticky bg-white",
       )}
     >
       <div className="flex-center-center mx-auto h-full max-w-[120rem] px-20 py-12">
