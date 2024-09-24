@@ -29,7 +29,7 @@ export default async function VulnerabilityDBDetailPage({
     }
 
     return (
-      <div className="relative mx-auto mb-[8.596rem] mt-[2.063rem] flex w-[120rem] flex-col items-center gap-[3.75rem] px-[1rem]">
+      <div className="relative mx-auto mb-[8.596rem] mt-[2.063rem] flex w-full max-w-[120rem] flex-col items-center gap-[3.75rem] overflow-hidden px-[1rem]">
         <ArticleDetail userId={userId} postId={postId} />
         <SimilarInfoPosts postId={postId} userId={userId} />
         <div className="width-[4.75rem] absolute right-[8.75rem] top-[46.313rem]">
