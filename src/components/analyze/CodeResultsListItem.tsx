@@ -1,3 +1,4 @@
+import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { FileResultProps } from "@/types/file";
 import {
   InfoBox,
@@ -9,22 +10,20 @@ import {
 } from "../ui/InfoBox";
 import { Label } from "../ui/Label";
 import CodeBlock from "./CodeBlock";
-import { Dispatch, SetStateAction } from "react";
 
-type ResultInfoBoxProps = FileResultProps & {
-  setLines: Dispatch<SetStateAction<number[]>>;
-};
-
-export default function ResultInfoBox({
+export default function CodeResultsListItem({
   name,
   vulnerability,
   descriptions,
   lines,
   modified_codes,
-  setLines,
-}: ResultInfoBoxProps) {
+}: FileResultProps) {
   const modifiedCodeStr = modified_codes?.join("\n") ?? "";
+  const setDetectedLines = useFileViewerStore(
+    (state) => state.setDetectedLines,
+  );
 
+  // lines 파싱
   let linesRange: number[] = [];
   if (lines.includes(",")) {
     const ranges = lines.split(",");
@@ -55,7 +54,7 @@ export default function ResultInfoBox({
         <Label
           variant="location"
           className="cursor-pointer border-accent-red text-accent-red"
-          onClick={() => setLines(linesRange)}
+          onClick={() => setDetectedLines(linesRange)}
         >
           위치보기
         </Label>

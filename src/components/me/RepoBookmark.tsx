@@ -1,21 +1,23 @@
 "use client";
 
-import { memo, useCallback, useState } from "react";
-import { IconStar } from "../ui/Icons";
 import { cn } from "@/lib/utils";
 import { useSession } from "next-auth/react";
+import { memo, useCallback, useState } from "react";
+import { IconStar } from "../ui/Icons";
 
-function RepoBookmark({
+const RepoBookmark = ({
   repo,
   isBookmarked,
 }: {
   repo: string;
   isBookmarked: boolean;
-}) {
+}) => {
   const { data: session } = useSession();
   const [isSelected, setIsSelected] = useState(isBookmarked);
 
   const onToggleFavorite = useCallback(async () => {
+    setIsSelected(!isSelected);
+
     try {
       const res = await fetch("/api/repos", {
         method: "PATCH",
@@ -33,8 +35,6 @@ function RepoBookmark({
         const errorData = await res.json();
         throw new Error(errorData.error || "Failed to save results.");
       }
-
-      setIsSelected(!isSelected);
     } catch (err) {
       console.error("Error adding results:", err);
     }
@@ -57,6 +57,6 @@ function RepoBookmark({
       )}
     </div>
   );
-}
+};
 
 export default memo(RepoBookmark);

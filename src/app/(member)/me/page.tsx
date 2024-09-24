@@ -1,9 +1,8 @@
 import { auth } from "@/auth";
+import LogoutButton from "@/components/me/LogoutButton";
 import Profile from "@/components/me/Profile";
-import Button from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import TitleBar from "@/components/ui/TitleBar";
-import { logout } from "@/lib/actions";
 import Link from "next/link";
 
 export default async function MyPage() {
@@ -21,15 +20,7 @@ export default async function MyPage() {
         <section className="flex flex-col gap-y-20">
           <div className="flex-between-center h-[6.688rem] gap-4">
             <Profile />
-            <form action={logout}>
-              <Button
-                variant="filled-light-purple"
-                shape="rounded"
-                className="flex-center-center px-5 py-4 font-medium"
-              >
-                로그아웃
-              </Button>
-            </form>
+            <LogoutButton username={session?.user?.username} />
           </div>
           <hr />
         </section>

@@ -1,10 +1,12 @@
+import { auth } from "@/auth";
+import LogoutButton from "@/components/me/LogoutButton";
 import Profile from "@/components/me/Profile";
-import Button from "@/components/ui/Button";
 import Switch from "@/components/ui/Switch";
 import TitleBar from "@/components/ui/TitleBar";
-import { logout } from "@/lib/actions";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const session = await auth();
+
   return (
     <div className="mb-[7.75rem] flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
       <TitleBar title="Settings" align="center" className="mb-0 mt-[4.5rem]" />
@@ -13,15 +15,7 @@ export default function SettingsPage() {
         <section className="flex flex-col gap-y-20">
           <div className="flex-between-center h-[6.688rem] gap-4">
             <Profile />
-            <form action={logout}>
-              <Button
-                variant="filled-light-purple"
-                shape="rounded"
-                className="flex-center-center px-5 py-4 font-medium"
-              >
-                로그아웃
-              </Button>
-            </form>
+            <LogoutButton username={session?.user?.username} />
           </div>
           <hr />
         </section>
@@ -38,8 +32,13 @@ export default function SettingsPage() {
           <div className="flex w-full flex-col gap-y-12 text-2xl -tracking-[0.01em]">
             <h2 className="font-semibold">알림</h2>
             <div className="flex-between-center w-full">
-              <span className="font-normal">이메일로 알림 받기</span>
-              <Switch />
+              <p className="flex gap-x-3">
+                <span className="font-normal">이메일로 알림 받기</span>
+                <span className="text-gray-default">
+                  (준비 중인 기능입니다.)
+                </span>
+              </p>
+              <Switch variant="disabled" />
             </div>
           </div>
         </section>

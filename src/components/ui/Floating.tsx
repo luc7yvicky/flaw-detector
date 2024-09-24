@@ -21,7 +21,7 @@ export type FloatingProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
   VariantProps<typeof floatingVariants> & {};
 
 const Floating = React.forwardRef<HTMLButtonElement, FloatingProps>(
-  ({ className, variant, type, ...props }, ref) => {
+  ({ className, variant, ...props }, ref) => {
     return (
       <button
         type="button"
