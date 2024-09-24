@@ -5,13 +5,14 @@
 3. [**주요 기능**](#3)
 4. [**아키텍처**](#4)
 5. [**팀 소개**](#5)
-6. [**폴더 구조**](#6)
+6. [**성능 최적화**](#6)
+7. [**폴더 구조**](#7)
 
 <div id="1"></div>
 
 ## 📌 프로젝트 소개
 
-![main](https://github.com/WePlanPlans/WPP_FE/assets/39702832/6b64523f-d3e9-4de2-b23b-a7bd35d0a4b8)
+![main](https://github.com/user-attachments/assets/dc282e55-adee-413a-a058-a53d95bf0dde)
 
 - **소개**
 
@@ -40,7 +41,6 @@
 
 <div style="display: flex; gap:5px;">
   <img src="https://img.shields.io/badge/pnpm-%234a4a4a.svg?style=for-the-badge&logo=pnpm&logoColor=f69220" />
-
   <img src="https://img.shields.io/badge/github-181717?style=for-the-badge&logo=github&logoColor=white" />
   <img src="https://img.shields.io/badge/git-F05032?style=for-the-badge&logo=git&logoColor=white" />
   <img src="https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white" />
@@ -53,15 +53,18 @@
   <img src="https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white" />
 <img src="https://img.shields.io/badge/zustand-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB"/>
   <img src="https://img.shields.io/badge/-Tanstack%20Query-FF4154?style=for-the-badge&logo=react%20query&logoColor=white">
-  <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white" />
-
 </div>
 
 <div style="display: flex; gap:5px;">
+  <img src="https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white" />
 <img src="https://img.shields.io/badge/Puppeteer-2E8555?style=for-the-badge&logo=Puppeteer&logoColor=white" />  
   <img src="https://img.shields.io/badge/NextAuth-181717?style=for-the-badge&logo=nextdns&logoColor=white" />
   <img src="https://img.shields.io/badge/octokit-181717?style=for-the-badge&logo=github&logoColor=white" />
 </div>
+
+### Generative AI
+
+   <img src="https://img.shields.io/badge/llama3-white?style=for-the-badge&logo=meta&logoColor=black" />
 
 ### Database
 
@@ -83,21 +86,68 @@
 
 ## 📌 주요 기능
 
-### 1. 코드 분석 기능
+### 1. 취약점 코드 검사 및 분석 기능
 
-- 로그인 사용자가 선택한 github 레포지토리의 코드 취약점 분석
-- 레포지토리 전체 검사 / 특정 파일 검사 중 선택 가능
-- 검사 진행 상황과 결과 요약 실시간으로 확인 가능
+#### 1.1. 로그인 사용자가 선택한 github 레포지토리의 코드 취약점 분석
+
+![image](https://github.com/user-attachments/assets/e068a4e4-82a2-4239-97c6-716a8dd44d1b)
+
+### 1.2. 코드 취약점 분석 기능
+
+#### 1.2.1. 레포지토리 전체 검사
+
+![image](https://github.com/user-attachments/assets/658f478a-b5b1-4d20-86c1-a00cf9114563)
+
+#### 1.2.2. 특정 파일 검사 중 선택 가능
+
+![image](https://github.com/user-attachments/assets/b8b9f9e5-318c-4e21-a98e-689ce61ca68f)
+
+### 1.3. 검사 진행 상황과 결과 요약 실시간으로 확인 가능
+
+![image](https://github.com/user-attachments/assets/3e21e98b-cebc-474d-a2c8-cbcb488fe467)
+![image](https://github.com/user-attachments/assets/d470cafc-e0e4-414f-bf24-ec58f024d2de)
 
 ### 2. 보안 취약점 DB
 
-- 최신 보안 취약점 관련 기사(CNNVD, CERT/CC 크롤링 데이터)를 확인 ㄱ
-- 조회수가 높은 게시글의 경우 HOT 라벨링, 48시간 이내 가져온 게시글은 NEW 라벨링
-- 선택한 라벨(HOT / NEW)에 따른 게시글 필터링하여 출력
-- 게시글 검색 및 조회 기능 제공
-- 정시마다 검색 횟수가 많은 상위 10개 검색어 표시 (실시간 Topic)
-- 게시글 스크랩과 공유 기능 제공
-- 게시글 상세 페이지 하단에 최신 게시글 추천 목록 표시
+#### 2.1. 크롤링한 보안 취약점 기사 제공
+
+#### 2.1.1. 로그인 전
+
+![image](https://github.com/user-attachments/assets/9bca259b-5a33-4926-a477-00224a1f01f9)
+
+#### 2.1.2. 로그인 후
+
+- 인기 게시글, 최신 게시글 필터 기능
+- 매 정시에 상위 10개 인기 검색어 표시
+  ![image](https://github.com/user-attachments/assets/6d1d7496-9607-473d-9043-710a05c0c7ab)
+
+#### 2.2. 게시글 조회 기능
+
+- [CNNVD](https://www.cnnvd.org.cn/home/childHome) 및 [CERT/CC](https://www.kb.cert.org/vuls/)에서 크롤링한 보안 취약점 기사 제공
+- 최신 게시글 기반 추천 기능
+  ![image](https://github.com/user-attachments/assets/5f5e2674-5c20-4ab6-b7f6-4fda50dbd883)
+
+- 게시글 스크랩 기능
+  ![image](https://github.com/user-attachments/assets/ec6f14d7-15e3-4c35-8d2b-2878b6158bf7)
+
+- 게시물 공유 기능
+  ![image](https://github.com/user-attachments/assets/3d1511e7-ac93-4bd7-8661-8ade1905c55f)
+
+### 3. Profile Information
+
+#### 3.1. 깃허브 연동 계정 확인 및 로그아웃
+
+![image](https://github.com/user-attachments/assets/9d8666cf-8cb6-4f73-83b0-3e0f0b2fda52)
+![image](https://github.com/user-attachments/assets/d8515336-40c8-4f0a-a4a1-369a92d51ee4)
+
+#### 3.2. 스크랩한 게시글 조회
+
+![image](https://github.com/user-attachments/assets/2689353e-b399-47cd-9841-4c3218dd0d4a)
+
+#### 3.3. 고객센터 문의 메일 발송
+
+![image](https://github.com/user-attachments/assets/4e95e8ec-fcee-4da4-b436-2f530c0674eb)
+![image](https://github.com/user-attachments/assets/e5fa003e-a3e1-4158-ba69-cc7d929b1914)
 
 <div id="4"></div>
 
@@ -107,12 +157,22 @@
 
 ## 📌 팀 소개
 
-|                 이름                  |        <div align="center">개발 내용</div>         |
-| :-----------------------------------: | :------------------------------------------------: |
-| [심정아](https://github.com/joanShim) |       취약점 분석 검사 기능, 깃허브 API 연동       |
-|              [김다솔]()               |                 취약점 DB 웹크롤링                 |
-|              [유지수]()               | 취약점 분석 검사 기능, 프롬프팅, 깃허브 SNS 로그인 |
-|              [유의진]()               |        취약점 DB 웹크롤링, 웹 크롤링 자동화        |
+|                 이름                  |                     <div align="center">개발 내용</div>                     |
+| :-----------------------------------: | :-------------------------------------------------------------------------: |
+| [심정아](https://github.com/joanShim) | 프로젝트 세팅, 깃허브 API 연동, 레포지토리 파일 리스트, 파일 선택, 코드뷰어 |
+|  [김다솔](https://github.com/sol-ee)  |     파이어베이스 환경설정, 취약점 DB 웹크롤링, 공유기능                    |
+|              [유지수](https://github.com/jadugamja )               |             취약점 분석 검사 기능, 생성형 AI 프롬프팅, 깃허브 SNS 로그인              |
+|              [유의진](https://github.com/timetam24)               |                    취약점 DB 웹크롤링, 웹 크롤링 자동화                     |
+
+<div id="6"></div>
+
+## 📌 성능 최적화
+
+|BEFORE|AFTER|
+|:---:|:---:|
+|<img src="https://github.com/user-attachments/assets/9c1ead14-31d3-42a4-9e91-e59dd4346bfa" alt="성능최적화 이전"/>|<img src="https://cdn.discordapp.com/attachments/1268130742664171592/1288002574342946846/2024-09-24_2.02.18.png?ex=66f3995f&is=66f247df&hm=2a93e20b7ba596743728d3e7d8db5a8bba5999752c9e089aae67d6d81409e973&" alt="성능최적화 이후"/>|
+
+<!-- 리팩토링 세부내용 추가 -->
 
 <div id="7"></div>
 
