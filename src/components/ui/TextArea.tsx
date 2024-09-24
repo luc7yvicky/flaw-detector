@@ -30,7 +30,7 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
       <textarea
         onBlur={onBlurTextArea}
         className={cn(
-          "h-[220px] w-full resize-none rounded-lg border p-3 text-lg font-medium text-gray-dark outline-none placeholder:font-medium disabled:cursor-not-allowed disabled:bg-bggray-light",
+          "h-[220px] w-full resize-none rounded-lg border p-3 text-lg font-medium text-gray-dark outline-none placeholder:font-medium placeholder:text-gray-light disabled:cursor-not-allowed disabled:bg-bggray-light",
           className,
           isValid
             ? "bg-purple-light focus:bg-transparent"
@@ -38,8 +38,8 @@ const TextArea = React.forwardRef<HTMLTextAreaElement, TextAreaProps>(
               ? "bg-red-light"
               : "bg-transparent focus:bg-transparent",
           isErrored
-            ? "border-accent-red placeholder:text-accent-red"
-            : "border-line-default placeholder:text-gray-light focus:border-primary-500",
+            ? "border-accent-red"
+            : "border-line-default focus:border-primary-500",
         )}
         ref={ref}
         {...props}
