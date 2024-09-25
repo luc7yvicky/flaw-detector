@@ -153,6 +153,8 @@
 
 ## 📌 아키텍처
 
+![image](https://github.com/user-attachments/assets/5a63edf0-3b6f-4f8d-9dd3-95b5ca403f3b)
+
 <div id="5"></div>
 
 ## 📌 팀 소개
