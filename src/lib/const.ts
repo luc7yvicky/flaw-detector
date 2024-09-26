@@ -45,6 +45,3 @@ export const WEB_CRAWLING_CERT_CC_API_URL = `${BASE_URL}/api/web-crawling/cert-c
 export const WEB_CRAWLING_CNNVD_API_URL = `${BASE_URL}/api/web-crawling/cnnvd`;
 
 export const FILE_INSPECTION_STATUS_KEY = "fileStatuses";
-
-export const GOOGLE_APPLICATION_CREDENTIALS =
-  process.env.GOOGLE_APPLICATION_CREDENTIALS;
