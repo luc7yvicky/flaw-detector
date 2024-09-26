@@ -84,7 +84,7 @@ export default async function VulDBPage() {
     const top3RecentPosts = sortedPostsByDate.slice(0, 3);
 
     return (
-      <div className="relative mx-auto mb-[1.188rem] mt-[1.688rem] flex min-h-[2445px] w-[82.063rem] flex-col gap-[4.75rem] px-[1rem]">
+      <div className="relative mx-auto mt-[1.688rem] flex min-h-[147rem] w-full max-w-[82.063rem] flex-col gap-[4.75rem] overflow-hidden px-[1rem]">
         <VulDBImageCardContainer posts={top3RecentPosts} />
         <Search initialPosts={postsWithChips} postsWithScrap={postsWithScrap} />
       </div>
