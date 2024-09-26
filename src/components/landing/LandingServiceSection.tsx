@@ -4,13 +4,13 @@ import ServiceCard from "./ServiceCard";
 import { motion } from "framer-motion";
 
 export default function LandingServiceSection() {
-  const cards = [
-    { variant: "security" },
-    { variant: "critical" },
-    { variant: "realtime" },
-    { variant: "privacy" },
-    { variant: "efficiency" },
-    { variant: "quick" },
+  const cardVariants = [
+    "security",
+    "critical",
+    "realtime",
+    "privacy",
+    "efficiency",
+    "quick",
   ];
 
   return (
@@ -35,12 +35,12 @@ export default function LandingServiceSection() {
             }}
           >
             {Array(2)
-              .fill(cards)
+              .fill(cardVariants)
               .flat()
               .map((card, index) => (
                 <ServiceCard
                   key={index}
-                  variant={card.variant}
+                  variant={card}
                   className="w-[339px] flex-shrink-0"
                 />
               ))}
