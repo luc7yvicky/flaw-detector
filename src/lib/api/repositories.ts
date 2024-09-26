@@ -1,4 +1,5 @@
-import { BASE_URL, OCTOKIT_TOKEN } from "@/lib/const";
+import { auth } from "@/auth";
+import { BASE_URL } from "@/lib/const";
 import { Mode } from "@/stores/useDetectedModeStore";
 import { FileResultProps, FileStatus } from "@/types/file";
 import { detectedStatus, RepoContentItem, RepoListData } from "@/types/repo";
@@ -16,9 +17,29 @@ type RepoListRawData = {
   // };
 };
 
-const octokit = new Octokit({
-  auth: OCTOKIT_TOKEN,
-});
+/**
+ * 세션에 저장되어 있는 토큰을 가져옵니다.
+ */
+const getAccessToken = async () => {
+  const session = await auth();
+
+  if (!session) {
+    throw new Error("잘못된 접근입니다.");
+  }
+
+  return session.accessToken;
+};
+
+/**
+ * Octokit 인스턴스 초기화
+ */
+const initOctokit = async () => {
+  const OCTOKIT_TOKEN = await getAccessToken();
+
+  return new Octokit({
+    auth: OCTOKIT_TOKEN,
+  });
+};
 
 export async function fetchCodes(
   owner: string,
@@ -30,6 +51,7 @@ export async function fetchCodes(
   }
 
   try {
+    const octokit = await initOctokit();
     const response = await octokit.repos.getContent({
       owner,
       repo,
@@ -59,11 +81,11 @@ export async function getRepoLists(username: string) {
     throw new Error("GitHub username이 존재하지 않습니다");
   }
   try {
+    const octokit = await initOctokit();
     const { data } = await octokit.request("GET /users/{username}/repos", {
       username: username,
       headers: {
         "X-GitHub-Api-Version": "2022-11-28",
-        Authorization: `token ${OCTOKIT_TOKEN}`, // Github API 요청 한도 초과로 임시 추가
       },
     });
 
@@ -124,6 +146,7 @@ export async function fetchRepoContents(
   }
 
   try {
+    const octokit = await initOctokit();
     const response = await octokit.rest.repos.getContent({
       owner: username,
       repo: repo,
@@ -215,6 +238,7 @@ function isValidTreeItem(
 
 // 기본 브랜치 가져오기
 async function getDefaultBranch(owner: string, repo: string): Promise<string> {
+  const octokit = await initOctokit();
   const { data } = await octokit.rest.repos.get({ owner, repo });
   return data.default_branch;
 }
@@ -228,6 +252,7 @@ export async function getRepoTree(
     if (!branch) {
       branch = await getDefaultBranch(owner, repo);
     }
+    const octokit = await initOctokit();
 
     // 1. Get the latest commit SHA of the specified branch
     const { data: refData } = await octokit.git.getRef({
