@@ -47,13 +47,13 @@ export default async function MyPage() {
 
         <section className="flex flex-col gap-y-20">
           <div className="flex flex-col gap-y-9 text-2xl font-medium leading-[1.816rem] text-gray-dark">
-            <Link href="/me/scraps">
+            <Link href="/me/scraps" className="w-fit">
               <span>스크랩</span>
             </Link>
-            <Link href="/me/settings">
+            <Link href="/me/settings" className="w-fit">
               <span>설정</span>
             </Link>
-            <Link href="/me/contact">
+            <Link href="/me/contact" className="w-fit">
               <span>문의하기</span>
             </Link>
           </div>
