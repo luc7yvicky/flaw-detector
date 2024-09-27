@@ -1,31 +1,33 @@
 "use client";
-import { cn } from "@/lib/utils";
 import { IconBug } from "../ui/Icons";
 import { motion, SVGMotionProps } from "framer-motion";
 
 export default function LandingFeatureSection() {
   return (
     <section className="flex-end-center relative max-h-screen min-h-dvh w-full overflow-hidden bg-primary-50 bg-cover bg-center text-primary-500">
-      <article className="absolute left-[12rem] h-[29.5rem] w-[41rem]">
-        <h2 className="flex-col-start-center w-full space-y-3 text-[5rem] font-bold leading-[6.051rem] tracking-[-0.01em]">
-          <span>쉽고 편하게</span>
-          <span>취약점을 발견하다</span>
-        </h2>
-        <p className="mt-[3.75rem] flex flex-col space-y-3 text-[2rem] font-bold leading-[2.421rem] tracking-[-0.01em] text-gray-dark">
-          <span>코드보안</span>
-          <span>어떻게 관리하시나요?</span>
-        </p>
-        <p className="flex-col-start-center mb-2 mt-7 space-y-2 text-[1.25rem] leading-[1.512rem] tracking-[-0.01em] text-gray-default">
-          <span>플로디텍터는 안전한 소프트웨어 개발을 위한 필수 도구로,</span>
-          <span>코드의 보안 취약점을 사전에 수정함으로써</span>
-          <span>개발자들에게 편의와 안전한 개발 환경을 제공합니다.</span>
-        </p>
-      </article>
-
-      <div className="absolute right-[18.337rem] z-10 h-[23.875rem] w-[23.788rem] gap-[0.625rem] rounded-lg bg-white p-[5.813rem_5.938rem] shadow-[0rem_3.75rem_3.75rem_-1.5rem_#6100FF40]">
-        <IconBug />
+      <div className="z-10 mx-auto flex w-full max-w-screen-xl items-center justify-between p-4">
+        <article className="h-auto w-auto max-w-[55%]">
+          <h2 className="flex-col-start-center w-full space-y-3 whitespace-nowrap text-[3rem] font-bold leading-[6.051rem] tracking-[-0.01em] md:text-[4rem] lg:text-[5rem]">
+            <span>쉽고 편하게</span>
+            <span>취약점을 발견하다</span>
+          </h2>
+          <p className="mt-[3.75rem] flex flex-col space-y-3 text-[1.5rem] font-bold leading-[2.421rem] tracking-[-0.01em] text-gray-dark lg:text-[2rem]">
+            <span>코드보안</span>
+            <span>어떻게 관리하시나요?</span>
+          </p>
+          <p className="flex-col-start-center mb-2 mt-7 space-y-2 text-[1rem] leading-[1.512rem] tracking-[-0.01em] text-gray-default lg:text-[1.25rem]">
+            <span>플로디텍터는 안전한 소프트웨어 개발을 위한 필수 도구로,</span>
+            <span>코드의 보안 취약점을 사전에 수정함으로써</span>
+            <span>개발자들에게 편의와 안전한 개발 환경을 제공합니다.</span>
+          </p>
+        </article>
+        <div className="h-auto w-auto">
+          <div className="rounded-lg bg-white p-8 shadow-lg">
+            <IconBug />
+          </div>
+        </div>
       </div>
-      <SquareBackground className="absolute left-[70rem]" />
+      <SquareBackground className="absolute right-[-25%] h-[50vw] w-[50vw]" />
     </section>
   );
 }
