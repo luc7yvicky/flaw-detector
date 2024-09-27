@@ -75,21 +75,6 @@ const config: Config = {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-100%)" },
         },
-        rollAroundY: {
-          "0%": { transform: "translate(195px, 0px) rotate(0deg)" },
-          "25%": {
-            transform: "translate(145px, 30px) rotate(-90deg)",
-          },
-          "50%": {
-            transform: "translate(115px, 60px) rotate(-180deg)",
-          },
-          "75%": {
-            transform: "translate(145px, 30px) rotate(-270deg)",
-          },
-          "100%": {
-            transform: "translate(195px, 0px) rotate(-360deg)",
-          },
-        },
         round: {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
@@ -97,7 +82,6 @@ const config: Config = {
       },
       animation: {
         "scroll-left": "scrollLeft 10s linear infinite",
-        "roll-around-y": "rollAroundY 5s linear infinite",
         round: "round 1.7s infinite ease",
       },
     },
