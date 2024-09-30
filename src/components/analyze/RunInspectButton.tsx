@@ -33,8 +33,9 @@ export default function RunInspectButton({
     isInspectionRunning,
     setIsInspectionRunning,
   } = useFileProcessStore(useShallow((state) => state));
-  const selectedFilesCount = getSelectedFilesCount();
   const setCurrentFile = useFileViewerStore((state) => state.setCurrentFile);
+
+  const selectedFilesCount = getSelectedFilesCount();
 
   const {
     data: repoTree,

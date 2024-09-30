@@ -38,8 +38,8 @@ function FileTreeItem({
     useCallback((state) => state.currentFile === path, [path]),
   );
 
-  const isCheckboxShow = useFileSelectionStore((state) =>
-    state.isCheckboxShow(),
+  const isCheckboxVisible = useFileSelectionStore((state) =>
+    state.isCheckboxVisible
   );
 
   const isFileBookmarked = useFileBookmarkStore(
@@ -153,7 +153,7 @@ function FileTreeItem({
                 path={path}
                 name={name}
                 isImage={isImage}
-                isCheckboxShow={isCheckboxShow}
+                isCheckboxShow={isCheckboxVisible}
               />
             )}
 

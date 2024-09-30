@@ -26,16 +26,16 @@ export default function FileList({
   } = useQuery({
     queryKey: ["repoTree", username, repo],
     queryFn: () => getRepoTree(username, repo),
-    enabled: false, 
-    retry: 1, 
+    enabled: false,
+    retry: 1,
   });
 
   useEffect(() => {
     refetchRepoTree();
   }, [refetchRepoTree]);
 
-  const toggleCheckboxShow = useFileSelectionStore(
-    (state) => state.toggleCheckboxShow,
+  const toggleCheckboxVisibility = useFileSelectionStore(
+    (state) => state.toggleCheckboxVisibility,
   );
 
   const handleSortChange = (option: SortOption) => {
@@ -49,7 +49,10 @@ export default function FileList({
         <div className="flex w-full items-center justify-between">
           <h3>Files</h3>
           <div className="flex gap-3.5">
-            <button onClick={toggleCheckboxShow} title="파일 다중 선택 활성화">
+            <button
+              onClick={toggleCheckboxVisibility}
+              title="파일 다중 선택 활성화"
+            >
               <IconMultiSelect />
             </button>
             <button className="relative" title="리스트 정렬 옵션">
