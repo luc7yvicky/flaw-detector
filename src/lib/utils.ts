@@ -142,6 +142,7 @@ export const getLanguage = (filename: string) => {
     case "bmp":
     case "tiff":
     case "svg":
+    case "ico":
       return "image";
     // 확장자-언어 추가 가능
     default:
@@ -214,6 +215,7 @@ export const ignoredFiles = [
   "*.png",
   "*.gif",
   "*.svg",
+  "*.ico",
 
   // 압축 파일
   "*.zip",
