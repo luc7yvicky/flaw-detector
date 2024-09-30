@@ -1,7 +1,13 @@
-import { RepoContentItem } from "@/types/repo";
-import FileListItem from "./FileListItem";
+import { RepoTree } from "@/lib/api/repositories";
 import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
+import FileTreeItem from "./FileTreeItem";
+
+type FileTreeProps = {
+  data: RepoTree;
+  repo: string;
+  sortOption?: "file" | "folder" | "bookmark";
+};
 
 type BookmarkedFile = {
   name: string;
@@ -11,21 +17,9 @@ type BookmarkedFile = {
   isBookmarked: true;
 };
 
-export default function FileList({
-  structure,
-  onToggle,
-  depth = 0,
-  username,
-  repo,
-  sortOption,
-}: {
-  structure: RepoContentItem[];
-  onToggle: (item: RepoContentItem) => void;
-  depth?: number;
-  username: string;
-  repo: string;
-  sortOption?: "file" | "folder" | "bookmark";
-}) {
+function FileTree({ data, repo, sortOption }: FileTreeProps) {
+  const rootItems = data.tree.filter((item) => !item.path.includes("/"));
+
   const fileBookmarks = useFileBookmarkStore((state) =>
     state.fileBookmarks.filter((bookmark) => bookmark.repoName === repo),
   );
@@ -43,22 +37,25 @@ export default function FileList({
     });
   }, [fileBookmarks]);
 
-  const sortedStructure = useMemo(() => {
-    return [...structure].sort((a, b) => {
+  const sortedItems = useMemo(() => {
+    return [...rootItems].sort((a, b) => {
       if (sortOption === "folder" || sortOption === "bookmark") {
+        // 폴더 우선 정렬
         if (a.type === "dir" && b.type !== "dir") return -1;
         if (a.type !== "dir" && b.type === "dir") return 1;
+      } else if (sortOption === "file") {
+        // 파일 우선 정렬
+        if (a.type !== "dir" && b.type === "dir") return -1;
+        if (a.type === "dir" && b.type !== "dir") return 1;
       }
-      if (sortOption === "file") {
-        if (a.type === "file" && b.type !== "file") return -1;
-        if (a.type !== "file" && b.type === "file") return 1;
-      }
+
+      // 이름순 정렬
       return a.name.localeCompare(b.name);
     });
-  }, [structure, sortOption]);
+  }, [rootItems, sortOption]);
 
   return (
-    <ul className="max-h-[calc(100dvh-12rem)] w-full overflow-x-hidden overflow-y-scroll scrollbar-hide">
+    <ul className="">
       {sortOption === "bookmark" && (
         <>
           <li className="flex justify-between border-b border-line-default px-4 py-2 text-sm text-gray-500">
@@ -66,12 +63,11 @@ export default function FileList({
           </li>
           {bookmarkedFiles.length > 0 ? (
             bookmarkedFiles.map((item) => (
-              <FileListItem
+              <FileTreeItem
                 key={item.path}
                 item={item}
-                onToggle={onToggle}
-                depth={0}
-                username={username}
+                level={0}
+                allItems={data.tree}
                 repo={repo}
               />
             ))
@@ -88,16 +84,17 @@ export default function FileList({
           )}
         </>
       )}
-      {sortedStructure.map((item) => (
-        <FileListItem
+      {sortedItems.map((item) => (
+        <FileTreeItem
           key={item.path}
           item={item}
-          onToggle={onToggle}
-          depth={depth}
-          username={username}
+          level={0}
+          allItems={data.tree}
           repo={repo}
         />
       ))}
     </ul>
   );
 }
+
+export default React.memo(FileTree);

@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import CodeContainer from "@/components/analyze/CodeContainer";
-import FileListServer from "@/components/analyze/FileListServer";
+import FileList from "@/components/analyze/FileTree/FileList";
 import RunInspectButton from "@/components/analyze/RunInspectButton";
 import {
   Status,
@@ -28,7 +28,7 @@ export default async function RepoPage({
   return (
     <section className="mx-auto mb-7 h-full w-full min-w-[64rem] max-w-[110rem] px-[1rem]">
       <TitleBar title={repo} />
-      <div className="flex h-full gap-7 min-h-dvh">
+      <div className="flex h-full min-h-dvh gap-7">
         <div className="flex w-full max-w-[16rem] flex-col gap-7">
           <RunInspectButton repo={repo} username={username} />
           <Status>
@@ -36,7 +36,7 @@ export default async function RepoPage({
             <StatusWarning>{counts.warning}</StatusWarning>
             <StatusSuccess>{counts.success}</StatusSuccess>
           </Status>
-          <FileListServer repo={repo} username={username} />
+          <FileList repo={repo} username={username} />
         </div>
         <CodeContainer username={username} repo={repo} />
       </div>
