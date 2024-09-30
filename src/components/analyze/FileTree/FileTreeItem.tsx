@@ -42,6 +42,11 @@ function FileTreeItem({
     (state) => state.isCheckboxVisible,
   );
 
+  const toggleFileSelection = useFileSelectionStore(
+    (state) => state.toggleFileSelection,
+  );
+  const clearSelection = useFileSelectionStore((state) => state.clearSelection);
+
   const isFileBookmarked = useFileBookmarkStore(
     (state) => state.isFileBookmarked,
   );
@@ -70,9 +75,23 @@ function FileTreeItem({
     if (isFolder) {
       toggleFolder();
     } else if (type === "file") {
-      setCurrentFile(path);
+      if (isCurrentFile) {
+        setCurrentFile(null);
+      } else {
+        setCurrentFile(path);
+      }
+      if (!isCheckboxVisible) {
+        if (isCurrentFile) {
+          // 현재 파일 선택 해제
+          clearSelection();
+        } else {
+          // 새 파일 선택
+          clearSelection();
+          toggleFileSelection(path, name, size || 0);
+        }
+      }
     }
-  }, []);
+  }, [isCurrentFile, path]);
 
   const handleBookmark = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {

@@ -44,7 +44,6 @@ export const useFileSelectionStore = create<FileSelectionState>((set, get) => ({
 export const getSelectedFilesCount = () =>
   useFileSelectionStore.getState().selectedFiles.size;
 
-// initializeSelectedFilesStatus를 외부 함수로 분리
 export const initializeSelectedFilesStatus = () => {
   const selectedFiles = useFileSelectionStore.getState().getSelectedFiles();
   useFileProcessStore.getState().resetFileStatuses();

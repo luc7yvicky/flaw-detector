@@ -34,9 +34,15 @@ export default function FileList({
     refetchRepoTree();
   }, [refetchRepoTree]);
 
+  const clearSelection = useFileSelectionStore((state) => state.clearSelection);
   const toggleCheckboxVisibility = useFileSelectionStore(
     (state) => state.toggleCheckboxVisibility,
   );
+
+  const handleToggleMultiSelection = () => {
+    toggleCheckboxVisibility();
+    clearSelection();
+  }
 
   const handleSortChange = (option: SortOption) => {
     setSortOption(option);
@@ -50,7 +56,7 @@ export default function FileList({
           <h3>Files</h3>
           <div className="flex gap-3.5">
             <button
-              onClick={toggleCheckboxVisibility}
+              onClick={handleToggleMultiSelection}
               title="파일 다중 선택 활성화"
             >
               <IconMultiSelect />
