@@ -1,5 +1,6 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { InspectionList, RepoTree, RepoTreeItem } from "./api/repositories";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -244,6 +245,23 @@ export function isIgnoredFile(path: string): boolean {
     }
     return path === pattern || path.includes(`/${pattern}`);
   });
+}
+
+export function processRepoTree(repoTree: RepoTree): InspectionList {
+  const tree: RepoTreeItem[] = [];
+  const ignoredFiles: RepoTreeItem[] = [];
+  let ignoredCount = 0;
+
+  repoTree.tree.forEach((item) => {
+    if (isIgnoredFile(item.path)) {
+      ignoredFiles.push(item);
+      ignoredCount++;
+    } else {
+      tree.push(item);
+    }
+  });
+
+  return { tree, ignoredFiles, ignoredCount };
 }
 
 export const formatFileSize = (size: number | undefined): string => {

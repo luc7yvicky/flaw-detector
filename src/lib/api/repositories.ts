@@ -190,11 +190,16 @@ type GitHubTreeItem = {
 export type RepoTreeItem = {
   name: string;
   path: string;
-  type: "file" | "directory";
+  type: "file" | "dir";
   size?: number;
-  sha: string;
+  sha?: string;
 };
-export type RepoTreeResult = {
+
+export type RepoTree = {
+  tree: RepoTreeItem[];
+};
+
+export type InspectionList = {
   tree: RepoTreeItem[];
   ignoredFiles: RepoTreeItem[];
   ignoredCount: number;
@@ -222,14 +227,13 @@ async function getDefaultBranch(owner: string, repo: string): Promise<string> {
 export async function getRepoTree(
   owner: string,
   repo: string,
-  branch?: string,
-): Promise<RepoTreeResult> {
+  branch?: string
+): Promise<RepoTree> {
   try {
     if (!branch) {
       branch = await getDefaultBranch(owner, repo);
     }
 
-    // 1. Get the latest commit SHA of the specified branch
     const { data: refData } = await octokit.git.getRef({
       owner,
       repo,
@@ -237,7 +241,6 @@ export async function getRepoTree(
     });
     const commitSha = refData.object.sha;
 
-    // 2. Get the tree SHA from the commit
     const { data: commitData } = await octokit.git.getCommit({
       owner,
       repo,
@@ -245,7 +248,6 @@ export async function getRepoTree(
     });
     const treeSha = commitData.tree.sha;
 
-    // 3. Get the full tree recursively
     const { data: treeData } = await octokit.git.getTree({
       owner,
       repo,
@@ -253,39 +255,46 @@ export async function getRepoTree(
       recursive: "1",
     });
 
-    const processedTree: RepoTreeItem[] = [];
-    const ignoredFiles: RepoTreeItem[] = [];
+    const processedTree: RepoTreeItem[] = treeData.tree
+      .filter(isValidTreeItem)
+      .map((item) => ({
+        name: item.path.split("/").pop() || item.path,
+        path: item.path,
+        type: item.type === "blob" ? "file" : "dir",
+        size: item.size,
+        sha: item.sha,
+      }));
 
-    // 4. Process and filter the tree data
-    treeData.tree.forEach((item) => {
-      if (isValidTreeItem(item)) {
-        const processedItem: RepoTreeItem = {
-          name: item.path.split("/").pop() || item.path,
-          path: item.path,
-          type: item.type === "blob" ? "file" : "directory",
-          size: item.size,
-          sha: item.sha,
-        };
-
-        if (isIgnoredFile(item.path)) {
-          ignoredFiles.push(processedItem);
-        } else {
-          processedTree.push(processedItem);
-        }
-      }
-    });
-
-    return {
-      tree: processedTree,
-      ignoredFiles,
-      ignoredCount: ignoredFiles.length,
-    };
+    return { tree: processedTree };
   } catch (error) {
     console.error("Error fetching repo tree:", error);
     throw new Error(
-      `레포지토리 트리를 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
+      `레포지토리 트리를 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`
     );
   }
+}
+
+export async function getInspectionList(
+  owner: string,
+  repo: string,
+  branch?: string
+): Promise<InspectionList> {
+  const repoTree = await getRepoTree(owner, repo, branch);
+  
+  const inspectionList = repoTree.tree.reduce<InspectionList>(
+    (acc, item) => {
+      if (isIgnoredFile(item.path)) {
+        acc.ignoredFiles.push(item);
+        acc.ignoredCount += 1;
+      } else {
+        acc.tree.push(item);
+      }
+      return acc;
+    },
+    { tree: [], ignoredFiles: [], ignoredCount: 0 }
+  );
+
+  return inspectionList;
 }
 
 // 취약점 검사 결과 저장 (파일 단위)
