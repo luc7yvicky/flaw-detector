@@ -12,6 +12,7 @@ type FileTreeProps = {
 type BookmarkedFile = {
   name: string;
   path: string;
+  size?: number;
   type: "file";
   fileContentStatus: "initial";
   isBookmarked: true;

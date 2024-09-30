@@ -179,12 +179,12 @@ export async function fetchRootStructure(username: string, repo: string) {
 
 // GitHub API 응답에 맞춘 타입 정의
 type GitHubTreeItem = {
-  path?: string;
-  mode?: string;
-  type?: string;
-  sha?: string;
-  size?: number;
-  url?: string;
+  path: string;
+  mode: string;
+  type: string;
+  sha: string;
+  size: number;
+  url: string;
 };
 
 export type RepoTreeItem = {
@@ -206,14 +206,13 @@ export type InspectionList = {
 };
 
 // 타입 가드 함수
-function isValidTreeItem(
-  item: GitHubTreeItem,
-): item is Required<Pick<GitHubTreeItem, "path" | "type" | "sha">> &
-  Pick<GitHubTreeItem, "size"> {
+function isValidTreeItem(item: any): item is GitHubTreeItem {
   return (
     typeof item.path === "string" &&
+    typeof item.mode === "string" &&
     typeof item.type === "string" &&
     typeof item.sha === "string" &&
+    typeof item.url === "string" &&
     (item.size === undefined || typeof item.size === "number")
   );
 }
@@ -227,7 +226,7 @@ async function getDefaultBranch(owner: string, repo: string): Promise<string> {
 export async function getRepoTree(
   owner: string,
   repo: string,
-  branch?: string
+  branch?: string,
 ): Promise<RepoTree> {
   try {
     if (!branch) {
@@ -269,7 +268,7 @@ export async function getRepoTree(
   } catch (error) {
     console.error("Error fetching repo tree:", error);
     throw new Error(
-      `레포지토리 트리를 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`
+      `레포지토리 트리를 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
     );
   }
 }
@@ -277,10 +276,10 @@ export async function getRepoTree(
 export async function getInspectionList(
   owner: string,
   repo: string,
-  branch?: string
+  branch?: string,
 ): Promise<InspectionList> {
   const repoTree = await getRepoTree(owner, repo, branch);
-  
+
   const inspectionList = repoTree.tree.reduce<InspectionList>(
     (acc, item) => {
       if (isIgnoredFile(item.path)) {
@@ -291,7 +290,7 @@ export async function getInspectionList(
       }
       return acc;
     },
-    { tree: [], ignoredFiles: [], ignoredCount: 0 }
+    { tree: [], ignoredFiles: [], ignoredCount: 0 },
   );
 
   return inspectionList;

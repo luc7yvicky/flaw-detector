@@ -3,7 +3,11 @@
 import Button from "@/components/ui/Button";
 import { getRepoTree } from "@/lib/api/repositories";
 import { useFileProcessStore } from "@/stores/useFileProcessStore";
-import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
+import {
+  getSelectedFilesCount,
+  initializeSelectedFilesStatus,
+  useFileSelectionStore,
+} from "@/stores/useFileSelectionStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -21,12 +25,9 @@ export default function RunInspectButton({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scanType, setScanType] = useState<"selected" | "full">("selected");
   const [error, setError] = useState<string | null>(null);
-  const {
-    getSelectedFilesCount,
-    getSelectedFiles,
-    initializeSelectedFilesStatus,
-    resetFileSelection,
-  } = useFileSelectionStore(useShallow((state) => state));
+  const { getSelectedFiles, clearSelection } = useFileSelectionStore(
+    useShallow((state) => state),
+  );
   const {
     resetFileStatuses,
     processFiles,
@@ -82,7 +83,7 @@ export default function RunInspectButton({
       setError("파일 처리 중 오류가 발생했습니다.");
     } finally {
       setIsInspectionRunning(false);
-      resetFileSelection();
+      clearSelection();
     }
   };
 
@@ -135,12 +136,13 @@ export default function RunInspectButton({
   const renderFileList = () => {
     if (scanType === "selected") {
       const selectedFiles = getSelectedFiles();
+      console.log(selectedFiles);
       return (
         <List
-          items={selectedFiles.map(({ path, name }) => ({
+          items={selectedFiles.map(({ path, name, size }) => ({
             name,
             path,
-            size: undefined,
+            size,
           }))}
           totalFileCount={selectedFilesCount}
           ignoredCount={0}

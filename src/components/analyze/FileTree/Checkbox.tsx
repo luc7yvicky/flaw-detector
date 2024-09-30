@@ -5,12 +5,14 @@ import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
 interface CheckboxProps {
   path: string;
   name: string;
+  size: number;
   isImage: boolean;
   isCheckboxShow: boolean;
 }
 function Checkbox({ 
   path, 
   name, 
+  size,
   isImage, 
   isCheckboxShow 
 }: CheckboxProps) {
@@ -22,7 +24,7 @@ function Checkbox({
   const handleCheckboxChange = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     if (!isImage) {
-      toggleFileSelection(path, name);
+      toggleFileSelection(path, name, size);
     }
   }, [isImage, toggleFileSelection, path, name]);
 
