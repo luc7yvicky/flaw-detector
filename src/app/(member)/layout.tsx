@@ -5,8 +5,6 @@ export default async function MemberLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   await redirectIfNotLoggedIn("/login");
   return (
-    <div className="flex-col-center relative mx-auto w-full">
-      {children}
-    </div>
+    <div className="flex-col-center relative mx-auto w-full">{children}</div>
   );
 }

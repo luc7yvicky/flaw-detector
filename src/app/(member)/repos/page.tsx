@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
-import BookmarkButton from "@/components/me/BookmarkButton";
 import Profile from "@/components/me/Profile";
-import RecentFilesButton from "@/components/me/RecentFilesButton";
+import RepoFilterButton from "@/components/me/RepoFilterButton";
 import RepoList from "@/components/me/RepoList";
 import { IconCaretLeft } from "@/components/ui/Icons";
 import TitleBar from "@/components/ui/TitleBar";
@@ -11,21 +10,31 @@ import Image from "next/image";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export default async function ReposPage() {
-  const session = await auth();
-  const username = session?.user?.username;
-
-  if (!username) {
-    return null;
-  }
-
+/**
+ * 깃허브 레포지토리 리스트 불러오기
+ * 
+ * @param username
+ * @returns {Promise<any>}
+ */
+const fetchRepoList = async (username: string): Promise<any> => {
   // 1. 깃허브에서 레포지토리 리스트 불러와서 저장
   await getRepoLists(username);
 
   // 2. DB에서 레포지토리 리스트 불러오기
   const params = new URLSearchParams();
   params.append("username", username);
-  const repos: RepoListData[] = await getRepoListFromDB(params);
+  return await getRepoListFromDB(params);
+};
+
+export default async function ReposPage() {
+  const session = await auth();
+  const username = session?.user?.username;
+
+  if (!username) {
+    throw new Error("잘못된 접근입니다.");
+  }
+
+  const repos: RepoListData[] = await fetchRepoList(username);
 
   return (
     <div className="mb-[8.536rem] flex w-full min-w-[64rem] max-w-[82.125rem] flex-col gap-y-[7.75rem]">
@@ -61,8 +70,8 @@ export default async function ReposPage() {
         </section>
 
         <section className="flex-between-center gap-x-[1.313rem]">
-          <RecentFilesButton />
-          <BookmarkButton />
+          <RepoFilterButton type="recent-files" />
+          <RepoFilterButton type="bookmark" />
         </section>
 
         <Suspense fallback={<div>Loading repos...</div>}>

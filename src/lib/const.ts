@@ -5,7 +5,7 @@ export const LLAMA_API_URL = process.env.LLAMA_API_URL;
 export const LLAMA_USERNAME = process.env.LLAMA_USERNAME;
 export const LLAMA_PASSWORD = process.env.LLAMA_PASSWORD;
 
-export const OCTOKIT_TOKEN = process.env.NEXT_PUBLIC_API_GITHUB_TOKEN;
+export const OCTOKIT_TOKEN = process.env.NEXT_PUBLIC_OCTOKIT_TOKEN;
 
 export const GITHUB_ID = process.env.AUTH_GITHUB_ID;
 export const GITHUB_SECRET = process.env.AUTH_GITHUB_SECRET;
@@ -31,6 +31,13 @@ export const NODEMAILER_AUTH_PASS = process.env.NODEMAILER_AUTH_PASS;
 export const ITEMS_PER_DB_PAGE = 5;
 export const ITEMS_PER_MY_PAGE = 12;
 export const PAGES_PER_GROUP = 10;
+
+export const NAME_VALIDATION_MESSAGE =
+  "이름은 공백 없이 2자 이상이어야 합니다.";
+export const EMAIL_VALIDATION_MESSAGE = "이메일 형식이 유효하지 않습니다.";
+export const MESSAGE_VALIDATION_MESSAGE = "메세지는 5자 이상이어야 합니다.";
+export const SERVER_ERROR_MESSAGE =
+  "서버에 문제가 발생했습니다. 잠시 후 다시 시도해주세요.";
 
 export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability";
 
