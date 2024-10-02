@@ -104,8 +104,9 @@
 
 ### 1.3. 검사 진행 상황과 결과 요약 실시간으로 확인 가능
 
-![image](https://github.com/user-attachments/assets/3e21e98b-cebc-474d-a2c8-cbcb488fe467)
-![image](https://github.com/user-attachments/assets/d470cafc-e0e4-414f-bf24-ec58f024d2de)
+![image](https://github.com/user-attachments/assets/2da1066c-64b1-4a88-a2f3-7a9c3b189990)
+![image](https://github.com/user-attachments/assets/30b90728-d84a-41b9-9117-7394d1222061)
+
 
 ### 2. 보안 취약점 DB
 
