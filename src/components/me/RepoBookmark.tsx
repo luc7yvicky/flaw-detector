@@ -15,6 +15,10 @@ const RepoBookmark = ({
   const { user } = useSessionStore((state) => state);
   const [isSelected, setIsSelected] = useState(isBookmarked);
 
+  if (!user) {
+    throw new Error("잘못된 접근입니다.");
+  }
+
   const onToggleFavorite = useCallback(async () => {
     setIsSelected(!isSelected);
 
