@@ -75,7 +75,9 @@ export const SessionStoreProvider = ({
         };
 
         storeRef.current = createSessionStore(sessionWithError);
-        throw new Error(`[Error] error occurs when fetching session: ${err}`);
+        throw new Error(
+          `세션 데이터를 불러오는 중 오류가 발생했습니다: ${err}`,
+        );
       } finally {
         setIsLoading(false);
       }
