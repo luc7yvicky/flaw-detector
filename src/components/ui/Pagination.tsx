@@ -6,9 +6,10 @@ export type PaginationProps = {
   className?: string;
   currentPage: number;
   totalPages: number;
-  startPage: number;
-  endPage: number;
+  startPage?: number;
+  endPage?: number;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  prefetchPage?: (page: number) => void;
 };
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -18,11 +19,9 @@ const Pagination: React.FC<PaginationProps> = ({
   startPage,
   endPage,
   setCurrentPage,
+  prefetchPage,
 }) => {
-  const pages = Array.from(
-    { length: endPage - startPage + 1 },
-    (_, i) => startPage + i,
-  );
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
 
   return (
     <div
@@ -35,7 +34,11 @@ const Pagination: React.FC<PaginationProps> = ({
       {/* Render Previous Page button only if there's a previous page */}
       {currentPage > 1 ? (
         <button
-          onClick={() => setCurrentPage(currentPage - 1)}
+          onClick={() => {
+            setCurrentPage(currentPage - 1);
+            window.scrollTo(0, 0);
+          }}
+          onMouseEnter={() => prefetchPage?.(currentPage - 1)}
           className="text-center text-[1rem] font-normal leading-6 tracking-[-0.011em] text-gray-dark focus:outline-none"
           aria-label="Previous Page"
         >
@@ -48,7 +51,11 @@ const Pagination: React.FC<PaginationProps> = ({
       {pages.map((page) => (
         <button
           key={page}
-          onClick={() => setCurrentPage(page)}
+          onClick={() => {
+            setCurrentPage(page);
+            window.scrollTo(0, 0);
+          }}
+          onMouseEnter={() => prefetchPage?.(page)}
           className={`${
             page === currentPage
               ? "font-semibold text-gray-dark"
@@ -62,7 +69,11 @@ const Pagination: React.FC<PaginationProps> = ({
       {/* Render Next Page button only if there's a next page */}
       {currentPage < totalPages ? (
         <button
-          onClick={() => setCurrentPage(currentPage + 1)}
+          onClick={() => {
+            setCurrentPage(currentPage + 1);
+            window.scrollTo(0, 0);
+          }}
+          onMouseEnter={() => prefetchPage?.(currentPage + 1)}
           className="text-center text-[1rem] font-normal leading-6 tracking-[-0.011em] focus:outline-none"
           aria-label="Next Page"
         >

@@ -59,9 +59,9 @@ export async function addUser(newUser: User): Promise<void> {
 /**
  * 로그인한 사용자가 스크랩한 게시물 정보를 불러옵니다.
  */
-export async function getUserPinnedPosts(userId: number): Promise<any | null> {
+export async function getUserPinnedPosts(userId: number): Promise<any | []> {
   if (!userId) {
-    return null;
+    return [];
   }
 
   try {
@@ -76,11 +76,11 @@ export async function getUserPinnedPosts(userId: number): Promise<any | null> {
       return pinnedPosts;
     } else {
       console.log(`No user found with userId: ${userId}`);
-      return null;
+      return [];
     }
   } catch (error) {
     console.error("Error fetching pinned posts:", error);
-    return null;
+    return [];
   }
 }
 
