@@ -75,14 +75,19 @@ const config: Config = {
           "0%": { transform: "translateX(0)" },
           "100%": { transform: "translateX(-100%)" },
         },
-        round: {
+        roundClockwise: {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
+        },
+        roundCounterClockwise: {
+          "0%": { transform: "rotate(0deg)" },
+          "100%": { transform: "rotate(-360deg)" },
         },
       },
       animation: {
         "scroll-left": "scrollLeft 10s linear infinite",
-        round: "round 1.7s infinite ease",
+        "round-clockwise": "roundClockwise 1.7s infinite ease", // 시계 방향
+        "round-counter-clockwise": "roundCounterClockwise 1.7s infinite ease", // 반시계 방향
       },
     },
   },
