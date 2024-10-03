@@ -16,12 +16,19 @@ const Pagination: React.FC<PaginationProps> = ({
   className,
   currentPage,
   totalPages,
-  startPage,
-  endPage,
   setCurrentPage,
   prefetchPage,
 }) => {
-  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+  const maxPagesToShow = 10;
+
+  const currentGroup = Math.floor((currentPage - 1) / maxPagesToShow);
+  const startPage = currentGroup * maxPagesToShow + 1;
+  const endPage = Math.min(startPage + maxPagesToShow - 1, totalPages);
+
+  const pages = Array.from(
+    { length: endPage - startPage + 1 },
+    (_, i) => startPage + i,
+  );
 
   return (
     <div
