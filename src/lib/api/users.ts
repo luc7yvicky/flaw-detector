@@ -17,7 +17,7 @@ import { FILE_INSPECTION_STATUS_KEY } from "../const";
 
 /**
  * Firestore에 새로운 user를 추가합니다.
- * @returns Promise<void>
+ * @returns {Promise<void>}
  */
 export async function addUser(newUser: User): Promise<void> {
   if (!db) {
@@ -58,6 +58,7 @@ export async function addUser(newUser: User): Promise<void> {
 
 /**
  * 로그인한 사용자가 스크랩한 게시물 정보를 불러옵니다.
+ * @returns {Promise<any | null>}
  */
 export async function getUserPinnedPosts(userId: number): Promise<any | []> {
   if (!userId) {
@@ -86,7 +87,7 @@ export async function getUserPinnedPosts(userId: number): Promise<any | []> {
 
 /**
  * Firestore의 user 문서에 pinnedPost를 추가합니다.
- * @returns Promise<void>
+ * @returns {Promise<void>}
  */
 export async function addPinnedPostToUser(
   pinnedInfo: VulDBPinnedInfo,
@@ -124,7 +125,7 @@ export async function addPinnedPostToUser(
 
 /**
  * Firestore의 user 문서에서 pinnedPost를 삭제합니다.
- * @returns Promise<void>
+ * @returns {Promise<void>}
  */
 export async function deletePinnedPostFromUser(
   pinnedInfo: VulDBPinnedInfo,
@@ -162,7 +163,7 @@ export async function deletePinnedPostFromUser(
 
 /**
  * Firestore에 저장되어 있는 user 정보를 모두 삭제합니다.
- * @returns Promise<void>
+ * @returns {Promise<void>}
  */
 export async function deleteUserData(username: string): Promise<void> {
   if (!username) {

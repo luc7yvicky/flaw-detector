@@ -63,7 +63,6 @@ export async function getRepoLists(username: string) {
       username: username,
       headers: {
         "X-GitHub-Api-Version": "2022-11-28",
-        Authorization: `token ${OCTOKIT_TOKEN}`, // Github API 요청 한도 초과로 임시 추가
       },
     });
 
