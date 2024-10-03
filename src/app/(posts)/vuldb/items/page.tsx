@@ -11,18 +11,19 @@ import {
 } from "@/components/vulnerability-db/VulDBSkeleton";
 import { ITEMS_PER_DB_PAGE } from "@/lib/const";
 import { useVulDBPosts } from "@/lib/queries/useVulDBPosts";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
+import { useSessionStore } from "@/context/SessionProvider";
 
 export default function VulDBPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedChip, setSelectedChip] = useState<"hot" | "new" | "">("");
-  const { data: session, status: authLoading } = useSession();
-  const userId = session?.user?.userId;
+  const { user } = useSessionStore((state) => state);
+  const userId = user?.userId;
   const { posts, totalPages, postsLoading, latestPosts, prefetchPage } =
     useVulDBPosts(userId, currentPage, ITEMS_PER_DB_PAGE, selectedChip);
+
   try {
-    if (postsLoading || authLoading === "loading") {
+    if (postsLoading) {
       return (
         <div className="relative mx-auto mt-[1.688rem] flex min-h-[147rem] w-full max-w-[82.063rem] flex-col gap-[4.75rem] overflow-hidden px-[1rem]">
           <VulDBImageCardContainerSkeleton />

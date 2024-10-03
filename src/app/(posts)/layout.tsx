@@ -1,12 +1,11 @@
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { SessionProvider } from "next-auth/react";
 
 export default async function VulDBLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <SessionProvider>
+    <>
       {children}
       <ToastContainer
         position="top-right"
@@ -24,6 +23,6 @@ export default async function VulDBLayout({
           overflow: "visible",
         }}
       />
-    </SessionProvider>
+    </>
   );
 }
