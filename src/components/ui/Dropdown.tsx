@@ -121,7 +121,7 @@ export default function Dropdown({
         ref={buttonRef}
       >
         <span>{type === "sort" ? "Sort" : "Type"}</span>
-        <IconCaretDown />
+        <IconCaretDown width={12} height={6} />
       </button>
       {isOpen && (
         <DropdownMenu
