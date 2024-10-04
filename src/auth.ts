@@ -37,19 +37,24 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
       }
       return false;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
         const { userId, username } = user;
         token.userId = userId;
         token.username = username;
       }
+
+      if (account) {
+        token.accessToken = account.access_token;
+      }
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        const { userId, username } = token;
+        const { userId, username, accessToken } = token;
         session.user.userId = userId;
         session.user.username = username;
+        session.accessToken = accessToken as string;
       }
       return session;
     },

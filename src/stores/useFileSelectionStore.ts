@@ -1,59 +1,53 @@
 import { create } from "zustand";
 import { useFileProcessStore } from "./useFileProcessStore";
 
-interface FileSelectionState {
-  selectedFiles: Map<string, string>; // path를 key로, 파일 이름을 value로 저장
-  selectFile: (path: string, name: string) => void;
-  deselectFile: (path: string) => void;
-  toggleFileSelection: (path: string, name: string) => void;
+type FileInfo = {
+  name: string;
+  size: number;
+};
+
+type FileSelectionState = {
+  selectedFiles: Map<string, FileInfo>;
   isFileSelected: (path: string) => boolean;
-  getSelectedFilesCount: () => number;
-  getSelectedFiles: () => Array<{ path: string; name: string }>;
-  initializeSelectedFilesStatus: () => void;
-  resetFileSelection: () => void;
-  checkboxShow: boolean;
-  isCheckboxShow: () => boolean;
-  toggleCheckboxShow: () => void;
-}
+  toggleFileSelection: (path: string, name: string, size: number) => void;
+  clearSelection: () => void;
+  getSelectedFiles: () => Array<{ path: string; name: string; size: number }>;
+  isCheckboxVisible: boolean;
+  toggleCheckboxVisibility: () => void;
+};
 
 export const useFileSelectionStore = create<FileSelectionState>((set, get) => ({
-  selectedFiles: new Map<string, string>(),
-  selectFile: (path, name) =>
+  selectedFiles: new Map<string, FileInfo>(),
+  isFileSelected: (path: string) => get().selectedFiles.has(path),
+  toggleFileSelection: (path, name, size) =>
     set((state) => {
-      const newMap = new Map(state.selectedFiles);
-      newMap.set(path, name);
-      return { selectedFiles: newMap };
-    }),
-  deselectFile: (path) =>
-    set((state) => {
-      const newMap = new Map(state.selectedFiles);
-      newMap.delete(path);
-      return { selectedFiles: newMap };
-    }),
-  toggleFileSelection: (path, name) =>
-    set((state) => {
-      const newMap = new Map(state.selectedFiles);
-      if (newMap.has(path)) {
-        newMap.delete(path);
+      const newSelectedFiles = new Map(state.selectedFiles);
+      if (newSelectedFiles.has(path)) {
+        newSelectedFiles.delete(path);
       } else {
-        newMap.set(path, name);
+        newSelectedFiles.set(path, { name, size });
       }
-      return { selectedFiles: newMap };
+      return { selectedFiles: newSelectedFiles };
     }),
-  isFileSelected: (path) => get().selectedFiles.has(path),
-  getSelectedFilesCount: () => get().selectedFiles.size,
+  clearSelection: () => set({ selectedFiles: new Map() }),
   getSelectedFiles: () =>
-    Array.from(get().selectedFiles, ([path, name]) => ({ path, name })),
-  initializeSelectedFilesStatus: () => {
-    const selectedFiles = get().getSelectedFiles();
-    useFileProcessStore.getState().resetFileStatuses();
-    selectedFiles.forEach(({ path }) => {
-      useFileProcessStore.getState().setFileStatus(path, "onWait");
-    });
-  },
-  resetFileSelection: () => set({ selectedFiles: new Map() }),
-  checkboxShow: false,
-  isCheckboxShow: () => get().checkboxShow,
-  toggleCheckboxShow: () =>
-    set((state) => ({ checkboxShow: !state.checkboxShow })),
+    Array.from(get().selectedFiles, ([path, { name, size }]) => ({
+      path,
+      name,
+      size,
+    })),
+  isCheckboxVisible: false,
+  toggleCheckboxVisibility: () =>
+    set((state) => ({ isCheckboxVisible: !state.isCheckboxVisible })),
 }));
+
+export const getSelectedFilesCount = () =>
+  useFileSelectionStore.getState().selectedFiles.size;
+
+export const initializeSelectedFilesStatus = () => {
+  const selectedFiles = useFileSelectionStore.getState().getSelectedFiles();
+  useFileProcessStore.getState().resetFileStatuses();
+  selectedFiles.forEach(({ path }) => {
+    useFileProcessStore.getState().setFileStatus(path, "onWait");
+  });
+};

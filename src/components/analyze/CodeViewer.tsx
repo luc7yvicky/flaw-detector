@@ -24,7 +24,9 @@ export default function CodeViewer({
 }: CodeViewerProps & React.HTMLAttributes<HTMLDivElement>) {
   const codeRef = useRef<HTMLPreElement>(null);
 
-  const { currentFile, setCurrentFile, setCurrentRepo } = useFileViewerStore();
+  const setCurrentRepo = useFileViewerStore((state) => state.setCurrentRepo);
+  const setCurrentFile = useFileViewerStore((state) => state.setCurrentFile);
+  const currentFile = useFileViewerStore((state) => state.currentFile);
   const detectedLines = useFileViewerStore((state) => state.detectedLines);
 
   const { data, isLoading, error } = useFileContent(

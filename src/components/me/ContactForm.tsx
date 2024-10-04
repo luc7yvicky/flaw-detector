@@ -1,7 +1,13 @@
 "use client";
 
+import { useSessionStore } from "@/context/SessionProvider";
+import {
+  EMAIL_VALIDATION_MESSAGE,
+  MESSAGE_VALIDATION_MESSAGE,
+  NAME_VALIDATION_MESSAGE,
+  SERVER_ERROR_MESSAGE,
+} from "@/lib/const";
 import { cn } from "@/lib/utils";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Button from "../ui/Button";
@@ -13,12 +19,6 @@ import {
   ModalTitleWrapper,
 } from "../ui/Modal";
 import { TextArea } from "../ui/TextArea";
-import {
-  SERVER_ERROR_MESSAGE,
-  EMAIL_VALIDATION_MESSAGE,
-  MESSAGE_VALIDATION_MESSAGE,
-  NAME_VALIDATION_MESSAGE,
-} from "@/lib/const";
 
 type RequestState = "idle" | "loading" | "success" | "error";
 type InvalidField = "name" | "email" | "message";
@@ -84,25 +84,25 @@ function ContactSuccessModal({
 }
 
 export default function ContactForm() {
-  const { data: session } = useSession();
+  const { user } = useSessionStore((state) => state);
   const [invalidField, setInvalidField] = useState<InvalidField | null>(null);
   const [requestState, setRequestState] = useState<RequestState>("idle");
 
   const [formData, setFormData] = useState({
-    name: session?.user?.name || "",
-    email: session?.user?.email || "",
+    name: user?.name || "",
+    email: user?.email || "",
     message: "",
   });
 
   useEffect(() => {
-    if (session?.user) {
+    if (user) {
       setFormData((prev) => ({
         ...prev,
-        name: session.user.name || "",
-        email: session.user.email || "",
+        name: user.name || "",
+        email: user.email || "",
       }));
     }
-  }, [session]);
+  }, [user]);
 
   const onChangeInputAndTextArea = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -148,8 +148,8 @@ export default function ContactForm() {
           setInvalidField(null);
           setRequestState("success");
           setFormData({
-            name: session?.user?.name || "",
-            email: session?.user?.email || "",
+            name: user?.name || "",
+            email: user?.email || "",
             message: "",
           });
           break;
