@@ -55,7 +55,7 @@ export type VulDBPostWithChip = VulDBPost & {
 };
 
 export type VulDBPinnedInfo = {
-  userId: string;
+  userId: number;
   postId: string;
 };
 
@@ -67,6 +67,6 @@ export type ArticleListItem = {
 };
 
 export type VulDBPinnedPosts = {
-  userId: string;
+  userId: number;
   pinnedPosts: string[];
 };
