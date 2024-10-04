@@ -1,6 +1,18 @@
+"use client";
+
 import ServiceCard from "./ServiceCard";
+import { motion } from "framer-motion";
 
 export default function LandingServiceSection() {
+  const cardVariants = [
+    "security",
+    "critical",
+    "realtime",
+    "privacy",
+    "efficiency",
+    "quick",
+  ];
+
   return (
     <>
       {/* max-h-screen */}
@@ -12,42 +24,27 @@ export default function LandingServiceSection() {
           </h3>
         </article>
         <article className="relative w-full overflow-x-hidden">
-          {/* <div className="animate-scroll-left gap-x-15 relative ml-[-10.604rem] grid min-h-[35rem] w-[120%] grid-cols-6"> */}
-          <div className="animate-scroll-left flex min-h-[35rem] w-auto flex-nowrap gap-x-12">
-            <ServiceCard
-              variant="security"
-              className="w-[339px] flex-shrink-0"
-            />
-            <ServiceCard
-              variant="critical"
-              className="w-[339px] flex-shrink-0"
-            />
-            <ServiceCard
-              variant="realtime"
-              className="w-[339px] flex-shrink-0"
-            />
-            <ServiceCard
-              variant="privacy"
-              className="w-[339px] flex-shrink-0"
-            />
-            <ServiceCard
-              variant="efficiency"
-              className="w-[339px] flex-shrink-0"
-            />
-            <ServiceCard variant="quick" className="w-[339px] flex-shrink-0" />
-            <ServiceCard
-              variant="security"
-              className="w-[339px] flex-shrink-0"
-            />
-            <ServiceCard
-              variant="critical"
-              className="w-[339px] flex-shrink-0"
-            />
-            <ServiceCard
-              variant="realtime"
-              className="w-[339px] flex-shrink-0"
-            />
-          </div>
+          <motion.div
+            className="flex min-h-[35rem] w-auto flex-nowrap gap-x-12"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{
+              repeat: Infinity,
+              repeatType: "loop",
+              duration: 20,
+              ease: "linear",
+            }}
+          >
+            {Array(2)
+              .fill(cardVariants)
+              .flat()
+              .map((card, index) => (
+                <ServiceCard
+                  key={index}
+                  variant={card}
+                  className="w-[339px] flex-shrink-0"
+                />
+              ))}
+          </motion.div>
         </article>
       </section>
     </>

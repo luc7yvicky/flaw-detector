@@ -1,7 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
 import { expandFolder } from "@/lib/api/repositories";
-import { FolderItem, RepoContentItem } from "@/types/repo";
-
+import { FolderItem } from "@/types/repo";
+import { useQuery } from "@tanstack/react-query";
 
 export function useExpandFolder(
   username: string,

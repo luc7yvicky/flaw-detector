@@ -1,7 +1,7 @@
 "use client";
 
+import { useSessionStore } from "@/context/SessionProvider";
 import { cn } from "@/lib/utils";
-import { useSession } from "next-auth/react";
 import { memo, useCallback, useState } from "react";
 import { IconStar } from "../ui/Icons";
 
@@ -12,8 +12,12 @@ const RepoBookmark = ({
   repo: string;
   isBookmarked: boolean;
 }) => {
-  const { data: session } = useSession();
+  const { user } = useSessionStore((state) => state);
   const [isSelected, setIsSelected] = useState(isBookmarked);
+
+  if (!user) {
+    throw new Error("잘못된 접근입니다.");
+  }
 
   const onToggleFavorite = useCallback(async () => {
     setIsSelected(!isSelected);
@@ -25,7 +29,7 @@ const RepoBookmark = ({
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          username: session?.user?.username,
+          username: user?.username,
           repoName: repo,
           favorite: !isSelected,
         }),
@@ -38,7 +42,7 @@ const RepoBookmark = ({
     } catch (err) {
       console.error("Error adding results:", err);
     }
-  }, [isSelected, repo, session]);
+  }, [isSelected, repo, user]);
 
   return (
     <div

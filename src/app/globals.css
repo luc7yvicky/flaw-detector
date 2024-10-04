@@ -60,28 +60,3 @@
 .animate-fadeIn {
   animation: fadeIn 0.5s ease-in-out;
 }
-@keyframes rollAroundY {
-  0% {
-    transform: translate(195px, 0px) rotate(0deg);
-  }
-  25% {
-    transform: translate(145px, 30px) rotate(-90deg);
-  }
-  50% {
-    transform: translate(115px, 60px) rotate(-180deg);
-  }
-  75% {
-    transform: translate(145px, 30px) rotate(-270deg);
-  }
-  100% {
-    transform: translate(195px, 0px) rotate(-360deg);
-  }
-}
-
-.rolling-square {
-  animation: rollAroundY 5s linear infinite;
-  transform-origin: center center;
-  position: absolute;
-  top: 0;
-  right: 0;
-}
