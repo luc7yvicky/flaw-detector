@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Floating } from "../../../components/ui/Floating";
+import { Floating } from "@/components/ui/Floating";
 
 export default function LandingTopFloating() {
   const [isFloatingVisible, setIsFloatingVisible] = useState(false);

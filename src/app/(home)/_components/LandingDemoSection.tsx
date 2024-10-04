@@ -1,6 +1,6 @@
 import { exampleCode } from "@/lib/dummy";
-import ProcessStatus from "../../../components/analyze/ProcessStatus";
-import Button from "../../../components/ui/Button";
+import ProcessStatus from "@/components/analyze/ProcessStatus";
+import Button from "@/components/ui/Button";
 
 export default function LandingDemoSection() {
   return (
