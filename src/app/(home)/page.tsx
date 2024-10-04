@@ -1,9 +1,9 @@
 import { auth } from "@/auth";
-import LandingDemoSection from "@/components/landing/LandingDemoSection";
-import LandingFeatureSection from "@/components/landing/LandingFeatureSection";
-import LandingHeroSection from "@/components/landing/LandingHeroSection";
-import LandingServiceSection from "@/components/landing/LandingServiceSection";
-import LandingTopFloating from "@/components/landing/LandingTopFloating";
+import LandingDemoSection from "./_components/LandingDemoSection";
+import LandingFeatureSection from "./_components/LandingFeatureSection";
+import LandingHeroSection from "./_components/LandingHeroSection";
+import LandingServiceSection from "./_components/LandingServiceSection";
+import LandingTopFloating from "./_components/LandingTopFloating";
 import CustomerService from "@/components/ui/CustomerService";
 
 export default async function LandingPage() {
