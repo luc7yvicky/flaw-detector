@@ -1,0 +1,43 @@
+name: Weekly CERT/CC Web Crawling
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0" # 매주 일요일 자정(UTC) 실행
+
+jobs:
+  run-web-crawling:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.11.0"
+
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install puppeteer
+        run: pnpm install puppeteer
+
+      - name: Run Schdule file
+        run: node src/scripts/schedule.mjs
+        env:
+          NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
+          NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
+          NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
+          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: ${{ secrets.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET }}
+          NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID }}
+          NEXT_PUBLIC_FIREBASE_APP_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_APP_ID }}
+          NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID }}
+          LLAMA_AUTH_URL: ${{ secrets.LLAMA_AUTH_URL }}
+          LLAMA_API_URL: ${{ secrets.LLAMA_API_URL }}
+          LLAMA_USERNAME: ${{ secrets.LLAMA_USERNAME }}
+          LLAMA_PASSWORD: ${{ secrets.LLAMA_PASSWORD }}
