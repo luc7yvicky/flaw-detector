@@ -6,36 +6,32 @@ import {
 } from "@/lib/const";
 import { sendEmail } from "@/lib/contact";
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+
+const contactSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: NAME_VALIDATION_MESSAGE })
+    .refine((name) => !name.includes(" "), {
+      message: NAME_VALIDATION_MESSAGE,
+    }),
+  email: z.string().email({ message: EMAIL_VALIDATION_MESSAGE }),
+  message: z.string().min(5, { message: MESSAGE_VALIDATION_MESSAGE }),
+});
 
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
-  const name = formData.get("name");
-  const email = formData.get("email");
-  const message = formData.get("message");
+  const name = formData.get("name")?.toString() || "";
+  const email = formData.get("email")?.toString() || "";
+  const message = formData.get("message")?.toString() || "";
 
-  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const validationResult = contactSchema.safeParse({ name, email, message });
 
-  if (
-    typeof name !== "string" ||
-    name.includes(" ") ||
-    name.trim().length < 2
-  ) {
+  if (!validationResult.success) {
+    const errorMessage = validationResult.error.errors[0]?.message;
+
     return NextResponse.json({
-      message: NAME_VALIDATION_MESSAGE,
-      status: 400,
-    });
-  }
-
-  if (typeof email !== "string" || !emailPattern.test(email.trim())) {
-    return NextResponse.json({
-      message: EMAIL_VALIDATION_MESSAGE,
-      status: 400,
-    });
-  }
-
-  if (typeof message !== "string" || message.trim().length < 5) {
-    return NextResponse.json({
-      message: MESSAGE_VALIDATION_MESSAGE,
+      message: errorMessage,
       status: 400,
     });
   }
