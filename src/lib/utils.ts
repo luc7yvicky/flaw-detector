@@ -1,5 +1,6 @@
 import { ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { InspectionList, RepoTree, RepoTreeItem } from "./api/repositories";
 
 export const cn = (...inputs: ClassValue[]) => {
   return twMerge(clsx(inputs));
@@ -141,6 +142,7 @@ export const getLanguage = (filename: string) => {
     case "bmp":
     case "tiff":
     case "svg":
+    case "ico":
       return "image";
     // 확장자-언어 추가 가능
     default:
@@ -213,6 +215,7 @@ export const ignoredFiles = [
   "*.png",
   "*.gif",
   "*.svg",
+  "*.ico",
 
   // 압축 파일
   "*.zip",
@@ -244,6 +247,23 @@ export function isIgnoredFile(path: string): boolean {
     }
     return path === pattern || path.includes(`/${pattern}`);
   });
+}
+
+export function processRepoTree(repoTree: RepoTree): InspectionList {
+  const tree: RepoTreeItem[] = [];
+  const ignoredFiles: RepoTreeItem[] = [];
+  let ignoredCount = 0;
+
+  repoTree.tree.forEach((item) => {
+    if (isIgnoredFile(item.path)) {
+      ignoredFiles.push(item);
+      ignoredCount++;
+    } else {
+      tree.push(item);
+    }
+  });
+
+  return { tree, ignoredFiles, ignoredCount };
 }
 
 export const formatFileSize = (size: number | undefined): string => {

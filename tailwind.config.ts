@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontSize: {
+        root: "12px",
+      },
       fontFamily: {
         pretendard: ["var(--font-pretendard)"],
       },

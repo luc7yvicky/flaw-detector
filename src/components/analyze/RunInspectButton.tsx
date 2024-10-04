@@ -3,11 +3,17 @@
 import Button from "@/components/ui/Button";
 import { getRepoTree } from "@/lib/api/repositories";
 import { useFileProcessStore } from "@/stores/useFileProcessStore";
-import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
+import {
+  getSelectedFilesCount,
+  initializeSelectedFilesStatus,
+  useFileSelectionStore,
+} from "@/stores/useFileSelectionStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { List, Modal, ModalTitle } from "../ui/Modal";
+import { processRepoTree } from "@/lib/utils";
+import { useShallow } from "zustand/react/shallow";
 
 export default function RunInspectButton({
   repo,
@@ -19,23 +25,21 @@ export default function RunInspectButton({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [scanType, setScanType] = useState<"selected" | "full">("selected");
   const [error, setError] = useState<string | null>(null);
-  const {
-    getSelectedFilesCount,
-    getSelectedFiles,
-    initializeSelectedFilesStatus,
-    resetFileSelection,
-  } = useFileSelectionStore();
+  const { getSelectedFiles, clearSelection } = useFileSelectionStore(
+    useShallow((state) => state),
+  );
   const {
     resetFileStatuses,
     processFiles,
     isInspectionRunning,
     setIsInspectionRunning,
-  } = useFileProcessStore();
+  } = useFileProcessStore(useShallow((state) => state));
+  const setCurrentFile = useFileViewerStore((state) => state.setCurrentFile);
+
   const selectedFilesCount = getSelectedFilesCount();
-  const { setCurrentFile } = useFileViewerStore();
 
   const {
-    data: repoTreeResult,
+    data: repoTree,
     refetch: refetchRepoTree,
     isLoading,
     isError,
@@ -46,14 +50,8 @@ export default function RunInspectButton({
     retry: 1, // 실패 시 1번 재시도
   });
 
-  // useEffect(() => {
-  //   if (repoTreeResult) {
-  //     console.log(
-  //       "Repository Tree Structure:",
-  //       JSON.stringify(repoTreeResult, null, 2),
-  //     );
-  //   }
-  // }, [repoTreeResult]);
+  // 폴더 및 검사하지 않을 파일 필터링
+  const inspectionList = repoTree ? processRepoTree(repoTree) : null;
 
   useEffect(() => {
     if (scanType === "full" && isModalOpen) {
@@ -85,14 +83,14 @@ export default function RunInspectButton({
       setError("파일 처리 중 오류가 발생했습니다.");
     } finally {
       setIsInspectionRunning(false);
-      resetFileSelection();
+      clearSelection();
     }
   };
 
   const handleFullRepoInspect = async () => {
     try {
-      if (repoTreeResult) {
-        const allFiles = repoTreeResult.tree.filter(
+      if (inspectionList) {
+        const allFiles = inspectionList.tree.filter(
           (item) => item.type === "file",
         );
         if (allFiles.length > 0) {
@@ -103,7 +101,7 @@ export default function RunInspectButton({
         // console.log(allFiles);
         await processFiles(allFiles, username, repo, "analyze");
         console.log(
-          `전체 레포지토리 처리가 완료되었습니다. ${repoTreeResult.ignoredCount}개의 파일이 무시되었습니다.`,
+          `전체 레포지토리 처리가 완료되었습니다. ${inspectionList.ignoredCount}개의 파일이 무시되었습니다.`,
         );
       } else {
         console.error("레포지토리 구조를 가져오는데 실패했습니다.");
@@ -138,12 +136,13 @@ export default function RunInspectButton({
   const renderFileList = () => {
     if (scanType === "selected") {
       const selectedFiles = getSelectedFiles();
+      console.log(selectedFiles);
       return (
         <List
-          items={selectedFiles.map(({ path, name }) => ({
+          items={selectedFiles.map(({ path, name, size }) => ({
             name,
             path,
-            size: undefined,
+            size,
           }))}
           totalFileCount={selectedFilesCount}
           ignoredCount={0}
@@ -151,8 +150,8 @@ export default function RunInspectButton({
       );
     }
 
-    if (repoTreeResult) {
-      const fileItems = repoTreeResult.tree.filter(
+    if (inspectionList) {
+      const fileItems = inspectionList.tree.filter(
         (item) => item.type === "file",
       );
       return (
@@ -162,8 +161,8 @@ export default function RunInspectButton({
             path: item.path,
             size: item.size,
           }))}
-          totalFileCount={fileItems.length + repoTreeResult.ignoredCount}
-          ignoredCount={repoTreeResult.ignoredCount}
+          totalFileCount={fileItems.length + inspectionList.ignoredCount}
+          ignoredCount={inspectionList.ignoredCount}
         />
       );
     }

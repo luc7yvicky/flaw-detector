@@ -1,6 +1,6 @@
 import { auth } from "@/auth";
 import CodeContainer from "@/components/analyze/CodeContainer";
-import FileListServer from "@/components/analyze/FileListServer";
+import FileList from "@/components/analyze/FileTree/FileList";
 import RunInspectButton from "@/components/analyze/RunInspectButton";
 import {
   Status,
@@ -36,7 +36,7 @@ export default async function RepoPage({
             <StatusWarning>{counts.warning}</StatusWarning>
             <StatusSuccess>{counts.success}</StatusSuccess>
           </Status>
-          <FileListServer repo={repo} username={username} />
+          <FileList repo={repo} username={username} />
         </div>
         <CodeContainer username={username} repo={repo} />
       </div>

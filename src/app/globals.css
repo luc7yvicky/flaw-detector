@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  font-size: 12px;
+}
+
 @layer base {
   hr {
     @apply h-[0.063rem] w-full border-0 bg-line-light;
