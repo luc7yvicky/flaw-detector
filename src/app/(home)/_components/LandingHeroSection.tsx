@@ -2,8 +2,8 @@
 
 import { useTransition } from "react";
 import { loginWithGithub } from "@/lib/actions";
-import Button from "../ui/Button";
-import { IconCaretDoubleDown } from "../ui/Icons";
+import Button from "../../../components/ui/Button";
+import { IconCaretDoubleDown } from "../../../components/ui/Icons";
 import Link from "next/link";
 
 export default function LandingHeroSection({
