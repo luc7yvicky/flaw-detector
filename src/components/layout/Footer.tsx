@@ -18,51 +18,51 @@ export default function Footer() {
                 CONTACT
               </h4>
               <ul className="flex-between-center gap-10 text-base font-medium leading-6 tracking-[-0.011em]">
-                <div className="flex-col-start-center gap-1">
+                <li className="flex-col-start-center gap-1">
                   <div className="flex gap-[1.625rem]">
-                    <li className="text-gray-default">(주)스팩스페이스</li>
-                    <li>
+                    <span className="text-gray-default">(주)스팩스페이스</span>
+                    <span>
                       <span className="mr-3 text-gray-default">대표자</span>
-                      <span>염민호</span>
-                    </li>
+                      염민호
+                    </span>
                   </div>
-                  <li>서울 강서구 마곡중앙2로 11, 3층 303호</li>
-                  <li>
+                  <div>서울 강서구 마곡중앙2로 11, 3층 303호</div>
+                  <div>
                     <span className="mr-6 text-gray-default">Email</span>
-                    <span>admin@sfacspace.com</span>
-                  </li>
-                </div>
-                <div className="flex-col-start-center gap-1">
-                  <li>
+                    admin@sfacspace.com
+                  </div>
+                </li>
+                <li className="flex-col-start-center gap-1">
+                  <div>
                     <span className="mr-2 text-gray-default">
                       사업자등록번호
                     </span>
-                    <span>450-87-01864</span>
-                  </li>
-                  <li>
+                    450-87-01864
+                  </div>
+                  <div>
                     <span className="mr-[0.875rem] text-gray-default">
                       대표전화
                     </span>
-                    <span>02-6217-1119</span>
-                  </li>
-                  <li>
+                    02-6217-1119
+                  </div>
+                  <div>
                     <span className="mr-[1.875rem] text-gray-default">
                       팩스
                     </span>
-                    <span>02-6217-1115</span>
-                  </li>
-                </div>
+                    02-6217-1115
+                  </div>
+                </li>
               </ul>
             </section>
           </div>
         </div>
 
         <div>
-          <div className="flex gap-8 text-base font-medium leading-6 tracking-[-0.011em] text-gray-default">
+          <nav className="flex gap-8 text-base font-medium leading-6 tracking-[-0.011em] text-gray-default">
             <Link href={"https://www.sfacspace.com/ko"}>회사소개</Link>
             <Link href={"/agreements"}>서비스이용약관</Link>
             <Link href={"/ppa"}>개인정보처리방침</Link>
-          </div>
+          </nav>
           <p className="mt-3 text-right text-base font-medium text-gray-dark">
             ©Spacspace.All right reserved.
           </p>
