@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
+import { SessionStoreProvider } from "@/context/SessionProvider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -33,7 +34,9 @@ export default function RootLayout({
       >
         <Header />
         <main className="min-h-[calc(100dvh-136px)]">
-          <ReactQueryProviders>{children}</ReactQueryProviders>
+          <SessionStoreProvider>
+            <ReactQueryProviders>{children}</ReactQueryProviders>
+          </SessionStoreProvider>
         </main>
         <Footer />
       </body>

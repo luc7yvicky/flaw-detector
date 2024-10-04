@@ -16,12 +16,14 @@ import {
 
 const alertType = {
   onCheck: {
-    icon: <IconArrowsCounterClockwise className="animate-round" />,
+    icon: (
+      <IconArrowsCounterClockwise className="animate-round-counter-clockwise" />
+    ),
     title: "검사 중...",
     descriptions: ["코드가 많을수록 처리시간이 길어집니다."],
   },
   onWait: {
-    icon: <IconHourGlass className="animate-round" />,
+    icon: <IconHourGlass className="animate-round-clockwise" />,
     title: "검사 대기 중",
     descriptions: [
       "순차적으로 파일 검사가 진행됩니다.",
@@ -129,7 +131,7 @@ export const Alert = ({
     isOpen && (
       <div
         className={cn(
-          "absolute right-0 top-0 z-30 flex h-fit w-full max-w-[30.875rem] justify-between gap-x-[1.125rem] rounded-2xl bg-white p-8 shadow-[0_0.75rem_2.656rem_0_rgba(0,0,0,0.12)]",
+          "absolute right-[0.063rem] top-[0.063rem] z-30 flex h-fit w-full max-w-[30.875rem] justify-between gap-x-[1.125rem] rounded-2xl bg-white p-8 shadow-[0_0.75rem_2.656rem_0_rgba(0,0,0,0.12)]",
           className,
         )}
         {...props}
