@@ -10,6 +10,11 @@ export default async function crawling() {
       `1단계 완료: 웹 크롤링이 완료되었습니다. 총 ${posts.length}개의 게시물을 수집했습니다.`,
     );
 
+    if (posts.length === 0) {
+      console.log("게시물이 없습니다. 크롤링을 종료합니다.");
+      return;
+    }
+
     console.log("2단계: 번역을 시작합니다...");
     const translatedPosts = await translatePost(posts);
     console.log("2단계 완료: 번역이 완료되었습니다.");
