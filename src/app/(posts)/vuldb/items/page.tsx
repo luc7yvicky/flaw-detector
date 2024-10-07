@@ -27,7 +27,7 @@ export default function VulDBPage() {
       return (
         <div className="relative mx-auto mt-[1.688rem] flex min-h-[147rem] w-full max-w-[82.063rem] flex-col gap-[4.75rem] overflow-hidden px-[1rem]">
           <VulDBImageCardContainerSkeleton />
-          <div className="mt-[4.75rem] flex justify-between">
+          <div className="mt-[4.75rem] grid grid-cols-[1fr_22rem] gap-5">
             <VulDBDashboardSkeleton />
             <RealTimeTopic />
           </div>
