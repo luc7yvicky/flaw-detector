@@ -33,7 +33,7 @@ const Pagination: React.FC<PaginationProps> = ({
   return (
     <div
       className={cn(
-        "grid grid-flow-col gap-[0.625rem]",
+        "grid grid-flow-col gap-[0.813rem]",
         pages.length !== 1 && `grid-cols-${pages.length + 2}`,
         className,
       )}
@@ -46,10 +46,10 @@ const Pagination: React.FC<PaginationProps> = ({
             window.scrollTo(0, 0);
           }}
           onMouseEnter={() => prefetchPage?.(currentPage - 1)}
-          className="text-center text-[1rem] font-normal leading-6 tracking-[-0.011em] text-gray-dark focus:outline-none"
+          className="flex-center-center h-9 w-9 text-gray-dark"
           aria-label="Previous Page"
         >
-          <IconCaretLeft className="fill-default" />
+          <IconCaretLeft className="fill-default h-6 w-6" />
         </button>
       ) : (
         currentPage < totalPages && <div className="w-8"></div>
@@ -65,9 +65,9 @@ const Pagination: React.FC<PaginationProps> = ({
           onMouseEnter={() => prefetchPage?.(page)}
           className={`${
             page === currentPage
-              ? "font-semibold text-gray-dark"
+              ? "rounded-full bg-bggray-light font-semibold text-gray-dark"
               : "text-gray-dark"
-          } h-9 w-9 text-center text-[1rem] font-normal leading-6 tracking-[-0.011em] focus:outline-none`}
+          } h-9 w-9 text-center text-[1rem] font-normal leading-6 tracking-[-0.011em]`}
           aria-current={page === currentPage ? "page" : undefined}
         >
           {page}
@@ -81,10 +81,10 @@ const Pagination: React.FC<PaginationProps> = ({
             window.scrollTo(0, 0);
           }}
           onMouseEnter={() => prefetchPage?.(currentPage + 1)}
-          className="text-center text-[1rem] font-normal leading-6 tracking-[-0.011em] focus:outline-none"
+          className="flex-center-center h-9 w-9 text-gray-dark"
           aria-label="Next Page"
         >
-          <IconCaretLeft className="fill-default rotate-180" />
+          <IconCaretLeft className="fill-default h-6 w-6 rotate-180" />
         </button>
       ) : (
         currentPage > 1 && <div className="w-8"></div>
