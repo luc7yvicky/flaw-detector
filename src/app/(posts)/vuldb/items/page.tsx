@@ -17,10 +17,17 @@ import { useSessionStore } from "@/context/SessionProvider";
 export default function VulDBPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedChip, setSelectedChip] = useState<"hot" | "new" | "">("");
+  const [searchTerm, setSearchTerm] = useState("");
   const { user } = useSessionStore((state) => state);
   const userId = user?.userId;
   const { posts, totalPages, postsLoading, latestPosts, prefetchPage } =
-    useVulDBPosts(userId, currentPage, ITEMS_PER_DB_PAGE, selectedChip);
+    useVulDBPosts(
+      userId,
+      currentPage,
+      ITEMS_PER_DB_PAGE,
+      selectedChip,
+      searchTerm,
+    );
 
   try {
     if (postsLoading) {
@@ -35,15 +42,15 @@ export default function VulDBPage() {
       );
     }
 
-    if (posts.length === 0 && userId && selectedChip === "") {
-      return <VulDBNoPosts />;
-    }
+    // if (posts.length === 0 && userId && selectedChip === "") {
+    //   return <VulDBNoPosts />;
+    // }
 
     return (
       <div className="relative mx-auto mt-[1.688rem] flex min-h-[147rem] w-full max-w-[82.063rem] flex-col gap-[4.75rem] overflow-hidden px-[1rem]">
         <VulDBImageCardContainer posts={latestPosts} />
         <Search
-          initialPosts={posts}
+          posts={posts}
           currentPage={currentPage}
           totalPages={totalPages}
           setCurrentPage={setCurrentPage}
@@ -51,6 +58,7 @@ export default function VulDBPage() {
           selectedChip={selectedChip}
           userId={userId}
           prefetchPage={prefetchPage}
+          setSearchTerm={setSearchTerm}
         />
       </div>
     );

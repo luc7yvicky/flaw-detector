@@ -9,6 +9,7 @@ import {
   query,
   startAfter,
   updateDoc,
+  where,
 } from "firebase/firestore";
 import db from "../../../firebaseConfig";
 import { getUserPinnedPosts } from "./users";
@@ -43,6 +44,7 @@ export async function getPaginatedPosts(
   pageSize: number,
   lastVisiblePost: VulDBPost | null = null,
   userId: number | null = null,
+  searchTerm: string | null = null,
 ): Promise<{ posts: VulDBPost[]; lastVisiblePost: VulDBPost | null }> {
   try {
     const postsCollection = collection(db, "posts");
@@ -59,6 +61,14 @@ export async function getPaginatedPosts(
       postsQuery = query(
         postsCollection,
         orderBy("created_at", "desc"),
+        limit(pageSize),
+      );
+    }
+
+    if (searchTerm) {
+      postsQuery = query(
+        postsCollection,
+        where("keywords", "array-contains", searchTerm),
         limit(pageSize),
       );
     }
