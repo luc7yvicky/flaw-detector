@@ -55,7 +55,7 @@ function Repo({
   };
 
   return (
-    <Card key={id} className="group relative">
+    <Card key={id} className="group relative max-w-none">
       <CardHeader>
         {detectedStatus !== "notChecked" ? (
           <>
