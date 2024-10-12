@@ -1,10 +1,10 @@
 "use client";
 
-import { useTransition } from "react";
+import Button from "@/components/ui/Button";
+import { IconCaretDoubleDown } from "@/components/ui/Icons";
 import { loginWithGithub } from "@/lib/actions";
-import Button from "../ui/Button";
-import { IconCaretDoubleDown } from "../ui/Icons";
 import Link from "next/link";
+import { useTransition } from "react";
 
 export default function LandingHeroSection({
   isLoggedIn,
