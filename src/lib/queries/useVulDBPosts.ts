@@ -64,7 +64,7 @@ export function useVulDBPosts(
             : new Date(0);
           const diffInHours =
             (now.getTime() - postDate.getTime()) / (1000 * 60 * 60);
-          return diffInHours <= 48;
+          return diffInHours <= 48 && !hotPostIds.includes(post.id);
         });
       }
 
@@ -129,7 +129,7 @@ export function useVulDBPosts(
                 : new Date(0);
               const diffInHours =
                 (now.getTime() - postDate.getTime()) / (1000 * 60 * 60);
-              return diffInHours <= 48;
+              return diffInHours <= 48 && !hotPostIds.includes(post.id);
             });
           }
 
