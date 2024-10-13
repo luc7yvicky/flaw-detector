@@ -6,12 +6,12 @@ import React from "react";
 import { IconArrow, IconChat } from "./Icons";
 
 const floatingVariants = cva(
-  "w-[4.75rem] h-[4.75rem] border-[0.091rem] px-4 border-primary-500 rounded-full text-primary-500 flex-center-center flex-col z-20",
+  "w-[4.75rem] h-[4.75rem] border-[0.091rem] border-primary-500 rounded-full text-primary-500 flex-center-center flex-col z-20",
   {
     variants: {
       variant: {
         top: "text-lg font-normal tracking-[-1%]",
-        chat: "",
+        chat: "p-[1.281rem]",
       },
     },
   },
@@ -33,8 +33,12 @@ const Floating = React.forwardRef<HTMLButtonElement, FloatingProps>(
         ref={ref}
         {...props}
       >
-        {variant === "top" ? <IconArrow /> : <IconChat />}
-        {variant === "top" && "TOP"}
+        {variant === "top" ? (
+          <IconArrow className="h-7 w-7" />
+        ) : (
+          <IconChat className="h-[2.103rem] w-[2.103rem]" />
+        )}
+        {variant === "top" && <span>TOP</span>}
       </button>
     );
   },

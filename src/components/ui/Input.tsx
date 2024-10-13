@@ -30,7 +30,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
         type={type}
         onBlur={onBlurInput}
         className={cn(
-          "h-[51px] w-full rounded-lg border p-3 text-lg font-medium text-gray-dark outline-none placeholder:font-medium placeholder:text-gray-light disabled:cursor-not-allowed disabled:bg-bggray-light",
+          "h-[3.188rem] w-full rounded-lg border p-3 text-lg font-medium text-gray-dark outline-none placeholder:font-medium placeholder:text-gray-light disabled:cursor-not-allowed disabled:bg-bggray-light",
           className,
           isValid
             ? "bg-purple-light focus:bg-transparent"
