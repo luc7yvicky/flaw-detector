@@ -70,28 +70,31 @@ function FileTreeItem({
     }
   }, [isFolder]);
 
-  const handleItemClick = useCallback((e: React.MouseEvent<HTMLLIElement>) => {
-    e.stopPropagation();
-    if (isFolder) {
-      toggleFolder();
-    } else if (type === "file") {
-      if (isCurrentFile) {
-        setCurrentFile(null);
-      } else {
-        setCurrentFile(path);
-      }
-      if (!isCheckboxVisible) {
+  const handleItemClick = useCallback(
+    (e: React.MouseEvent<HTMLLIElement>) => {
+      e.stopPropagation();
+      if (isFolder) {
+        toggleFolder();
+      } else if (type === "file") {
         if (isCurrentFile) {
-          // 현재 파일 선택 해제
-          clearSelection();
+          setCurrentFile(null);
         } else {
-          // 새 파일 선택
-          clearSelection();
-          toggleFileSelection(path, name, size || 0);
+          setCurrentFile(path);
+        }
+        if (!isCheckboxVisible) {
+          if (isCurrentFile) {
+            // 현재 파일 선택 해제
+            clearSelection();
+          } else {
+            // 새 파일 선택
+            clearSelection();
+            toggleFileSelection(path, name, size || 0);
+          }
         }
       }
-    }
-  }, [isCurrentFile, path]);
+    },
+    [isCurrentFile, path],
+  );
 
   const handleBookmark = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -153,6 +156,7 @@ function FileTreeItem({
         className={cn(
           "group/item relative flex w-full cursor-pointer border-b border-line-default p-2.5 py-[-1px] hover:bg-purple-light",
           isCurrentFile && "bg-primary-50",
+          level === 0 && "last:border-none",
         )}
         style={{ paddingLeft: `${BASE_PADDING + level * PADDING_INCREMENT}px` }}
         onClick={handleItemClick}
