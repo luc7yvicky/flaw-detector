@@ -56,7 +56,7 @@ const DropdownMenu = forwardRef<HTMLUListElement, DropdownMenuProps>(
       const newIndex = index === selectedIndex ? -1 : index;
       setSelectedIndex(newIndex);
       setIsOpen(false); // close dropdown
-      onChange(newIndex === -1 ? "-1" : options[index].value);
+      onChange(newIndex === -1 ? "" : options[index].value);
     };
     return (
       <ul

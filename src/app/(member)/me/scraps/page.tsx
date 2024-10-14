@@ -4,32 +4,50 @@ import TitleBar from "@/components/ui/TitleBar";
 import { BASE_URL } from "@/lib/const";
 import { ArticleListItem } from "@/types/post";
 
-export default async function ScrapsPage() {
-  const session = await auth();
-  let articles: ArticleListItem[] = [];
-  let error = "";
+export const fetchArticleList = async (
+  username: string,
+  currPage: number = 1,
+  labelType: string = "",
+) => {
+  const params = new URLSearchParams();
+  params.append("username", username);
+  params.append("page", currPage.toString());
+  params.append("label", labelType);
 
   try {
-    const res = await fetch(
-      `${BASE_URL}/api/scraps?username=${session?.user?.username}`,
-    );
-
-    if (!res.ok) {
-      error = "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요.";
-      throw new Error("Failed to fetch scrapped article data from server.");
-    }
-
+    const res = await fetch(`${BASE_URL}/api/scraps?${params.toString()}`);
     const data = await res.json();
 
-    if (data.status) {
-      error = data.message;
+    if (!res.ok) {
+      return {
+        error:
+          data.message ||
+          "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요.",
+      };
     }
 
-    articles = data;
+    return data;
   } catch (err) {
-    error = "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요.";
-    throw new Error(`Failed to fetch scrapped article data ${err}`);
+    return { error: "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요." };
   }
+};
+
+export default async function ScrapsPage() {
+  const session = await auth();
+  let error = "";
+
+  if (!session?.user?.username) {
+    error = "사용자 정보를 가져오는 데 실패했습니다.";
+  }
+
+  const result = await fetchArticleList(session?.user.username);
+
+  if (result.message) {
+    error = result.message || "게시물을 찾을 수 없습니다.";
+  }
+
+  const { posts, totalPage }: { posts: ArticleListItem[]; totalPage: number } =
+    result;
 
   return (
     <div className="mb-[7.75rem] flex w-full max-w-[82.125rem] flex-col gap-y-[7.75rem]">
@@ -38,8 +56,8 @@ export default async function ScrapsPage() {
         align="center"
         className="mb-0 mt-[4.5rem]"
       />
-      {Array.isArray(articles) && articles.length !== 0 ? (
-        <ScrappedArticleList initialArticles={articles} />
+      {posts && Array.isArray(posts) && posts?.length !== 0 ? (
+        <ScrappedArticleList initialArticles={posts} totalPage={totalPage} />
       ) : (
         <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
           <p className="text-[2rem] font-semibold leading-[2.8rem] tracking-[0.015em] text-gray-dark">
