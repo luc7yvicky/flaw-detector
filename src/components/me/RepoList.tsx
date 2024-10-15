@@ -1,34 +1,47 @@
 "use client";
 
 import Repo from "@/components/me/Repo";
-import { ITEMS_PER_MY_PAGE, PAGES_PER_GROUP } from "@/lib/const";
+import { getRepoListFromDB } from "@/lib/api/repositories";
+import { useRepoListStore } from "@/stores/useRepoListStore";
 import { RepoListData } from "@/types/repo";
 import { useEffect, useMemo, useState } from "react";
+import { useShallow } from "zustand/react/shallow";
 import Dropdown from "../ui/Dropdown";
 import Pagination from "../ui/Pagination";
-import { useRepoListStore } from "@/stores/useRepoListStore";
-import { getRepoListFromDB } from "@/lib/api/repositories";
+import RepoFilterButton from "./RepoFilterButton";
+import { useQuery } from "@tanstack/react-query";
 
 export default function RepoList({
   initialRepos,
+  totalPage = 1,
   username,
 }: {
   initialRepos: RepoListData[];
+  totalPage: number;
   username: string;
 }) {
-  // 1. 북마크한 레파지토리만 보기
-  const filterByBookmarked = useRepoListStore(
-    (state) => state.filterByBookmarked,
+  // 1. 필터링 적용 (1) 북마크, (2) 최근 클릭
+  const { filterByBookmarked, filterByRecentClicked } = useRepoListStore(
+    useShallow((state) => ({
+      filterByBookmarked: state.filterByBookmarked,
+      filterByRecentClicked: state.filterByRecentClicked,
+    })),
   );
-  // 2. 최근에 클릭한 레파지토리만 보기
-  const filterByRecentClicked = useRepoListStore(
-    (state) => state.filterByRecentClicked,
-  );
+  // 2. 필터링 적용 (1) 검사 상태, (2) 정렬
+  const [filterType, setFilterType] = useState<string>("");
+  const [sortType, setSortType] = useState<string>("");
+  // 3. 페이지네이션 적용
+  const [currPage, setCurrPage] = useState(1);
+  // const [repos, setRepos] = useState<RepoListData[]>(initialRepos);
 
-  const [repos, setRepos] = useState<RepoListData[]>(initialRepos);
-
-  useEffect(() => {
-    const fetchRepos = async () => {
+  const {
+    data: repos,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["repoList", username, filterByBookmarked, filterByRecentClicked],
+    queryFn: async () => {
       const params = new URLSearchParams({ username });
       if (filterByBookmarked) {
         params.append("favorite", "true");
@@ -36,16 +49,27 @@ export default function RepoList({
       if (filterByRecentClicked) {
         params.append("clickedAt", "true");
       }
-      const filteredRepos = await getRepoListFromDB(params);
-      setRepos(filteredRepos);
-    };
 
-    fetchRepos();
-  }, [filterByBookmarked, filterByRecentClicked, username, initialRepos]);
+      const { repos } = await getRepoListFromDB(params);
+      return repos;
+    },
+    enabled: false,
+    initialData: initialRepos,
+  });
 
-  // 3. 필터링 적용
-  const [filterType, setFilterType] = useState<string>("");
-  const [sortType, setSortType] = useState<string>("");
+  useEffect(() => {
+    if (filterByBookmarked || filterByRecentClicked) {
+      refetch();
+    }
+  }, [filterByBookmarked, filterByRecentClicked]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading data</div>;
+  }
 
   const filteredAndSortedRepos = useMemo(() => {
     let result = [...repos];
@@ -80,61 +104,54 @@ export default function RepoList({
     return result;
   }, [filterType, sortType, repos]);
 
-  // 4. 페이징 적용
-  const [currPage, setCurrPage] = useState(1);
-  const totalPages = Math.ceil(
-    filteredAndSortedRepos?.length / ITEMS_PER_MY_PAGE,
-  );
-  const currentGroup = Math.ceil(currPage / PAGES_PER_GROUP);
-  const startPage = (currentGroup - 1) * PAGES_PER_GROUP + 1;
-  const endPage = Math.min(startPage + PAGES_PER_GROUP - 1, totalPages);
-
-  const startIndex = (currPage - 1) * ITEMS_PER_MY_PAGE;
-  const endIndex = startIndex + ITEMS_PER_MY_PAGE;
-  const currentRepos = filteredAndSortedRepos?.slice(startIndex, endIndex);
-
   return (
-    <section className="mt-5 flex flex-col gap-y-12">
-      <div className="inline-flex h-11 items-center justify-between">
-        <h2 className="text-[2rem] font-medium -tracking-[0.01em] text-gray-dark">
-          Library
-        </h2>
-        <div className="inline-flex gap-x-[0.563rem]">
-          <Dropdown type="type" onSelectFilter={setFilterType} />
-          <Dropdown type="sort" onSelectFilter={setSortType} />
-        </div>
+    <section>
+      <div className="flex-between-center gap-x-[1.313rem]">
+        <RepoFilterButton type="recent-files" />
+        <RepoFilterButton type="bookmark" />
       </div>
 
-      {initialRepos.length === 0 ? (
-        <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
-          <p className="text-[2rem] font-semibold leading-[2.8rem] tracking-[0.015em] text-gray-dark">
-            Github에 레포지토리가 존재하지 않습니다.
-          </p>
-          <p className="flex-col-center-center text-2xl font-normal leading-[2.1rem] text-gray-default">
-            <span>새로운 프로젝트를 시작해보세요.</span>
-          </p>
+      <div className="mt-5 flex flex-col gap-y-12">
+        <div className="inline-flex h-11 items-center justify-between">
+          <h2 className="text-[2rem] font-medium -tracking-[0.01em] text-gray-dark">
+            Library
+          </h2>
+          <div className="inline-flex gap-x-[0.563rem]">
+            <Dropdown type="type" onSelectFilter={setFilterType} />
+            <Dropdown type="sort" onSelectFilter={setSortType} />
+          </div>
         </div>
-      ) : currentRepos.length == 0 ? (
-        <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
-          <p className="text-[2rem] font-semibold leading-[2.8rem] tracking-[0.015em] text-gray-dark">
-            조건에 맞는 레포지토리가 없습니다.
-          </p>
+
+        {initialRepos.length === 0 ? (
+          <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
+            <p className="text-[2rem] font-semibold leading-[2.8rem] tracking-[0.015em] text-gray-dark">
+              Github에 레포지토리가 존재하지 않습니다.
+            </p>
+            <p className="flex-col-center-center text-2xl font-normal leading-[2.1rem] text-gray-default">
+              새로운 프로젝트를 시작해보세요.
+            </p>
+          </div>
+        ) : filteredAndSortedRepos.length == 0 ? (
+          <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
+            <p className="text-[2rem] font-semibold leading-[2.8rem] tracking-[0.015em] text-gray-dark">
+              조건에 맞는 레포지토리가 없습니다.
+            </p>
+          </div>
+        ) : (
+          <div className="flex-between-center relative grid grid-cols-3 grid-rows-3 gap-x-6 gap-y-12 1150:grid-cols-4">
+            {filteredAndSortedRepos.map((repo) => (
+              <Repo key={repo.repositoryName} username={username} {...repo} />
+            ))}
+          </div>
+        )}
+        <div className="flex-center-center w-full">
+          <Pagination
+            className="-translate-x-1/2 transform"
+            currentPage={currPage}
+            totalPages={totalPage}
+            setCurrentPage={setCurrPage}
+          />
         </div>
-      ) : (
-        <div className="flex-between-center relative grid grid-cols-3 grid-rows-3 gap-x-6 gap-y-12 1150:grid-cols-4">
-          {currentRepos.map((repo) => (
-            <Repo key={repo.repositoryName} username={username} {...repo} />
-          ))}
-        </div>
-      )}
-      <div className="flex-center-center w-full">
-        <Pagination
-          currentPage={currPage}
-          totalPages={totalPages}
-          startPage={startPage}
-          endPage={endPage}
-          setCurrentPage={setCurrPage}
-        />
       </div>
     </section>
   );

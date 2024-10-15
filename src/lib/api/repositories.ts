@@ -73,6 +73,7 @@ export async function getRepoLists(username: string) {
         createdAt: repo.created_at ?? "",
         detectedStatus: "notChecked",
         favorite: false,
+        owner: username,
       }),
     );
 
@@ -406,10 +407,10 @@ export const addRepoList = async (username: string, repos: RepoListData[]) => {
 export const getRepoListFromDB = async (params: URLSearchParams) => {
   try {
     const res = await fetch(`${BASE_URL}/api/repos?${params.toString()}`);
-    const data = await res.json();
-    return data.repos;
+    return await res.json();
   } catch (err) {
-    console.error("Error fetching document:", err);
+    console.error("Error fetching document from repos collections:", err);
+    return { repos: [], totalPage: 1 };
   }
 };
 

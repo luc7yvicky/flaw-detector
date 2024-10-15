@@ -33,10 +33,10 @@ function NavMenu({ isDocsPage }: { isDocsPage: boolean }) {
         )}
       >
         <li>
-          <Link href={"/vuldb/items"}>취약점 DB</Link>
+          <Link prefetch href={"/vuldb/items"}>취약점 DB</Link>
         </li>
         <li>
-          <Link href={"/repos"}>MY 저장소</Link>
+          <Link prefetch href={"/repos"}>MY 저장소</Link>
         </li>
       </ul>
     </nav>

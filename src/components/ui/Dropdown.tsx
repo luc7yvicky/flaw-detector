@@ -56,7 +56,7 @@ const DropdownMenu = forwardRef<HTMLUListElement, DropdownMenuProps>(
       const newIndex = index === selectedIndex ? -1 : index;
       setSelectedIndex(newIndex);
       setIsOpen(false); // close dropdown
-      onChange(newIndex === -1 ? "-1" : options[index].value);
+      onChange(newIndex === -1 ? "" : options[index].value);
     };
     return (
       <ul
@@ -115,7 +115,7 @@ export default function Dropdown({
     >
       <button
         className={cn(
-          "inline-flex h-[2.75rem] w-full items-center justify-between rounded-lg border border-gray-default px-[0.625rem] py-[0.625rem] text-xl text-gray-dark outline-0",
+          "inline-flex h-[2.75rem] w-full items-center justify-between rounded-lg border border-gray-default bg-white px-[0.625rem] py-[0.625rem] text-xl text-gray-dark outline-0",
         )}
         onClick={() => setIsOpen(!isOpen)}
         ref={buttonRef}
