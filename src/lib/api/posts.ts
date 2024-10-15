@@ -7,6 +7,7 @@ import {
   limit,
   orderBy,
   query,
+  runTransaction,
   startAfter,
   updateDoc,
   where,
@@ -125,5 +126,29 @@ export async function increasePostViews(postId: string): Promise<void> {
   } catch (error) {
     console.error("Error updating post views:", error);
     throw new Error("Failed to update post views.");
+  }
+}
+
+/**
+ * 검색어 기반으로 실시간 토픽을 업데이트합니다.
+ * @param searchTerm
+ */
+export async function updateRealTimeTopic(searchTerm: string) {
+  const searchKeywordRef = doc(db, "searchKeywords", searchTerm);
+
+  try {
+    await runTransaction(db, async (transaction) => {
+      const searchKeywordDoc = await transaction.get(searchKeywordRef);
+
+      if (searchKeywordDoc.exists()) {
+        const newCount = searchKeywordDoc.data().searchCounts + 1;
+        transaction.update(searchKeywordRef, { searchCounts: newCount });
+      } else {
+        transaction.set(searchKeywordRef, { searchCounts: 1 });
+      }
+    });
+  } catch (error) {
+    console.error("Error updating RealTime Topic: ", error);
+    throw new Error("Failed to update RealTime Topic.");
   }
 }
