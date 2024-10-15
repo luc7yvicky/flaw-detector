@@ -56,7 +56,7 @@ function FileTree({ data, repo, sortOption }: FileTreeProps) {
   }, [rootItems, sortOption]);
 
   return (
-    <ul className="">
+    <ul className="max-h-[40rem] overflow-x-hidden overflow-y-scroll scrollbar-hide">
       {sortOption === "bookmark" && (
         <>
           <li className="flex justify-between border-b border-line-default px-4 py-2 text-sm text-gray-500">

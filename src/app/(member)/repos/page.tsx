@@ -12,7 +12,7 @@ import { Suspense } from "react";
 
 /**
  * 깃허브 레포지토리 리스트 불러오기
- * 
+ *
  * @param username
  * @returns {Promise<any>}
  */
@@ -37,7 +37,7 @@ export default async function ReposPage() {
   const repos: RepoListData[] = await fetchRepoList(username);
 
   return (
-    <div className="mb-[8.536rem] flex w-full min-w-[64rem] max-w-[82.125rem] flex-col gap-y-[7.75rem]">
+    <div className="mb-[8.536rem] flex w-full min-w-[64rem] max-w-[82.125rem] flex-col gap-y-[7.75rem] px-[1rem]">
       <Image
         src="/images/myReposBg.png"
         alt="my repos bg"

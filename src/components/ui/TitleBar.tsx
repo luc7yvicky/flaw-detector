@@ -50,6 +50,7 @@ export default function TitleBar({
             align === "center" && "absolute left-0 z-30",
           )}
           onClick={onClickBackButton}
+          aria-label="뒤로가기"
         >
           <IconCaretLeft className="stroke-primary-500 stroke-[0.1rem]" />
         </Button>
