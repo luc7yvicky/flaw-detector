@@ -30,8 +30,8 @@ export default function ScrappedArticleListSkeleton() {
 
         {/* Filter */}
         <div className="inline-flex gap-x-[0.563rem]">
-          <button className="h-[2.75rem] w-[5.563rem] cursor-default rounded-xl bg-gray-200" />
-          <button className="h-[2.75rem] w-[5.563rem] cursor-default rounded-xl bg-gray-200" />
+          <button className="h-[2.75rem] w-[6rem] cursor-default rounded-xl bg-gray-200" />
+          <button className="h-[2.75rem] w-[6rem] cursor-default rounded-xl bg-gray-200" />
         </div>
       </div>
 
