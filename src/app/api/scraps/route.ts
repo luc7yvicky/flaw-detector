@@ -50,7 +50,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         const post = {
           id: doc.id,
           label: doc.data().label,
-          title: doc.data().title.translated,
+          title: doc.data().title.translated || doc.data().title.original,
           createdAt: new Timestamp(
             doc.data().created_at.seconds,
             doc.data().created_at.nanoseconds,
