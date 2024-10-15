@@ -58,6 +58,7 @@ const DropdownMenu = forwardRef<HTMLUListElement, DropdownMenuProps>(
       setIsOpen(false); // close dropdown
       onChange(newIndex === -1 ? "" : options[index].value);
     };
+
     return (
       <ul
         className={cn(
@@ -73,7 +74,7 @@ const DropdownMenu = forwardRef<HTMLUListElement, DropdownMenuProps>(
             className={cn(
               "flex-center-center h-[2.438rem] w-full bg-white px-[0.6rem] py-[0.469rem] transition-all duration-300 first:rounded-t-lg last:rounded-b-lg",
               selectedIndex === index
-                ? "cursor-default justify-between bg-purple-dark"
+                ? "cursor-default gap-x-2 bg-purple-dark"
                 : "hover:bg-purple-light",
               name.length > 3 && "px-[0.1rem]",
             )}
@@ -82,7 +83,7 @@ const DropdownMenu = forwardRef<HTMLUListElement, DropdownMenuProps>(
             role="menu-item"
             aria-label="menu item"
           >
-            {selectedIndex === index && <IconCheck width={20} height={20} />}
+            {selectedIndex === index && <IconCheck width={13} height={13} />}
             {name}
           </li>
         ))}
@@ -102,26 +103,30 @@ export default function Dropdown({
   const menuRef = useRef<HTMLUListElement>(null);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const selectedOptionName = getOptions(type).find(
+    (option) => option.id === selectedIndex.toString(),
+  )?.name;
 
   useOutsideClick([menuRef, buttonRef], () => setIsOpen(false));
 
   return (
     <div
       className={cn(
-        "relative flex w-[5.563rem] cursor-pointer flex-col",
+        "relative flex w-[6rem] min-w-fit cursor-pointer flex-col",
         className,
       )}
       {...props}
     >
       <button
         className={cn(
-          "inline-flex h-[2.75rem] w-full items-center justify-between rounded-lg border border-gray-default bg-white px-[0.625rem] py-[0.625rem] text-xl text-gray-dark outline-0",
+          "inline-flex h-[2.75rem] w-full items-center justify-center rounded-lg border border-gray-default px-[0.625rem] py-[0.625rem] text-xl text-gray-dark outline-0 hover:bg-slate-50",
+          !selectedOptionName ? "gap-x-2" : "bg-[#fafafa] font-semibold",
         )}
         onClick={() => setIsOpen(!isOpen)}
         ref={buttonRef}
       >
-        <span>{type === "sort" ? "Sort" : "Type"}</span>
-        <IconCaretDown width={12} height={6} />
+        <span>{selectedOptionName || (type === "sort" ? "Sort" : "Type")}</span>
+        {!selectedOptionName && <IconCaretDown width={12} height={6} />}
       </button>
       {isOpen && (
         <DropdownMenu

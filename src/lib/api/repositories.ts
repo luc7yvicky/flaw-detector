@@ -1,7 +1,7 @@
 import { BASE_URL, OCTOKIT_TOKEN } from "@/lib/const";
 import { Mode } from "@/stores/useDetectedModeStore";
 import { FileResultProps, FileStatus } from "@/types/file";
-import { detectedStatus, RepoContentItem, RepoListData } from "@/types/repo";
+import { detectedStatus, RepoListData } from "@/types/repo";
 import { Octokit } from "@octokit/rest";
 import { isIgnoredFile } from "../utils";
 
@@ -53,7 +53,6 @@ export async function fetchCodes(
   }
 }
 
-// 1. 레포지토리 리스트를 불러옵니다.
 export async function getRepoLists(username: string) {
   if (!username) {
     throw new Error("GitHub username이 존재하지 않습니다");
@@ -83,96 +82,6 @@ export async function getRepoLists(username: string) {
     return repos;
   } catch (error) {
     console.error("레포지토리 목록을 읽어오는 데 실패했습니다:", error);
-    throw error;
-  }
-}
-
-// 폴더의 하위 콘텐츠를 불러옵니다.
-type FolderItem = Extract<RepoContentItem, { type: "dir" }>;
-
-export async function expandFolder(
-  username: string,
-  repo: string,
-  folder: FolderItem,
-): Promise<FolderItem> {
-  if (folder.folderExpandStatus === "expanded") {
-    return folder;
-  }
-
-  try {
-    folder.folderExpandStatus = "expanding";
-    folder.items = await fetchRepoContents(username, repo, folder.path);
-    folder.folderExpandStatus = "expanded";
-    return folder;
-  } catch (error) {
-    folder.folderExpandStatus = "error";
-    folder.error =
-      error instanceof Error
-        ? error.message
-        : "알 수 없는 에러가 발생했습니다.";
-    throw error;
-  }
-}
-// 해당 경로의 content를 1depth만 읽어옵니다 (폴더/파일)
-export async function fetchRepoContents(
-  username: string,
-  repo: string,
-  path: string = "",
-): Promise<RepoContentItem[]> {
-  if (!username || !repo) {
-    throw new Error("GitHub username과 repository가 필요합니다.");
-  }
-
-  try {
-    const response = await octokit.rest.repos.getContent({
-      owner: username,
-      repo: repo,
-      path: path,
-    });
-
-    if (!Array.isArray(response.data)) {
-      throw new Error(`경로 ${path}에 대한 예상치 못한 응답입니다.`);
-    }
-
-    return response.data.map((item: any): RepoContentItem => {
-      const baseItem = {
-        name: item.name,
-        path: item.path,
-        type: item.type as "file" | "dir",
-        size: item.size,
-      };
-
-      if (item.type === "dir") {
-        return {
-          ...baseItem,
-          type: "dir",
-          folderExpandStatus: "initial",
-          items: [],
-        };
-      } else {
-        return {
-          ...baseItem,
-          type: "file",
-          fileContentStatus: "initial",
-        };
-      }
-    });
-  } catch (error) {
-    throw new Error(
-      `${path} 레포 내용을 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
-    );
-  }
-}
-
-// 레포의 최상위 루트폴더의 구조를 fetch합니다.
-export async function fetchRootStructure(username: string, repo: string) {
-  try {
-    // console.log(
-    //   `${username}/${repo} 레포지토리의 최상위 구조를 가져오는 중...`,
-    // );
-    return await fetchRepoContents(username, repo);
-  } catch (error) {
-    console.error("fetchRootStructure에서 오류 발생:", error);
     throw error;
   }
 }
@@ -271,29 +180,6 @@ export async function getRepoTree(
       `레포지토리 트리를 가져오는 중 오류 발생: ${error instanceof Error ? error.message : "알 수 없는 에러"}`,
     );
   }
-}
-
-export async function getInspectionList(
-  owner: string,
-  repo: string,
-  branch?: string,
-): Promise<InspectionList> {
-  const repoTree = await getRepoTree(owner, repo, branch);
-
-  const inspectionList = repoTree.tree.reduce<InspectionList>(
-    (acc, item) => {
-      if (isIgnoredFile(item.path)) {
-        acc.ignoredFiles.push(item);
-        acc.ignoredCount += 1;
-      } else {
-        acc.tree.push(item);
-      }
-      return acc;
-    },
-    { tree: [], ignoredFiles: [], ignoredCount: 0 },
-  );
-
-  return inspectionList;
 }
 
 // 취약점 검사 결과 저장 (파일 단위)

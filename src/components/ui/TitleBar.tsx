@@ -36,10 +36,6 @@ export default function TitleBar({
     }
   };
 
-  const onClickTitle = () => {
-    window.location.reload();
-  };
-
   return (
     <div
       className={cn("relative mb-8 flex h-[4.875rem]", alignStyle, className)}
@@ -54,7 +50,7 @@ export default function TitleBar({
             align === "center" && "absolute left-0 z-30",
           )}
           onClick={onClickBackButton}
-          aria-label="Go To Back"
+          aria-label="뒤로가기"
         >
           <IconCaretLeft className="stroke-primary-500 stroke-[0.1rem]" />
         </Button>
@@ -66,7 +62,6 @@ export default function TitleBar({
           h1AlignStyle,
           h1ClassName,
         )}
-        onClick={onClickTitle}
       >
         {title}
       </h1>

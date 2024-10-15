@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { User } from "next-auth";
 import db from "../../../firebaseConfig";
-import { FILE_INSPECTION_STATUS_KEY } from "../const";
+import { BASE_URL, FILE_INSPECTION_STATUS_KEY } from "../const";
 
 /**
  * Firestore에 새로운 user를 추가합니다.
@@ -213,5 +213,41 @@ export async function deleteUserData(username: string): Promise<void> {
   } catch (error) {
     console.error("유저 정보를 삭제하는 중 오류 발생:", error);
     throw new Error("유저 정보를 삭제하는 중 오류가 발생했습니다.");
+  }
+}
+
+/**
+ * 사용자가 스크랩한 게시물을 가져옵니다.
+ *
+ * @param username
+ * @param currPage
+ * @param labelType
+ * @returns
+ */
+export async function fetchArticleList(
+  username: string,
+  currPage: number = 1,
+  labelType: string = "",
+) {
+  const params = new URLSearchParams();
+  params.append("username", username);
+  params.append("page", currPage.toString());
+  params.append("label", labelType);
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/scraps?${params.toString()}`);
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        error:
+          data.message ||
+          "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요.",
+      };
+    }
+
+    return data;
+  } catch (err) {
+    return { error: "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요." };
   }
 }

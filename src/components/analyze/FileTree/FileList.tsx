@@ -42,7 +42,7 @@ export default function FileList({
   const handleToggleMultiSelection = () => {
     toggleCheckboxVisibility();
     clearSelection();
-  }
+  };
 
   const handleSortChange = (option: SortOption) => {
     setSortOption(option);

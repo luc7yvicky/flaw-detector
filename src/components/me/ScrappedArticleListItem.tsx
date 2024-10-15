@@ -1,13 +1,10 @@
+import { formatDateToYYYYMMDDhhmmss } from "@/lib/utils";
 import { ArticleListItem, VulDBPostLabel } from "@/types/post";
+import { memo } from "react";
 import { Card, CardHeader, CardSubTitle, CardTitle } from "../ui/Card";
 import { Label } from "../ui/Label";
-import { formatDateToYYYYMMDDhhmmss } from "@/lib/utils";
 
-export default function ScrappedArticleListItem({
-  label,
-  title,
-  createdAt,
-}: ArticleListItem) {
+function ScrappedArticleListItem({ label, title, createdAt }: ArticleListItem) {
   const labelVariant = (label: VulDBPostLabel) => {
     switch (label) {
       case "취약성 보고서":
@@ -31,3 +28,5 @@ export default function ScrappedArticleListItem({
     </Card>
   );
 }
+
+export default memo(ScrappedArticleListItem);

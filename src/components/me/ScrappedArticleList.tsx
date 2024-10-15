@@ -1,17 +1,14 @@
 "use client";
 
-import { fetchArticleList } from "@/app/(member)/me/scraps/page";
 import { useSessionStore } from "@/context/SessionProvider";
+import { fetchArticleList } from "@/lib/api/users";
 import { ArticleListItem } from "@/types/post";
-import {
-  keepPreviousData,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import Dropdown from "../ui/Dropdown";
 import Pagination from "../ui/Pagination";
+import ExceptionHandlingMessage from "../vulnerability-db/ExceptionHandlingMessage";
 import ScrappedArticleListItem from "./ScrappedArticleListItem";
 
 export default function ScrappedArticleList({
@@ -22,7 +19,6 @@ export default function ScrappedArticleList({
   totalPage: number;
 }) {
   const { user } = useSessionStore((store) => store);
-  console.log(user);
 
   // 1. 필터링 적용
   const [labelType, setLabelType] = useState<string>("");
@@ -30,33 +26,26 @@ export default function ScrappedArticleList({
   // 2. 페이징 적용
   const [currPage, setCurrPage] = useState<number>(1);
 
-  // const queryClient = useQueryClient();
-
-  const { data, error, isLoading, refetch } = useQuery({
+  const { data, error, refetch } = useQuery({
     queryKey: ["scrappedArticles", user.username, currPage, labelType],
     queryFn: async () =>
       await fetchArticleList(user.username, currPage, labelType),
-    enabled: !!user.username,
+    enabled: false,
     initialData: { posts: initialArticles, totalPage },
     placeholderData: keepPreviousData,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
-  // 다음 페이지의 데이터를 미리 가져옴
-  // useEffect(() => {
-  //   if (currPage < totalPage) {
-  //     queryClient.prefetchQuery({
-  //       queryKey: ["scrappedArticles", user.username, currPage + 1, labelType],
-  //       queryFn: async () =>
-  //         await fetchArticleList(user.username, currPage + 1, labelType),
-  //     });
-  //   }
-  // }, [currPage, totalPage, labelType, queryClient]);
+  useEffect(() => {
+    if (data?.totalPage === 1) {
+      setCurrPage(1);
+    }
+  }, [data?.totalPage]);
 
   useEffect(() => {
-    if (currPage > 1) {
-      refetch();
-    }
-  }, [currPage, labelType]);
+    refetch();
+  }, [currPage, labelType, refetch]);
 
   const filteredArticles = useMemo(() => {
     let sortedArticles = [...(data?.posts || [])];
@@ -100,15 +89,22 @@ export default function ScrappedArticleList({
         </div>
       </div>
 
-      <div className="flex-between-center relative grid grid-cols-3 gap-6">
-        {filteredArticles?.map((article) => (
-          <Link href={`/vuldb/items/${article.id}`} key={article.id}>
-            <ScrappedArticleListItem {...article} />
-          </Link>
-        ))}
-      </div>
+      {filteredArticles.length === 0 ? (
+        <ExceptionHandlingMessage
+          situation="조건에 맞는 게시물이 없습니다."
+          solution="다른 조건을 선택해주세요."
+        />
+      ) : (
+        <div className="flex-between-center relative grid grid-cols-3 gap-6">
+          {filteredArticles?.map((article) => (
+            <Link href={`/vuldb/items/${article.id}`} key={article.id}>
+              <ScrappedArticleListItem {...article} />
+            </Link>
+          ))}
+        </div>
+      )}
 
-      {!error && (
+      {data?.totalPage > 0 && (
         <div className="flex-center-center w-full">
           <Pagination
             currentPage={currPage}
