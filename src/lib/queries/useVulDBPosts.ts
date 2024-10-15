@@ -10,7 +10,7 @@ export function useVulDBPosts(
   currentPage: number,
   itemsPerPage: number,
   selectedChip: "hot" | "new" | "",
-  searchTerm: string | null = null,
+  searchTerm: string[] | null = null,
 ) {
   const queryClient = useQueryClient();
   const { data: hotPostIds = [] } = useHotPostIds();

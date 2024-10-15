@@ -17,7 +17,7 @@ import { useSessionStore } from "@/context/SessionProvider";
 export default function VulDBPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedChip, setSelectedChip] = useState<"hot" | "new" | "">("");
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string[]>([]);
   const { user } = useSessionStore((state) => state);
   const userId = user?.userId;
   const { posts, totalPages, postsLoading, latestPosts, prefetchPage } =
