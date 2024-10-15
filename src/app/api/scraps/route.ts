@@ -1,12 +1,11 @@
 import { ITEMS_PER_MY_PAGE } from "@/lib/const";
-import { ArticleListItem, VulDBPostLabel } from "@/types/post";
+import { ArticleListItem } from "@/types/post";
 import {
   collection,
   doc,
   getDoc,
   getDocs,
   limit,
-  orderBy,
   query,
   startAfter,
   Timestamp,
@@ -16,7 +15,7 @@ import { NextRequest, NextResponse } from "next/server";
 import db from "../../../../firebaseConfig";
 
 /**
- * 사용자가 스크랩한 게시물의 아이디로 (1)페이징하거나 (2)필터링한 게시물을 가져옵니다.
+ * 필터링하거나 페이징한 게시물을 가져옵니다.
  *
  * @param pinnedPostsIds
  * @param label
@@ -42,14 +41,10 @@ async function getFilteredArticles(
     return { filteredArticles: [], totalPage: 0 };
   }
 
-  totalDocsSnapshot.docs.forEach((doc) => {
-    console.log(doc.id, "=>", doc.data());
-  });
-
   const totalDocs = totalDocsSnapshot.docs.length;
   const totalPage = Math.ceil(totalDocs / ITEMS_PER_MY_PAGE);
 
-  if (page > 1) {
+  if (page > 1 && page <= totalPage) {
     const lastVisibleDoc =
       totalDocsSnapshot.docs[(page - 1) * ITEMS_PER_MY_PAGE - 1];
     q = query(q, startAfter(lastVisibleDoc), limit(ITEMS_PER_MY_PAGE));
@@ -58,10 +53,6 @@ async function getFilteredArticles(
   }
 
   const postsSnapshot = await getDocs(q);
-
-  if (postsSnapshot.empty) {
-    throw new Error("조건에 맞는 게시물이 없습니다.");
-  }
 
   const filteredArticles: ArticleListItem[] = postsSnapshot.docs.map((doc) => ({
     id: doc.id,
@@ -84,7 +75,6 @@ async function getFilteredArticles(
  */
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const { searchParams } = new URL(req.url);
-  console.log(searchParams);
   const username = searchParams.get("username");
   const page = parseInt(searchParams.get("page") || "1", 10);
   const label = searchParams.get("label") || "";

@@ -1,36 +1,17 @@
 import { auth } from "@/auth";
-import ScrappedArticleList from "@/components/me/ScrappedArticleList";
+import ScrappedArticleListSkeleton from "@/components/me/ScrappedArticleListSkeleton";
 import TitleBar from "@/components/ui/TitleBar";
-import { BASE_URL } from "@/lib/const";
+import { fetchArticleList } from "@/lib/api/users";
 import { ArticleListItem } from "@/types/post";
+import dynamic from "next/dynamic";
 
-export const fetchArticleList = async (
-  username: string,
-  currPage: number = 1,
-  labelType: string = "",
-) => {
-  const params = new URLSearchParams();
-  params.append("username", username);
-  params.append("page", currPage.toString());
-  params.append("label", labelType);
-
-  try {
-    const res = await fetch(`${BASE_URL}/api/scraps?${params.toString()}`);
-    const data = await res.json();
-
-    if (!res.ok) {
-      return {
-        error:
-          data.message ||
-          "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요.",
-      };
-    }
-
-    return data;
-  } catch (err) {
-    return { error: "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요." };
-  }
-};
+const ScrappedArticleList = dynamic(
+  () => import("@/components/me/ScrappedArticleList"),
+  {
+    ssr: false,
+    loading: () => <ScrappedArticleListSkeleton />,
+  },
+);
 
 export default async function ScrapsPage() {
   const session = await auth();
@@ -56,7 +37,7 @@ export default async function ScrapsPage() {
         align="center"
         className="mb-0 mt-[4.5rem]"
       />
-      {posts && Array.isArray(posts) && posts?.length !== 0 ? (
+      {posts && Array.isArray(posts) ? (
         <ScrappedArticleList initialArticles={posts} totalPage={totalPage} />
       ) : (
         <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
