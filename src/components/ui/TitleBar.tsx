@@ -56,7 +56,7 @@ export default function TitleBar({
       )}
       <h1
         className={cn(
-          "flex size-full h-fit cursor-pointer rounded-full border-[0.25rem] border-primary-500 px-[2rem] py-3 text-[2.5rem] leading-tight -tracking-[0.01em] text-primary-500",
+          "flex size-full h-fit rounded-full border-[0.25rem] border-primary-500 px-[2rem] py-3 text-[2.5rem] leading-tight -tracking-[0.01em] text-primary-500",
           hasBackButton && "ml-[1.5rem]",
           h1AlignStyle,
           h1ClassName,
