@@ -50,7 +50,6 @@ export default function TitleBar({
             align === "center" && "absolute left-0 z-30",
           )}
           onClick={onClickBackButton}
-          aria-label="Go To Back"
         >
           <IconCaretLeft className="stroke-primary-500 stroke-[0.1rem]" />
         </Button>
