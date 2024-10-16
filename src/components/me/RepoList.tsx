@@ -10,6 +10,7 @@ import Dropdown from "../ui/Dropdown";
 import Pagination from "../ui/Pagination";
 import RepoFilterButton from "./RepoFilterButton";
 import { useQuery } from "@tanstack/react-query";
+import { RepoListSkeleton } from "./RepoListSkeleton";
 
 export default function RepoList({
   initialRepos,
@@ -64,7 +65,7 @@ export default function RepoList({
   }, [filterByBookmarked, filterByRecentClicked]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <RepoListSkeleton />;
   }
 
   if (isError) {

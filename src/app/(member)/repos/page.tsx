@@ -1,10 +1,11 @@
 import { auth } from "@/auth";
 import Profile from "@/components/me/Profile";
 import { RepoHeader } from "@/components/me/RepoHeader";
-import RepoList from "@/components/me/RepoList";
+import { RepoListSkeleton } from "@/components/me/RepoListSkeleton";
 import { IconCaretLeft } from "@/components/ui/Icons";
 import { getRepoListFromDB, getRepoLists } from "@/lib/api/repositories";
 import { RepoListData } from "@/types/repo";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 
 /**
@@ -23,6 +24,10 @@ const fetchRepoList = async (username: string): Promise<any> => {
 
   return await getRepoListFromDB(params);
 };
+
+const RepoList = dynamic(() => import("@/components/me/RepoList"), {
+  loading: () => <RepoListSkeleton />,
+});
 
 export default async function ReposPage() {
   const session = await auth();

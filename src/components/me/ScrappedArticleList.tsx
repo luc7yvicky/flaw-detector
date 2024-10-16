@@ -31,6 +31,7 @@ export default function ScrappedArticleList({
     queryFn: async () =>
       await fetchArticleList(user.username, currPage, labelType),
     enabled: false,
+    staleTime: 2000,
     initialData: { posts: initialArticles, totalPage },
     placeholderData: keepPreviousData,
     refetchOnWindowFocus: false,

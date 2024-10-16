@@ -112,7 +112,6 @@ export const Alert = ({
       if (filePath) {
         setMode(filePath, mode);
         setResults(results);
-        // window.history.replaceState({}, "", `/repos/${repoName}/${filePath}`);
       }
     } catch (err) {
       console.error("Error fetching results:", err);

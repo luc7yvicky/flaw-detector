@@ -235,19 +235,13 @@ export async function fetchArticleList(
   params.append("label", labelType);
 
   try {
-    const res = await fetch(`${BASE_URL}/api/scraps?${params.toString()}`);
+    const res = await fetch(`${BASE_URL}/api/scraps?${params.toString()}`, {
+      next: { revalidate: 60 },
+    });
     const data = await res.json();
-
-    if (!res.ok) {
-      return {
-        error:
-          data.message ||
-          "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요.",
-      };
-    }
-
-    return data;
+    return { ...data, status: res.status };
   } catch (err) {
-    return { error: "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요." };
+    console.error("Error fetching article list:", err);
+    return { error: "게시물을 불러오는 데 실패했습니다.", status: 500 };
   }
 }

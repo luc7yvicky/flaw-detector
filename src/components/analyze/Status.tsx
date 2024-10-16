@@ -53,16 +53,6 @@ function StatusMessage({
   );
 }
 
-function StatusMessageSkeleton() {
-  return (
-    <div className="inline-flex gap-x-[0.833rem]">
-      <div className="ml-[0.667rem] size-[1.667rem] rounded-full bg-gray-200" />
-      <div className="h-[1.902rem] w-[6.833rem] rounded-lg bg-gray-200" />
-      <div className="ml-auto size-[1.667rem] rounded-lg bg-gray-200" />
-    </div>
-  );
-}
-
 function Status({
   className,
   children,
@@ -77,6 +67,16 @@ function Status({
       {...props}
     >
       {children}
+    </div>
+  );
+}
+
+function StatusMessageSkeleton() {
+  return (
+    <div className="inline-flex gap-x-[0.833rem]">
+      <div className="ml-[0.667rem] size-[1.667rem] rounded-full bg-gray-200" />
+      <div className="h-[1.902rem] w-[6.833rem] rounded-lg bg-gray-200" />
+      <div className="ml-auto size-[1.667rem] rounded-lg bg-gray-200" />
     </div>
   );
 }
