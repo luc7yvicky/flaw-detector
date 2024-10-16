@@ -23,6 +23,7 @@ export type Option = { id: string; name: string; value: string };
 const typeOptions: Option[] = [
   { id: "0", name: "검사완료", value: "done" },
   { id: "1", name: "검사중", value: "onProgress" },
+  { id: "2", name: "미검사", value: "notChecked" },
 ];
 
 const labelOptions: Option[] = [
@@ -119,8 +120,10 @@ export default function Dropdown({
     >
       <button
         className={cn(
-          "inline-flex h-[2.75rem] w-full items-center justify-center rounded-lg border border-gray-default px-[0.625rem] py-[0.625rem] text-xl text-gray-dark outline-0 hover:bg-slate-50",
-          !selectedOptionName ? "gap-x-2" : "bg-[#fafafa] font-semibold",
+          "flex-center-center h-[2.75rem] w-full rounded-lg border border-gray-default px-[0.625rem] py-[0.625rem] text-xl text-gray-dark outline-0 hover:bg-slate-50",
+          !selectedOptionName
+            ? "gap-x-2"
+            : "bg-purple-light font-bold shadow-[0_0.833rem_4.167rem_0_rgba(0,0,0,0.1)]",
         )}
         onClick={() => setIsOpen(!isOpen)}
         ref={buttonRef}
