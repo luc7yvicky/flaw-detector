@@ -270,3 +270,16 @@ export const formatFileSize = (size: number | undefined): string => {
   if (size === undefined) return "";
   return `${(size / 1024).toFixed(2)} KB`;
 };
+
+/** 입력값을 소문자로 변환 후 특수 문자를 제거합니다. */
+export const processText = (text: string): string => {
+  let processedText = text.toLowerCase();
+  return processedText.replace(/[^\w\sㄱ-ㅎㅏ-ㅣ가-힣]/g, "");
+};
+
+export const extractPostTitleKeywords = (title: string): string[] => {
+  const processedTitle = processText(title);
+  const keywords = processedTitle.split(/\s+/);
+
+  return Array.from(new Set(keywords));
+};
