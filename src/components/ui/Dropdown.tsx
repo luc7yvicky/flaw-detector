@@ -123,7 +123,7 @@ export default function Dropdown({
           "flex-center-center h-[2.75rem] w-full rounded-lg border border-gray-default px-[0.625rem] py-[0.625rem] text-xl text-gray-dark outline-0 hover:bg-slate-50",
           !selectedOptionName
             ? "gap-x-2"
-            : "bg-purple-light font-bold shadow-[0_0.833rem_4.167rem_0_rgba(0,0,0,0.1)]",
+            : "bg-purple-light font-bold shadow-[0_0.833rem_1.667rem_0_rgba(150,150,150,0.15)]",
         )}
         onClick={() => setIsOpen(!isOpen)}
         ref={buttonRef}
