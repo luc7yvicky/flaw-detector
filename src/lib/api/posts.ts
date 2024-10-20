@@ -14,7 +14,6 @@ import {
 } from "firebase/firestore";
 import db from "../../../firebaseConfig";
 import { getUserPinnedPosts } from "./users";
-import { extractPostTitleKeywords } from "../utils";
 
 /**
  * 조회수가 높은 상위 게시물 ID를 가져옵니다.
@@ -157,34 +156,34 @@ export async function updateRealTimeTopic(searchTerm: string) {
 /**
  * 모든 post 문서의 title 필드를 기반으로 keywords 필드를 업데이트합니다.
  */
-export async function updateTitleKeywordsForPosts() {
-  try {
-    const postsCollection = collection(db, "posts");
-    const postsQuery = query(postsCollection);
-    const postsSnapshot = await getDocs(postsQuery);
+// export async function updateTitleKeywordsForPosts() {
+//   try {
+//     const postsCollection = collection(db, "posts");
+//     const postsQuery = query(postsCollection);
+//     const postsSnapshot = await getDocs(postsQuery);
 
-    postsSnapshot.forEach(async (docSnapshot) => {
-      const postData = docSnapshot.data();
+//     postsSnapshot.forEach(async (docSnapshot) => {
+//       const postData = docSnapshot.data();
 
-      if (postData.keywords) {
-        console.log(
-          `Document ${docSnapshot.id} already has keywords. Skipping update.`,
-        );
-        return;
-      }
+//       if (postData.keywords) {
+//         console.log(
+//           `Document ${docSnapshot.id} already has keywords. Skipping update.`,
+//         );
+//         return;
+//       }
 
-      const title = postData.title.translated || postData.title.original;
-      const keywords = extractPostTitleKeywords(title);
+//       const title = postData.title.translated || postData.title.original;
+//       const keywords = extractPostTitleKeywords(title);
 
-      await updateDoc(docSnapshot.ref, { keywords: keywords });
+//       await updateDoc(docSnapshot.ref, { keywords: keywords });
 
-      console.log(
-        `Updated document ${docSnapshot.id} with keywords:`,
-        keywords,
-      );
-    });
-  } catch (error) {
-    console.error("Error updating title keywords for posts: ", error);
-    throw new Error("Failed to update title keywords for posts.");
-  }
-}
+//       console.log(
+//         `Updated document ${docSnapshot.id} with keywords:`,
+//         keywords,
+//       );
+//     });
+//   } catch (error) {
+//     console.error("Error updating title keywords for posts: ", error);
+//     throw new Error("Failed to update title keywords for posts.");
+//   }
+// }
