@@ -38,7 +38,7 @@ export default function VulDBPage() {
           <VulDBImageCardContainer posts={latestPosts} />
         )}
         <Search setCurrentPage={setCurrentPage} setSearchTerm={setSearchTerm} />
-        <div className="flex justify-between">
+        <div className="grid grid-cols-[1fr_22rem] gap-5">
           {postsLoading ? (
             <VulDBDashboardSkeleton />
           ) : (
