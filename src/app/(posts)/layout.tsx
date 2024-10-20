@@ -18,9 +18,9 @@ export default async function VulDBLayout({
         draggable
         pauseOnHover
         toastStyle={{
-          boxShadow: "0px 4px 10px rgba(97, 0, 255, 0.25)",
           zIndex: 999,
           overflow: "visible",
+          backgroundColor: "#3F3F3F", // gray.dark
         }}
       />
     </>

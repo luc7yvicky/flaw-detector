@@ -270,3 +270,34 @@ export const formatFileSize = (size: number | undefined): string => {
   if (size === undefined) return "";
   return `${(size / 1024).toFixed(2)} KB`;
 };
+
+/**
+ * 텍스트에서 특수문자를 제거합니다.
+ */
+export const removeSpecialCharacters = (text: string): string => {
+  return text.replace(/[^a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣\s]/g, " ");
+};
+
+/**
+ * 텍스트에서 조사나 어미를 제거합니다.
+ */
+export const removeSuffixes = (text: string): string => {
+  return text.replace(/(에|을|를|이|가|의|은|는|도|로|과|와)$/g, "");
+};
+
+export const extractPostTitleKeywords = (title: string): string[] => {
+  const processedTitle = removeSpecialCharacters(title.toLowerCase());
+  const keywords = processedTitle
+    .split(/\s+/)
+    .filter((keyword) => keyword !== "")
+    .map(removeSuffixes);
+
+  return Array.from(new Set(keywords));
+};
+
+export const processSearchInput = (input: string): string[] => {
+  let processedInput = removeSpecialCharacters(input.toLowerCase());
+  processedInput = removeSuffixes(processedInput);
+
+  return processedInput.split(/\s+/).filter((keyword) => keyword !== "");
+};
