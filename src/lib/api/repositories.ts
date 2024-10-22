@@ -293,10 +293,11 @@ export const addRepoList = async (username: string, repos: RepoListData[]) => {
 export const getRepoListFromDB = async (params: URLSearchParams) => {
   try {
     const res = await fetch(`${BASE_URL}/api/repos?${params.toString()}`);
-    return await res.json();
+    const data = await res.json();
+    return { ...data, status: res.status };
   } catch (err) {
     console.error("Error fetching document from repos collections:", err);
-    return { repos: [], totalPage: 1 };
+    return { error: "게시물을 불러오는 데 실패했습니다.", status: 500 };
   }
 };
 

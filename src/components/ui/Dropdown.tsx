@@ -75,7 +75,7 @@ const DropdownMenu = forwardRef<HTMLUListElement, DropdownMenuProps>(
             className={cn(
               "flex-center-center h-[2.438rem] w-full bg-white px-[0.6rem] py-[0.469rem] transition-all duration-300 first:rounded-t-lg last:rounded-b-lg",
               selectedIndex === index
-                ? "cursor-default gap-x-2 bg-purple-dark"
+                ? "cursor-default gap-x-2 bg-primary-50"
                 : "hover:bg-purple-light",
               name.length > 3 && "px-[0.1rem]",
             )}

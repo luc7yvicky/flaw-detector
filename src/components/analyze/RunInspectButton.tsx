@@ -180,7 +180,7 @@ export default function RunInspectButton({
   return (
     <>
       <Button
-        className="h-[6.75rem] w-full"
+        className="h-[6.75rem] w-full text-[1.75rem]"
         onClick={openModal}
         disabled={isInspectionRunning}
       >

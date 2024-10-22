@@ -4,13 +4,14 @@ import Repo from "@/components/me/Repo";
 import { getRepoListFromDB } from "@/lib/api/repositories";
 import { useRepoListStore } from "@/stores/useRepoListStore";
 import { RepoListData } from "@/types/repo";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import Dropdown from "../ui/Dropdown";
 import Pagination from "../ui/Pagination";
+import ExceptionHandlingMessage from "../vulnerability-db/ExceptionHandlingMessage";
 import RepoFilterButton from "./RepoFilterButton";
-import { useQuery } from "@tanstack/react-query";
-import { RepoListSkeleton } from "./RepoListSkeleton";
+// import { RepoSkeleton } from "./RepoListSkeleton";
 
 export default function RepoList({
   initialRepos,
@@ -33,52 +34,75 @@ export default function RepoList({
   const [sortType, setSortType] = useState<string>("");
   // 3. 페이지네이션 적용
   const [currPage, setCurrPage] = useState(1);
-  // const [repos, setRepos] = useState<RepoListData[]>(initialRepos);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
+
+  // for Repo Skeleton
+  // const opacityLevels = [0.75, 0.5, 0.2];
 
   const {
-    data: repos,
-    isLoading,
+    data,
+    // isFetching,
     isError,
+    error,
     refetch,
   } = useQuery({
-    queryKey: ["repoList", username, filterByBookmarked, filterByRecentClicked],
+    queryKey: [
+      "repos",
+      username,
+      currPage,
+      filterType,
+      filterByBookmarked,
+      filterByRecentClicked,
+    ],
     queryFn: async () => {
       const params = new URLSearchParams({ username });
+
+      if (currPage) {
+        params.append("page", currPage.toString());
+      }
+
+      if (filterType !== undefined) {
+        params.append("filterType", filterType);
+      }
+
       if (filterByBookmarked) {
         params.append("favorite", "true");
       }
+
       if (filterByRecentClicked) {
         params.append("clickedAt", "true");
       }
 
-      const { repos } = await getRepoListFromDB(params);
-      return repos;
+      const res = await getRepoListFromDB(params);
+      return res;
     },
     enabled: false,
-    initialData: initialRepos,
+    initialData: { repos: initialRepos, totalPage },
   });
 
   useEffect(() => {
-    if (filterByBookmarked || filterByRecentClicked) {
+    if (data?.totalPage === 1) {
+      setCurrPage(1);
+    }
+  }, [data?.totalPage]);
+
+  useEffect(() => {
+    if (!isFirstLoad) {
       refetch();
+    } else {
+      setIsFirstLoad(false);
     }
-  }, [filterByBookmarked, filterByRecentClicked]);
+  }, [
+    isFirstLoad,
+    filterType,
+    currPage,
+    filterByBookmarked,
+    filterByRecentClicked,
+    refetch,
+  ]);
 
-  if (isLoading) {
-    return <RepoListSkeleton />;
-  }
-
-  if (isError) {
-    return <div>Error loading data</div>;
-  }
-
-  const filteredAndSortedRepos = useMemo(() => {
-    let result = [...repos];
-
-    // 검사 여부 필터링
-    if (filterType && filterType !== "-1") {
-      result = result.filter((repo) => repo.detectedStatus === filterType);
-    }
+  const sortedRepos = useMemo(() => {
+    let result = [...(data?.repos || [])];
 
     // 정렬
     if (sortType) {
@@ -103,7 +127,16 @@ export default function RepoList({
     }
 
     return result;
-  }, [filterType, sortType, repos]);
+  }, [data?.repos, sortType]);
+
+  if (isError && error) {
+    return (
+      <ExceptionHandlingMessage
+        situation={error.toString()}
+        solution="다시 시도해주세요."
+      />
+    );
+  }
 
   return (
     <section>
@@ -124,35 +157,43 @@ export default function RepoList({
         </div>
 
         {initialRepos.length === 0 ? (
-          <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
-            <p className="text-[2rem] font-semibold leading-[2.8rem] tracking-[0.015em] text-gray-dark">
-              Github에 레포지토리가 존재하지 않습니다.
-            </p>
-            <p className="flex-col-center-center text-2xl font-normal leading-[2.1rem] text-gray-default">
-              새로운 프로젝트를 시작해보세요.
-            </p>
-          </div>
-        ) : filteredAndSortedRepos.length == 0 ? (
-          <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
-            <p className="text-[2rem] font-semibold leading-[2.8rem] tracking-[0.015em] text-gray-dark">
-              조건에 맞는 레포지토리가 없습니다.
-            </p>
-          </div>
+          <ExceptionHandlingMessage
+            situation="Github에 레포지토리가 존재하지 않습니다."
+            solution="새로운 프로젝트를 시작해보세요."
+          />
+        ) : sortedRepos.length == 0 ? (
+          <ExceptionHandlingMessage
+            situation="조건에 맞는 레포지토리가 없습니다."
+            solution="다른 조건을 선택해주세요."
+          />
         ) : (
+          // isFetching ? (
+          //   <div className="flex-between-center relative grid grid-cols-3 grid-rows-3 gap-x-6 gap-y-12 1150:grid-cols-4">
+          //     {Array.from({ length: 12 }).map((_, index) => (
+          //       <RepoSkeleton
+          //         key={index}
+          //         style={{ opacity: opacityLevels[Math.floor(index / 4)] }}
+          //       />
+          //     ))}
+          //   </div>
+          // ) :
           <div className="flex-between-center relative grid grid-cols-3 grid-rows-3 gap-x-6 gap-y-12 1150:grid-cols-4">
-            {filteredAndSortedRepos.map((repo) => (
+            {sortedRepos.map((repo) => (
               <Repo key={repo.repositoryName} username={username} {...repo} />
             ))}
           </div>
         )}
-        <div className="flex-center-center w-full">
-          <Pagination
-            className="-translate-x-1/2 transform"
-            currentPage={currPage}
-            totalPages={totalPage}
-            setCurrentPage={setCurrPage}
-          />
-        </div>
+
+        {data?.totalPage > 0 && (
+          <div className="flex-center-center w-full">
+            <Pagination
+              className="-translate-x-1/2 transform"
+              currentPage={currPage}
+              totalPages={totalPage}
+              setCurrentPage={setCurrPage}
+            />
+          </div>
+        )}
       </div>
     </section>
   );

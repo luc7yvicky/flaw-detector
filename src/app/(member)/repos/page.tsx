@@ -26,6 +26,7 @@ const fetchRepoList = async (username: string): Promise<any> => {
 };
 
 const RepoList = dynamic(() => import("@/components/me/RepoList"), {
+  // ssr: false,
   loading: () => <RepoListSkeleton />,
 });
 

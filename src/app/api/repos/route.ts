@@ -1,5 +1,6 @@
+import { ITEMS_PER_MY_PAGE } from "@/lib/const";
+import { RepoListData } from "@/types/repo";
 import {
-  addDoc,
   collection,
   doc,
   getDoc,
@@ -7,7 +8,6 @@ import {
   limit,
   orderBy,
   query,
-  setDoc,
   startAfter,
   updateDoc,
   where,
@@ -15,8 +15,6 @@ import {
 } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
 import db from "../../../../firebaseConfig";
-import { RepoListData } from "@/types/repo";
-import { ITEMS_PER_MY_PAGE } from "@/lib/const";
 
 export async function POST(req: NextRequest) {
   const { username, repos }: { username: string; repos: RepoListData[] } =
@@ -38,7 +36,7 @@ export async function POST(req: NextRequest) {
     // 전달 받은 레포지토리 목록 생성
     const newRepos = new Map<string, RepoListData>();
     repos.forEach((repo) => {
-      newRepos.set(`${username}_${repo.id}`, repo);
+      newRepos.set(`${username}_${repo.repositoryName}`, repo);
     });
 
     // 변경 사항 비교
@@ -46,10 +44,14 @@ export async function POST(req: NextRequest) {
       newRepos.size === prevRepos.size &&
       Array.from(prevRepos.keys()).every((key) => newRepos.has(key))
     ) {
-      return NextResponse.json({
-        status: 200,
-        body: "Repository already exists in Firestore.",
-      });
+      return NextResponse.json(
+        {
+          body: "Repository already exists in Firestore.",
+        },
+        {
+          status: 200,
+        },
+      );
     }
 
     const reposToDelete: string[] = [];
@@ -98,49 +100,46 @@ export async function PATCH(req: NextRequest) {
   const { username, repoName, favorite, clickedAt, detectedStatus } =
     await req.json();
 
-  try {
-    const reposCollection = collection(db, "repos");
-    const q = query(reposCollection, where("username", "==", username));
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-      return NextResponse.json({
-        status: 404,
-        body: "Repository not found in Firestore.",
-      });
-    }
-
-    const repoDoc = querySnapshot.docs[0];
-    const repoData = repoDoc.data();
-    const repoIndex = repoData.repos.findIndex(
-      (repo: any) => repo.repositoryName === repoName,
+  if (!username || !repoName) {
+    return NextResponse.json(
+      { error: "Missing username or repoName" },
+      { status: 400 },
     );
+  }
 
-    if (repoIndex === -1) {
-      return NextResponse.json({
-        status: 404,
-        body: "Repository not found in Firestore.",
-      });
+  try {
+    const docId = `${username}_${repoName}`;
+    const repoDocRef = doc(db, "repos", docId);
+    const repoDoc = await getDoc(repoDocRef);
+
+    if (!repoDoc.exists()) {
+      return NextResponse.json(
+        {
+          error: "Repository not found in Firestore.",
+        },
+        {
+          status: 404,
+        },
+      );
     }
 
-    if (favorite) {
-      // 북마크 여부 저장
-      repoData.repos[repoIndex].favorite = favorite;
+    const updates: Partial<RepoListData & { clickedAt: string }> = {};
+
+    // 북마크 여부 저장
+    if (favorite !== undefined) {
+      updates.favorite = favorite;
     }
 
+    // 북마크 여부 저장
     if (clickedAt) {
-      // 클릭한 시간 저장
-      repoData.repos[repoIndex].clickedAt = clickedAt;
+      updates.clickedAt = clickedAt;
     }
 
-    if (detectedStatus) {
-      // 검사 상태 저장
-      repoData.repos[repoIndex].detectedStatus = detectedStatus;
+    if (detectedStatus !== undefined) {
+      updates.detectedStatus = detectedStatus;
     }
 
-    await updateDoc(repoDoc.ref, {
-      repos: repoData.repos,
-    });
+    await updateDoc(repoDocRef, updates);
 
     return NextResponse.json({ message: "Repository updated in Firestore." });
   } catch (err) {
@@ -154,8 +153,10 @@ export async function PATCH(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
+  console.log(searchParams);
   const username = searchParams.get("username");
   const page = parseInt(searchParams.get("page") || "1", 10);
+  const filterType = searchParams.get("filterType");
   const favorite = searchParams.get("favorite") === "true";
   const clickedAt = searchParams.get("clickedAt") === "true";
 
@@ -166,18 +167,31 @@ export async function GET(req: NextRequest) {
   try {
     const reposCollection = collection(db, "repos");
     let q = query(reposCollection, where("owner", "==", username));
+
+    if (filterType) {
+      q = query(q, where("detectedStatus", "==", filterType));
+    }
+
+    if (favorite) {
+      q = query(q, where("favorite", "==", true));
+    }
+
+    // 복합 쿼리 생성 시, 등호 연산자와 부등호 연산자를 결합하기 위해 firestore에 복합 색인 생성
+    if (clickedAt) {
+      q = query(
+        q,
+        where("clickedAt", "!=", null),
+        orderBy("clickedAt", "desc"),
+      );
+    }
+
     const querySnapshot = await getDocs(q);
 
     // 페이지네이션
     const totalDocs = querySnapshot.docs.length;
     const totalPage = Math.ceil(totalDocs / ITEMS_PER_MY_PAGE);
 
-    // 전달 받은 페이지가 마지막 페이지 수보다 클 경우의 예외 처리
-    if (page > totalPage) {
-      return NextResponse.json({ repos: [], totalPage });
-    }
-
-    if (page > 1) {
+    if (page > 1 && page <= totalPage) {
       const lastDoc = querySnapshot.docs[(page - 1) * ITEMS_PER_MY_PAGE - 1];
       q = query(q, startAfter(lastDoc), limit(ITEMS_PER_MY_PAGE));
     } else {
@@ -186,29 +200,21 @@ export async function GET(req: NextRequest) {
 
     const paginatedSnapshot = await getDocs(q);
     if (paginatedSnapshot.empty) {
-      return NextResponse.json({ repos: [], totalPage });
+      return NextResponse.json({ repos: [], totalPage }, { status: 200 });
     }
 
-    let repos = paginatedSnapshot.docs.map((doc) => doc.data());
+    const repos = paginatedSnapshot.docs.map((doc) => doc.data());
 
-    if (favorite) {
-      repos = repos.filter((repo: any) => repo.favorite);
-    }
-
-    if (clickedAt) {
-      repos = repos.filter((repo: any) => repo.clickedAt);
-      repos.sort(
-        (a: any, b: any) =>
-          new Date(b.clickedAt).getTime() - new Date(a.clickedAt).getTime(),
-      );
-    }
-
-    return NextResponse.json({ repos, totalPage });
+    return NextResponse.json({ repos, totalPage }, { status: 200 });
   } catch (err) {
     console.error("Error fetching document:", err);
-    return NextResponse.json({
-      status: 500,
-      body: "Failed to fetch document",
-    });
+    return NextResponse.json(
+      {
+        body: "Failed to fetch document",
+      },
+      {
+        status: 500,
+      },
+    );
   }
 }
