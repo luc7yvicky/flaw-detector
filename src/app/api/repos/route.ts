@@ -153,7 +153,6 @@ export async function PATCH(req: NextRequest) {
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
-  console.log(searchParams);
   const username = searchParams.get("username");
   const page = parseInt(searchParams.get("page") || "1", 10);
   const filterType = searchParams.get("filterType");
