@@ -130,12 +130,13 @@ export async function PATCH(req: NextRequest) {
       updates.favorite = favorite;
     }
 
-    // 북마크 여부 저장
+    // 클릭한 시간 저장
     if (clickedAt) {
       updates.clickedAt = clickedAt;
     }
 
-    if (detectedStatus !== undefined) {
+    // 검사 상태 저장
+    if (detectedStatus) {
       updates.detectedStatus = detectedStatus;
     }
 
