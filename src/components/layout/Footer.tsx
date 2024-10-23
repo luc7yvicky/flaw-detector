@@ -14,9 +14,9 @@ export default function Footer() {
           />
           <div className="flex-between-end mt-[2.375rem]">
             <section className="h-[7.375rem]">
-              <h4 className="mb-2 text-xl font-semibold leading-[1.875rem] tracking-[-0.011em] text-gray-dark">
+              <p className="mb-2 text-xl font-semibold leading-[1.875rem] tracking-[-0.011em] text-gray-dark">
                 CONTACT
-              </h4>
+              </p>
               <ul className="flex-between-center gap-10 text-base font-medium leading-6 tracking-[-0.011em]">
                 <li className="flex-col-start-center gap-1">
                   <div className="flex gap-[1.625rem]">

@@ -9,6 +9,7 @@ import {
   setDoc,
   Timestamp,
 } from "firebase/firestore";
+import extractPostTitleKeywords from "./utils.mjs";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -47,10 +48,14 @@ export async function addVulDBPost(post) {
   try {
     const newPostRef = doc(collection(db, "posts"));
 
+    const title = post.title.translated || post.title.original;
+    const keywords = extractPostTitleKeywords(title);
+
     const newPost = {
       ...post,
       id: newPostRef.id,
       created_at: Timestamp.now(),
+      keywords,
     };
 
     await setDoc(newPostRef, newPost);
