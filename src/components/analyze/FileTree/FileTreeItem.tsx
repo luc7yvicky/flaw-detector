@@ -167,7 +167,7 @@ function FileTreeItem({
             {type === "dir" ? (
               <IconCaretLeft
                 className={cn(
-                  "inline-block size-4 rotate-180 fill-black",
+                  "inline-block size-4 rotate-180 fill-black mr-1",
                   isFolderExpanded && "-rotate-90",
                 )}
               />
@@ -183,7 +183,7 @@ function FileTreeItem({
 
             <div className="mr-1 flex items-center">{typeIcon}</div>
           </div>
-          <div className="shrink items-center truncate">{name}</div>
+          <div className="shrink items-center truncate leading-8">{name}</div>
           {type === "file" && (
             <div
               className={cn(
