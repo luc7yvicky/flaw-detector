@@ -81,7 +81,11 @@ function Repo({
         )}
       </CardHeader>
       <CardFooter>
-        <Link href={`/repos/${repositoryName}`} className="basis-[9.153rem]">
+        <Link
+          prefetch
+          href={`/repos/${repositoryName}`}
+          className="basis-[9.153rem]"
+        >
           <Button
             variant="filled"
             shape="rounded"

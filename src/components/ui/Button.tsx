@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   variant?:
     | "filled"
     | "filled-light-purple"

@@ -182,7 +182,7 @@ export async function deleteUserData(username: string): Promise<void> {
       await deleteDoc(doc.ref);
     });
 
-    // 2. users collection 데이터 삭제
+    // 2. results collection 데이터 삭제
     const resultsCollection = collection(db, "results");
     const resultsQuery = query(
       resultsCollection,
@@ -193,12 +193,9 @@ export async function deleteUserData(username: string): Promise<void> {
       await deleteDoc(doc.ref);
     });
 
-    // 3. users collection 데이터 삭제
+    // 3. repos collection 데이터 삭제
     const reposCollection = collection(db, "repos");
-    const reposQuery = query(
-      reposCollection,
-      where("username", "==", username),
-    );
+    const reposQuery = query(reposCollection, where("owner", "==", username));
     const reposSnapshot = await getDocs(reposQuery);
     reposSnapshot.forEach(async (doc) => {
       await deleteDoc(doc.ref);
@@ -235,19 +232,13 @@ export async function fetchArticleList(
   params.append("label", labelType);
 
   try {
-    const res = await fetch(`${BASE_URL}/api/scraps?${params.toString()}`);
+    const res = await fetch(`${BASE_URL}/api/scraps?${params.toString()}`, {
+      next: { revalidate: 60 },
+    });
     const data = await res.json();
-
-    if (!res.ok) {
-      return {
-        error:
-          data.message ||
-          "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요.",
-      };
-    }
-
-    return data;
+    return { ...data, status: res.status };
   } catch (err) {
-    return { error: "게시물을 가져오는 데 실패했습니다. 다시 시도해주세요." };
+    console.error("Error fetching article list:", err);
+    return { error: "게시물을 불러오는 데 실패했습니다.", status: 500 };
   }
 }

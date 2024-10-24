@@ -72,6 +72,7 @@ export async function getRepoLists(username: string) {
         createdAt: repo.created_at ?? "",
         detectedStatus: "notChecked",
         favorite: false,
+        owner: username,
       }),
     );
 
@@ -293,9 +294,10 @@ export const getRepoListFromDB = async (params: URLSearchParams) => {
   try {
     const res = await fetch(`${BASE_URL}/api/repos?${params.toString()}`);
     const data = await res.json();
-    return data.repos;
+    return { ...data, status: res.status };
   } catch (err) {
-    console.error("Error fetching document:", err);
+    console.error("Error fetching document from repos collections:", err);
+    return { error: "게시물을 불러오는 데 실패했습니다.", status: 500 };
   }
 };
 

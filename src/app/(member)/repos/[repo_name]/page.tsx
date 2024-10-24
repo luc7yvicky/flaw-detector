@@ -4,9 +4,7 @@ import FileList from "@/components/analyze/FileTree/FileList";
 import RunInspectButton from "@/components/analyze/RunInspectButton";
 import {
   Status,
-  StatusError,
-  StatusSuccess,
-  StatusWarning,
+  StatusMessage
 } from "@/components/analyze/Status";
 import TitleBar from "@/components/ui/TitleBar";
 
@@ -32,9 +30,9 @@ export default async function RepoPage({
         <div className="flex w-full max-w-[16rem] flex-col gap-7">
           <RunInspectButton repo={repo} username={username} />
           <Status>
-            <StatusError>{counts.error}</StatusError>
-            <StatusWarning>{counts.warning}</StatusWarning>
-            <StatusSuccess>{counts.success}</StatusSuccess>
+            <StatusMessage type="error">{counts.error}</StatusMessage>
+            <StatusMessage type="warning">{counts.warning}</StatusMessage>
+            <StatusMessage type="success">{counts.success}</StatusMessage>
           </Status>
           <FileList repo={repo} username={username} />
         </div>

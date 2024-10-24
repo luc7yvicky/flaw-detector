@@ -8,6 +8,7 @@ export type RepoListData = {
   createdAt: string;
   detectedAt?: string;
   filename?: string;
+  owner?: string;
 };
 
 export type RepoContentItem = {

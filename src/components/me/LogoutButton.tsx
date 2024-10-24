@@ -42,11 +42,11 @@ export default function LogoutButton({ username }: { username: string }) {
           onClose={() => setIsModalOpen(false)}
         >
           <div className="flex-col-center-center gap-y-4">
-            <h4>
+            <h3>
               <ModalTitle className="text-[1.75rem] font-semibold leading-[2.45rem] text-gray-dark">
                 정말 로그아웃 할까요?
               </ModalTitle>
-            </h4>
+            </h3>
             <p className="flex-col-center-center text-xl leading-7 text-[#8F8F8F]">
               <span>
                 소스코드 보안을 위하여 모든 히스토리와 코드 저장 내역이

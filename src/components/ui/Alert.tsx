@@ -112,7 +112,6 @@ export const Alert = ({
       if (filePath) {
         setMode(filePath, mode);
         setResults(results);
-        // window.history.replaceState({}, "", `/repos/${repoName}/${filePath}`);
       }
     } catch (err) {
       console.error("Error fetching results:", err);
@@ -139,7 +138,7 @@ export const Alert = ({
         <div className="flex basis-12 justify-center">{icon}</div>
 
         <div className="flex grow flex-col gap-y-4 text-xl font-medium leading-7">
-          <h4>{title}</h4>
+          <h3>{title}</h3>
           <p className="flex flex-col text-[1.125rem] text-gray-default">
             {descriptions.map((desc, index) => (
               <span key={index}>{desc}</span>

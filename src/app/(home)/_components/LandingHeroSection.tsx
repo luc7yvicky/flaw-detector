@@ -28,7 +28,7 @@ export default function LandingHeroSection({
         해결하세요.
       </p>
       {isLoggedIn ? (
-        <Link href="/repos">
+        <Link prefetch href="/repos">
           <Button
             shape="pill"
             className="flex-center-center px-6 py-[0.688rem] text-center text-[1.75rem] font-light leading-[2.118rem] -tracking-[0.01em]"

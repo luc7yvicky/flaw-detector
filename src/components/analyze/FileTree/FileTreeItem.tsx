@@ -128,7 +128,7 @@ function FileTreeItem({
       case "error":
         return <IconError />;
       case "success":
-        return <IconDone className="fill-accent-cyan" />;
+        return <IconDone className="fill-accent-green" />;
       default:
         return null;
     }

@@ -23,6 +23,7 @@ export type Option = { id: string; name: string; value: string };
 const typeOptions: Option[] = [
   { id: "0", name: "검사완료", value: "done" },
   { id: "1", name: "검사중", value: "onProgress" },
+  { id: "2", name: "미검사", value: "notChecked" },
 ];
 
 const labelOptions: Option[] = [
@@ -74,7 +75,7 @@ const DropdownMenu = forwardRef<HTMLUListElement, DropdownMenuProps>(
             className={cn(
               "flex-center-center h-[2.438rem] w-full bg-white px-[0.6rem] py-[0.469rem] transition-all duration-300 first:rounded-t-lg last:rounded-b-lg",
               selectedIndex === index
-                ? "cursor-default gap-x-2 bg-purple-dark"
+                ? "cursor-default gap-x-2 bg-primary-50"
                 : "hover:bg-purple-light",
               name.length > 3 && "px-[0.1rem]",
             )}
@@ -119,8 +120,10 @@ export default function Dropdown({
     >
       <button
         className={cn(
-          "inline-flex h-[2.75rem] w-full items-center justify-center rounded-lg border border-gray-default px-[0.625rem] py-[0.625rem] text-xl text-gray-dark outline-0 hover:bg-slate-50",
-          !selectedOptionName ? "gap-x-2" : "bg-[#fafafa] font-semibold",
+          "flex-center-center h-[2.75rem] w-full rounded-lg border border-gray-default px-[0.625rem] py-[0.625rem] text-xl text-gray-dark outline-0 hover:bg-slate-50",
+          !selectedOptionName
+            ? "gap-x-2"
+            : "bg-purple-light font-bold shadow-[0_0.833rem_1.667rem_0_rgba(150,150,150,0.15)]",
         )}
         onClick={() => setIsOpen(!isOpen)}
         ref={buttonRef}

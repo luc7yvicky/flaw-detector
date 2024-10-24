@@ -80,10 +80,15 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const label = searchParams.get("label") || "";
 
   if (!username) {
-    return NextResponse.json({
-      status: 400,
-      message: "사용자 정보를 가져오는 데 실패했습니다.",
-    });
+    return NextResponse.json(
+      {
+        situation: "사용자 정보를 가져오는 데 실패했습니다.",
+        solution: "로그인 후 다시 시도해주세요.",
+      },
+      {
+        status: 400,
+      },
+    );
   }
 
   try {
@@ -91,19 +96,30 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     const usersSnap = await getDoc(usersRef);
 
     if (!usersSnap.exists()) {
-      return NextResponse.json({
-        status: 404,
-        message: "사용자가 존재하지 않습니다.",
-      });
+      return NextResponse.json(
+        {
+          situation: "사용자가 존재하지 않습니다.",
+          solution: "회원가입을 진행해주세요.",
+        },
+        {
+          status: 404,
+        },
+      );
     }
 
     const userData = usersSnap.data();
 
-    if (!userData.pinnedPosts) {
-      return NextResponse.json({
-        status: 404,
-        message: "스크랩한 게시물이 없습니다.",
-      });
+    if (!userData.pinnedPosts || userData.pinnedPosts.length === 0) {
+      return NextResponse.json(
+        {
+          situation: "스크랩한 게시물이 없습니다.",
+          solution:
+            "취약점 DB 페이지에서 관심 있는 취약점 기사를 스크랩해보세요!",
+        },
+        {
+          status: 404,
+        },
+      );
     }
 
     const pinnedPostsIds: string[] = userData.pinnedPosts;
@@ -113,16 +129,21 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
       page,
     );
 
-    return NextResponse.json({
-      posts: filteredArticles,
-      totalPage: totalPage,
-    });
+    return NextResponse.json(
+      {
+        posts: filteredArticles,
+        totalPage: totalPage,
+      },
+      { status: 200 },
+    );
   } catch (err) {
     console.error(`Internal Server Error: ${err}`);
-    return NextResponse.json({
-      status: 500,
-      message:
-        "Internal Server Error: An error occurred while fetching pinned posts.",
-    });
+    return NextResponse.json(
+      {
+        situation: "게시물을 불러오는 중에 오류가 발생했습니다.",
+        solution: "잠시 후 다시 시도해주세요.",
+      },
+      { status: 500 },
+    );
   }
 }
