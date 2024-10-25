@@ -33,7 +33,7 @@ export default function RootLayout({
         className={`${pretendard.variable} font-pretendard ${inter.className} min-w-[64rem]`}
       >
         <Header />
-        <main className="min-h-[calc(100dvh-136px)]">
+        <main className="min-h-[calc(100dvh-8.5rem)]">
           <SessionStoreProvider>
             <ReactQueryProviders>{children}</ReactQueryProviders>
           </SessionStoreProvider>

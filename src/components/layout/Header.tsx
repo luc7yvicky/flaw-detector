@@ -28,7 +28,7 @@ function NavMenu({ isDocsPage }: { isDocsPage: boolean }) {
     <nav className="w-full">
       <ul
         className={cn(
-          "flex-end-center w-full space-x-20 text-xl font-medium",
+          "flex-end-center h-[8.5rem] w-full space-x-20 text-xl font-medium",
           isDocsPage ? "text-white" : "text-gray-dark",
         )}
       >
