@@ -35,8 +35,8 @@ const config: Config = {
           50: "#F2EBFF",
         },
         accent: {
-          red: "#FF6D6D",
-          blue: "#6DB0FF",
+          red: "#ee0000",
+          blue: "#0974e6",
           orange: "#FFD542",
           green: "#00C308",
           cyan: "#17E0D4",
