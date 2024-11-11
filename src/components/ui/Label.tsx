@@ -8,10 +8,11 @@ const labelVariants = cva(
     variants: {
       variant: {
         // 취약점 DB
-        hot: "px-3 py-2 h-[2.375rem] bg-accent-red text-white font-semibold leading-[1.4rem]",
-        new: "px-3 py-2 h-[2.375rem] bg-accent-blue text-white font-semibold leading-[1.4rem]",
+        hot: "px-3 py-2 h-[2.375rem] bg-accent-red text-white font-semibold leading-[1.4rem] cursor-pointer",
+        new: "px-3 py-2 h-[2.375rem] bg-accent-blue text-white font-semibold leading-[1.4rem] cursor-pointer",
+        all: "px-3 py-2 h-[2.375rem] bg-[#6100FF] text-white font-semibold leading-[1.4rem] cursor-pointer",
         unselected:
-          "px-3 py-2 h-[2.375rem] bg-white text-gray-default border border-gray-default font-semibold leading-[1.4rem]",
+          "px-3 py-2 h-[2.375rem] bg-white text-gray-default border border-gray-default font-semibold leading-[1.4rem] cursor-pointer",
 
         // 취약점 DB - grid label
         column:

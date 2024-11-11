@@ -9,7 +9,7 @@ export function useVulDBPosts(
   userId: number | null,
   currentPage: number,
   itemsPerPage: number,
-  selectedChip: "hot" | "new" | "",
+  selectedChip: "hot" | "new" | "all",
   searchTerm: string[] | null = null,
 ) {
   const queryClient = useQueryClient();
@@ -33,7 +33,11 @@ export function useVulDBPosts(
           (now.getTime() - postDate.getTime()) / (1000 * 60 * 60);
         const isNew = diffInHours <= 48;
         const isHot = hotPostIds.includes(post.id);
-        const chip: "hot" | "new" | "" = isHot ? "hot" : isNew ? "new" : "";
+        const chip: "hot" | "new" | "all" = isHot
+          ? "hot"
+          : isNew
+            ? "new"
+            : "all";
 
         return { ...post, chip };
       });
@@ -86,7 +90,11 @@ export function useVulDBPosts(
           (now.getTime() - postDate.getTime()) / (1000 * 60 * 60);
         const isNew = diffInHours <= 48;
         const isHot = hotPostIds.includes(post.id);
-        const chip: "hot" | "new" | "" = isHot ? "hot" : isNew ? "new" : "";
+        const chip: "hot" | "new" | "all" = isHot
+          ? "hot"
+          : isNew
+            ? "new"
+            : "all";
 
         return { ...post, chip };
       });

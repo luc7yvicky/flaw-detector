@@ -99,7 +99,7 @@ export async function getPaginatedPosts(
         source_created_at: docSnapshot.data().source_created_at,
         content: docSnapshot.data().content,
         views: docSnapshot.data().views,
-        chip: "",
+        chip: "all",
         isScrapped: userPinnedPosts.includes(docSnapshot.id),
       };
       posts.push(post);
