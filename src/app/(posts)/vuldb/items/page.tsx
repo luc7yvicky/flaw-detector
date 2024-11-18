@@ -1,6 +1,5 @@
 "use client";
 
-import ExceptionHandlingMessage from "@/components/vulnerability-db/ExceptionHandlingMessage";
 import RealTimeTopic from "@/components/vulnerability-db/RealTimeTopic";
 import Search from "@/components/vulnerability-db/Search";
 import VulDBDashboard from "@/components/vulnerability-db/VulDBDashboard";
@@ -31,40 +30,31 @@ export default function VulDBPage() {
       searchTerm,
     );
 
-  try {
-    return (
-      <div className="relative mx-auto mt-[1.688rem] flex min-h-[147rem] w-full max-w-[82.063rem] flex-col gap-[4.75rem] overflow-hidden px-[1rem]">
+  return (
+    <div className="relative mx-auto mt-[1.688rem] flex min-h-[147rem] w-full max-w-[82.063rem] flex-col gap-[4.75rem] overflow-hidden px-[1rem]">
+      {postsLoading ? (
+        <VulDBImageCardContainerSkeleton />
+      ) : (
+        <VulDBImageCardContainer posts={latestPosts} />
+      )}
+      <Search setCurrentPage={setCurrentPage} setSearchTerm={setSearchTerm} />
+      <div className="grid grid-cols-[1fr_22rem] gap-5">
         {postsLoading ? (
-          <VulDBImageCardContainerSkeleton />
+          <VulDBDashboardSkeleton />
         ) : (
-          <VulDBImageCardContainer posts={latestPosts} />
+          <VulDBDashboard
+            posts={posts}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+            setSelectedChip={setSelectedChip}
+            selectedChip={selectedChip}
+            userId={userId}
+            prefetchPage={prefetchPage}
+          />
         )}
-        <Search setCurrentPage={setCurrentPage} setSearchTerm={setSearchTerm} />
-        <div className="grid grid-cols-[1fr_22rem] gap-5">
-          {postsLoading ? (
-            <VulDBDashboardSkeleton />
-          ) : (
-            <VulDBDashboard
-              posts={posts}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              setCurrentPage={setCurrentPage}
-              setSelectedChip={setSelectedChip}
-              selectedChip={selectedChip}
-              userId={userId}
-              prefetchPage={prefetchPage}
-            />
-          )}
-          <RealTimeTopic />
-        </div>
+        <RealTimeTopic />
       </div>
-    );
-  } catch (error) {
-    return (
-      <ExceptionHandlingMessage
-        situation="게시글을 불러오는 중 오류가 발생했습니다!"
-        solution="잠시 후 다시 시도해주세요."
-      />
-    );
-  }
+    </div>
+  );
 }
