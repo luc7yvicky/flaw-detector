@@ -1,5 +1,9 @@
-import { SearchKeyword } from "@/lib/api/searchKeywords";
 import { cn } from "@/lib/utils";
+
+type SearchKeyword = {
+  keyword: string;
+  searchCounts: number;
+};
 
 export type RankingProps = React.HTMLAttributes<HTMLUListElement> & {
   topSearchKeywords: SearchKeyword[];
