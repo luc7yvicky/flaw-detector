@@ -1,32 +1,23 @@
-import { collection, orderBy, limit, query, getDocs } from "firebase/firestore";
-import db from "../../../firebaseConfig";
-
 export type SearchKeyword = {
   keyword: string;
   searchCounts: number;
 };
 
-export async function fetchSearchKeywords(): Promise<SearchKeyword[]> {
-  const q = query(
-    collection(db, "searchKeywords"),
-    orderBy("searchCounts", "desc"),
-    limit(10),
-  );
+export async function getSearchKeywords() {
+  try {
+    const res = await fetch("/api/search");
+    const data = await res.json();
 
-  const querySnapshot = await getDocs(q);
+    if (!res.ok) {
+      throw Error("검색어를 불러오는 데 실패했습니다.");
+    }
 
-  if (querySnapshot.empty) {
-    return [];
+    if (!data.results) {
+      return null;
+    } else {
+      return data.results as SearchKeyword[];
+    }
+  } catch (error) {
+    throw error;
   }
-
-  const topSearchKeywords: SearchKeyword[] = [];
-
-  querySnapshot.forEach((doc) => {
-    topSearchKeywords.push({
-      keyword: doc.id,
-      searchCounts: doc.data()["searchCounts"],
-    });
-  });
-
-  return topSearchKeywords;
 }
