@@ -26,10 +26,6 @@ const renderTopics = (
   topics: string[] | SearchKeyword[],
   haveSearchKeywords: boolean,
 ) => {
-  if (!topics || topics.length === 0) {
-    return <li>데이터를 불러오는 데 실패했습니다.</li>;
-  }
-
   return topics.map((topic, index) => {
     const topicName = typeof topic === "string" ? topic : topic.keyword;
 
