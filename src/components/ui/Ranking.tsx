@@ -58,7 +58,7 @@ export const Ranking: React.FC<RankingProps> = ({
   return (
     <ul
       className={cn(
-        "relative h-[36.25rem] w-full rounded-[1.25rem] border border-[#CFCFCF] px-9 py-5",
+        "relative mt-[1.625rem] h-[36.25rem] w-full rounded-[1.25rem] border border-[#CFCFCF] px-9 py-5",
         className,
       )}
       {...props}

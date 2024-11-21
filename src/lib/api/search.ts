@@ -5,18 +5,13 @@ type SearchKeyword = {
   searchCounts: number;
 };
 
-export async function getSearchKeywords(): Promise<SearchKeyword[] | null> {
-  try {
-    const res = await fetch(`${BASE_URL}/api/search`);
-    const data = await res.json();
+export async function getSearchKeywords(): Promise<SearchKeyword[]> {
+  const res = await fetch(`${BASE_URL}/api/search`);
 
-    if (!res.ok) {
-      throw new Error("검색어를 불러오는 데 실패했습니다.");
-    }
-
-    return data.results || null;
-  } catch (error) {
-    console.error("검색어를 불러오는 데 실패했습니다.", error);
-    throw error;
+  if (!res.ok) {
+    throw new Error("검색어를 불러오는 데 실패했습니다.");
   }
+
+  const data = await res.json();
+  return data.results || [];
 }
