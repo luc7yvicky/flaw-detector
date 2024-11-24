@@ -60,10 +60,13 @@ export default function FileList({
               onClick={handleToggleMultiSelection}
               title="파일 다중 선택 활성화"
             >
-              <IconMultiSelect />
+              <IconMultiSelect width={20} />
             </button>
             <button className="relative" title="리스트 정렬 옵션">
-              <IconList onClick={() => setIsSortListOpen(!isSortListOpen)} />
+              <IconList
+                width={20}
+                onClick={() => setIsSortListOpen(!isSortListOpen)}
+              />
               {isSortListOpen && (
                 <div className="absolute right-0 top-full z-50 mt-1">
                   <SortOptionList

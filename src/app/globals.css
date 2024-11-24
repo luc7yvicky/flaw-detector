@@ -69,8 +69,8 @@ html {
   .animate-fadeIn {
     animation: fadeIn 0.5s ease-in-out;
   }
-}
 
-.word-break-phrase {
-  word-break: auto-phrase;
+  .word-break-phrase {
+    word-break: auto-phrase;
+  }
 }

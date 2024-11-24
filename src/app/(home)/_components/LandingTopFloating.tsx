@@ -2,7 +2,6 @@
 
 import { Floating } from "@/components/ui/Floating";
 import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 
 export default function LandingTopFloating() {
   const [isFloatingVisible, setIsFloatingVisible] = useState(false);
@@ -33,8 +32,8 @@ export default function LandingTopFloating() {
     };
   }, []);
 
-  return createPortal(
-    <div className="fixed bottom-36 right-32 size-[4.75rem]">
+  return (
+    <div className="fixed bottom-36 right-32 z-20 size-[4.75rem]">
       {isFloatingVisible && (
         <Floating
           variant="top"
@@ -45,7 +44,6 @@ export default function LandingTopFloating() {
           className="fixed bottom-36"
         />
       )}
-    </div>,
-    document.body,
+    </div>
   );
 }

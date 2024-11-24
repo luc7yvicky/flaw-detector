@@ -3,9 +3,13 @@
 import Button from "@/components/ui/Button";
 import IconCaretDoubleDown from "@/components/ui/icons/IconCaretDoubleDown";
 import { loginWithGithub } from "@/lib/actions";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useTransition } from "react";
-import EllipsesAnimation from "./EllipsesAnimation";
+
+const EllipsesAnimation = dynamic(() => import("./EllipsesAnimation"), {
+  ssr: false,
+});
 
 export default function LandingHeroSection({
   isLoggedIn,
@@ -32,17 +36,14 @@ export default function LandingHeroSection({
       </p>
       {isLoggedIn ? (
         <Link href="/repos">
-          <Button
-            shape="pill"
-            className="px-6 py-[0.688rem] text-[1.75rem] font-light leading-[2.118rem] -tracking-[0.01em]"
-          >
+          <Button shape="pill" variant="filled-sm">
             파일 분석하러 가기
           </Button>
         </Link>
       ) : (
         <Button
           shape="pill"
-          className="px-6 py-[0.688rem] text-[1.75rem] font-light leading-[2.118rem] -tracking-[0.01em]"
+          variant="filled-sm"
           onClick={() => startTransition(async () => await loginWithGithub())}
         >
           Login

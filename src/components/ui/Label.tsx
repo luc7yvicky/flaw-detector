@@ -83,17 +83,17 @@ const ServiceLabel: React.FC<ServiceLabelProps> = ({
   let labelColor = "";
 
   if (color === "pink") {
-    labelColor = "text-[#FF81A7] bg-[#FFF2F7] border-[#FF81A7]";
+    labelColor = "text-[#bd466a] bg-[#FFF2F7] border-[#FF81A7]";
   } else if (color === "green") {
-    labelColor = "text-[#00987C] bg-[#DDFFF3] border-[#00987C]";
+    labelColor = "text-[#005d4c] bg-[#DDFFF3] border-[#00987C]";
   } else if (color === "purple") {
-    labelColor = "text-[#A54CFF] bg-[#F5E4FF] border-[#A54CFF]";
+    labelColor = "text-[#4c0b8d] bg-[#F5E4FF] border-[#A54CFF]";
   } else if (color === "blue") {
-    labelColor = "text-[#4C93FF] bg-[#E4F2FF] border-[#4C93FF]";
+    labelColor = "text-[#12428d] bg-[#E4F2FF] border-[#4C93FF]";
   } else if (color === "yellow") {
-    labelColor = "text-[#FF8A00] bg-[#FFFBE4] border-[#FF8A00]";
+    labelColor = "text-[#856C50] bg-[#FFFBE4] border-[#FF8A00]";
   } else if (color === "red") {
-    labelColor = "text-[#FF3D00] bg-[#FFEAE4] border-[#FF3D00]";
+    labelColor = "text-[#ac2b02] bg-[#FFEAE4] border-[#FF3D00]";
   }
 
   return (

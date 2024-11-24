@@ -9,11 +9,9 @@ import Button from "@/components/ui/Button";
 import IconList from "@/components/ui/icons/IconList";
 import IconMultiSelect from "@/components/ui/icons/IconMultiSelect";
 import TitleBar from "@/components/ui/TitleBar";
-import { exampleCode } from "@/lib/dummy";
 import { FileResultProps } from "@/types/file";
-import { memo, useEffect, useRef } from "react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import Image from "next/image";
+import FadeInUpAnimation from "./FadeInUpAnimation";
 
 const demoFileTreeItems: Array<FileTreeItemDemoProps> = [
   { type: "dir", name: "public" },
@@ -31,7 +29,6 @@ const demoFileTreeItems: Array<FileTreeItemDemoProps> = [
   { type: "file", name: "globals.css", level: 3, isHovered: true },
   { type: "file", name: "layout.tsx", level: 3, isSuccessful: true },
   { type: "file", name: "loading.tsx", level: 3 },
-  { type: "dir", name: "loading.tsx", level: 3 },
 ];
 
 const demoCodeResults: Array<FileResultProps> = [
@@ -69,51 +66,9 @@ const demoCodeResults: Array<FileResultProps> = [
   },
 ];
 
-const MemoizedSyntaxHighlighter = memo(SyntaxHighlighter);
-
 export default function LandingDemoSection() {
-  const sectionRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    let timeouts: number[] = [];
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry, index) => {
-          const target = entry.target as HTMLElement;
-          if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
-            const timeoutId = window.setTimeout(() => {
-              target.classList.add("animate-fade-up");
-            }, index * 300);
-            timeouts.push(timeoutId);
-          } else {
-            target.classList.remove("animate-fade-up");
-          }
-        });
-      },
-      { threshold: 0.5 },
-    );
-
-    const section = sectionRef.current;
-    if (section) {
-      const elements = section.querySelectorAll(".fade-up-element");
-      elements.forEach((el) => observer.observe(el));
-    }
-
-    return () => {
-      if (section) {
-        const elements = section.querySelectorAll(".fade-up-element");
-        elements.forEach((el) => observer.unobserve(el));
-      }
-      timeouts.forEach((timeoutId) => clearTimeout(timeoutId));
-    };
-  }, []);
-
   return (
-    <section
-      className="flex-center-center snap-box pointer-events-none relative max-h-screen min-h-[calc(100dvh-8.5rem)] w-full gap-x-[7.29rem] overflow-hidden overflow-y-clip"
-      ref={sectionRef}
-    >
+    <section className="flex-center-center snap-box pointer-events-none relative max-h-screen min-h-[calc(100dvh-8.5rem)] w-full gap-x-[7.29rem] overflow-hidden overflow-y-clip">
       <section className="mt-[12rem] hidden h-fit w-full max-w-[82.077rem] overflow-hidden overflow-x-visible rounded-[2.634rem] border-[0.102rem] border-line-light p-[3.42rem] lg:block">
         <div className="flex h-[61rem] flex-col">
           <TitleBar title="Project-1" as="span" />
@@ -154,16 +109,14 @@ export default function LandingDemoSection() {
 
             {/* CodeContainer */}
             <article className="relative w-full overflow-hidden">
-              <div className="relative h-full max-h-[23.725rem] w-full overflow-hidden rounded-[0.684rem] border-[0.042rem] border-line-light">
-                <MemoizedSyntaxHighlighter
-                  language="javascript"
-                  style={oneLight}
-                  showLineNumbers
-                  wrapLines
-                  className="!mt-0 !pl-0 blur-sm"
-                >
-                  {exampleCode}
-                </MemoizedSyntaxHighlighter>
+              <div className="relative h-full max-h-[23.725rem] w-full overflow-hidden">
+                <Image
+                  src="/images/exampleCode.png"
+                  alt="example code"
+                  fill
+                  sizes="(min-width: 1024px) 100vw, 50vw"
+                  priority
+                />
                 <Button
                   variant="demo"
                   shape="rounded"
@@ -190,13 +143,12 @@ export default function LandingDemoSection() {
           </div>
         </div>
       </section>
-      <section className="flex-col-center w-fit! gap-y-[2.125rem] leading-tight">
-        <h3 className="flex-col-end-center text-clamp-3xl w-full space-y-3 truncate font-bold -tracking-[0.011em] text-primary-500">
-          <span className="fade-up-element opacity-0">최신 보안 동향을</span>
-          <span className="fade-up-element opacity-0">
-            실시간으로 확인하세요.
-          </span>
-        </h3>
+      <section className="flex-col-center w-fit! gap-y-[2.125rem] leading-tight text-primary-500">
+        <FadeInUpAnimation
+          as="h3"
+          texts={["최신 보안 동향을", "실시간으로 확인하세요."]}
+          className="flex-col-end-center w-full space-y-3 truncate text-clamp-3xl font-bold -tracking-[0.011em]"
+        />
         <p className="flex-col-end-center w-full space-y-2 text-[1.4rem] font-medium -tracking-[0.011em] text-gray-default sm:text-2xl">
           <span>실시간으로 최신 보안 동향을 제공하여</span>
           <span>개발자들이 보안 취약점에 대한 최신 정보를 받을 수 있어</span>

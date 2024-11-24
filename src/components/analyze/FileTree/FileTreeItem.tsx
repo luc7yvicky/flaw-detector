@@ -1,3 +1,7 @@
+import IconCaretLeft from "@/components/ui/icons/IconCaretLeft";
+import IconCloseFolder from "@/components/ui/icons/IconCloseFolder";
+import IconDoc from "@/components/ui/icons/IconDoc";
+import IconOpenFolder from "@/components/ui/icons/IconOpenFolder";
 import { RepoTreeItem } from "@/lib/api/repositories";
 import { cn, getLanguage } from "@/lib/utils";
 import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore";
@@ -5,12 +9,9 @@ import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import { useFileSelectionStore } from "@/stores/useFileSelectionStore";
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { FileStatus } from "@/types/file";
+import dynamic from "next/dynamic";
 import React, { useCallback, useMemo, useState } from "react";
 import Checkbox from "./Checkbox";
-import dynamic from "next/dynamic";
-import IconFolder from "@/components/ui/icons/IconFolder";
-import IconDoc from "@/components/ui/icons/IconDoc";
-import IconCaretLeft from "@/components/ui/icons/IconCaretLeft";
 
 const IconStar = dynamic(() => import("@/components/ui/icons/IconStar"));
 const IconOnProcess = dynamic(
@@ -106,13 +107,28 @@ function FileTreeItem({
     [toggleFileBookmark, repo, path],
   );
 
-  const childItems = allItems.filter(
-    (childItem) =>
-      childItem.path.startsWith(path + "/") &&
-      childItem.path.split("/").length === path.split("/").length + 1,
-  );
+  const childItems = useMemo(() => {
+    return allItems
+      .sort((a, b) => {
+        if (a.type === "dir" && b.type !== "dir") return -1;
+        if (a.type !== "dir" && b.type === "dir") return 1;
+        return a.name.localeCompare(b.name);
+      })
+      .filter(
+        (childItem) =>
+          childItem.path.startsWith(path + "/") &&
+          childItem.path.split("/").length === path.split("/").length + 1,
+      );
+  }, [type]);
 
-  const typeIcon = type === "file" ? <IconDoc /> : <IconFolder />;
+  const typeIcon =
+    type === "file" ? (
+      <IconDoc width={20} />
+    ) : isFolderExpanded ? (
+      <IconOpenFolder width={20} height={20} />
+    ) : (
+      <IconCloseFolder width={20} height={20} />
+    );
 
   const getStatusIcon = (status: FileStatus | null) => {
     switch (status) {
@@ -191,6 +207,7 @@ function FileTreeItem({
                 onClick={handleBookmark}
               >
                 <IconStar
+                  width={20}
                   filled={isBookmarked}
                   className={
                     isBookmarked ? "text-primary-500" : "text-primary-300"

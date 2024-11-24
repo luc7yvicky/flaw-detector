@@ -5,6 +5,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?:
     | "filled"
     | "filled-light-purple"
+    | "filled-sm"
     | "outlined"
     | "outlined-gray"
     | "navigation"
@@ -29,6 +30,8 @@ export default function Button({
       "bg-primary-500 text-white disabled:bg-gray-light disabled:text-gray-default",
     "filled-light-purple":
       "flex-center-center bg-primary-50 h-[3.5rem] w-[12.25rem] text-2xl leading-[2.1rem] text-primary-500",
+    "filled-sm":
+      "bg-primary-500 text-white px-6 py-[0.688rem] text-[1.75rem] font-light leading-[2.118rem] -tracking-[0.01em]",
     outlined: "bg-white border-2 border-primary-500 text-primary-500",
     "outlined-gray":
       "flex-center-center w-full gap-x-[0.625rem] border border-line-light p-4 text-xl font-medium leading-7 text-gray-dark",

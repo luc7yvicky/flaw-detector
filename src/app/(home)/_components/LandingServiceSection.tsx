@@ -1,10 +1,10 @@
 "use client";
 
-import ServiceCard from "./ServiceCard";
 import { motion } from "framer-motion";
+import ServiceCard, { ServiceVariants } from "./ServiceCard";
 
 export default function LandingServiceSection() {
-  const cardVariants = [
+  const cardVariants: Array<ServiceVariants["variant"]> = [
     "security",
     "critical",
     "realtime",

@@ -27,7 +27,7 @@ export default function Footer() {
       </div>
 
       {/* Footer Content */}
-      <div className="relative z-10 mx-auto flex max-w-[120rem] items-end justify-between px-20 pb-[3.313rem] pt-[3.75rem]">
+      <div className="relative z-10 mx-auto flex size-full max-w-[120rem] items-end justify-between px-20 pb-[3.313rem] pt-[3.75rem]">
         <div>
           <Image
             src="/images/footerLogo.png"
