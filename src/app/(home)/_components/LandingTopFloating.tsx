@@ -33,7 +33,7 @@ export default function LandingTopFloating() {
   }, []);
 
   return (
-    <div className="fixed bottom-36 right-32 z-20 size-[4.75rem]">
+    <div className="fixed bottom-12 right-14 z-20 size-[4.75rem] md:bottom-36 md:right-32">
       {isFloatingVisible && (
         <Floating
           variant="top"
@@ -41,7 +41,7 @@ export default function LandingTopFloating() {
             const hero = document.querySelector("#hero");
             hero?.scrollIntoView({ behavior: "smooth" });
           }}
-          className="fixed bottom-36"
+          className="fixed bottom-12 md:bottom-36"
         />
       )}
     </div>
