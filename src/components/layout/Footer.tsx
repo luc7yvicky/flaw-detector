@@ -69,7 +69,7 @@ export default function Footer() {
         </section>
 
         <div className="col-start-2 col-end-3 row-start-1 row-end-2 flex flex-col items-end justify-start gap-3 md:row-start-2 md:row-end-3 md:justify-end">
-          <nav className="flex flex-col gap-1 text-right text-base font-medium leading-6 tracking-[-0.011em] text-gray-default md:flex-row md:gap-8">
+          <nav className="flex flex-col gap-2 text-right text-base font-medium leading-6 tracking-[-0.011em] text-gray-default md:flex-row md:gap-8">
             <Link href={"https://www.sfacspace.com/ko"}>회사소개</Link>
             <Link href={"/agreements"}>서비스이용약관</Link>
             <Link href={"/ppa"}>개인정보처리방침</Link>
