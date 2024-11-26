@@ -1,7 +1,7 @@
 export type FileStatus = "onCheck" | "onWait" | "error" | "success" | null;
 
 export type FileResultProps = {
-  id: string;
+  id: string | number;
   name: string;
   vulnerability: string;
   severity: Critical | High | Medium | Low;
