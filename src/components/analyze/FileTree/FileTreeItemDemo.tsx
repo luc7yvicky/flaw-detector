@@ -25,10 +25,10 @@ const calcPadding = (element: keyof HTMLElementTagNameMap, level: number) => {
 };
 
 export type FileTreeItemDemoProps = {
-  type: "dir" | "file";
+  type: 0 | 1; // 0: dir, 1: file
   name: string;
+  depth: number;
   isOpenDir?: boolean;
-  level?: number;
   isHovered?: boolean;
   isChecked?: boolean;
   isBookmarked?: boolean;
@@ -37,8 +37,8 @@ export type FileTreeItemDemoProps = {
 
 function FileTreeItemDemo({
   type,
+  depth,
   isOpenDir = false,
-  level,
   isHovered = false,
   isChecked = false,
   isBookmarked = false,
@@ -46,8 +46,8 @@ function FileTreeItemDemo({
   children,
 }: FileTreeItemDemoProps & { children?: React.ReactNode }) {
   const depthIndicators = useMemo(() => {
-    if (typeof level === "number") {
-      return Array.from({ length: level }).map((_, index) => (
+    if (depth > 0) {
+      return Array.from({ length: depth }).map((_, index) => (
         <span
           key={index}
           className="absolute bottom-0 top-0 inline-block h-full w-px bg-gray-300"
@@ -56,14 +56,14 @@ function FileTreeItemDemo({
       ));
     }
     return null;
-  }, [level]);
+  }, [depth]);
 
   // 폴더
-  if (type === "dir") {
+  if (type === 0) {
     return (
       <li
         className="relative flex w-full border-b border-line-light p-2.5 py-[-1px]"
-        style={level ? calcPadding("li", level) : undefined}
+        style={depth ? calcPadding("li", depth) : undefined}
       >
         {depthIndicators}
         <div className="flex w-full items-center gap-x-[0.267rem]">
@@ -94,7 +94,7 @@ function FileTreeItemDemo({
         isChecked && "bg-primary-50",
         isHovered && "bg-purple-light",
       )}
-      style={level ? calcPadding("li", level) : undefined}
+      style={depth ? calcPadding("li", depth) : undefined}
     >
       {depthIndicators}
       {isChecked && (
