@@ -6,7 +6,7 @@ type SearchKeyword = {
 };
 
 export async function getSearchKeywords(): Promise<SearchKeyword[]> {
-  const res = await fetch(`${BASE_URL}/api/search`);
+  const res = await fetch(`${BASE_URL}/api/ranking`);
 
   if (!res.ok) {
     throw new Error("검색어를 불러오는 데 실패했습니다.");
