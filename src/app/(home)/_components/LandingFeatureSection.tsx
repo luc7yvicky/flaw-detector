@@ -28,7 +28,7 @@ export default function LandingFeatureSection() {
           <div className="relative z-10 overflow-hidden rounded-lg bg-white p-[3vw] shadow-[0_2.6vw_2.6vw_-1vw_rgba(97,0,255,0.25)] md:flex">
             <IconBug width="7.5vw" height="7.65vw" />
           </div>
-          <SquareBackground className="absolute -right-[22%] bottom-[18%] h-[50vw] w-[50vw] overflow-hidden xl:-bottom-[12%]" />
+          <SquareBackground className="absolute -right-[22%] bottom-[18%] overflow-hidden xl:-bottom-[12%]" />
         </article>
       </div>
     </section>
@@ -57,8 +57,8 @@ export const SquareBackground = memo(function SquareBackground({
       initial={{ rotate: 0 }}
       animate={controls}
       className={className}
-      width="1022"
-      height="1022"
+      width="50vw"
+      height="50vw"
       viewBox="0 0 1022 1022"
       fill="#6100FF"
       xmlns="http://www.w3.org/2000/svg"
