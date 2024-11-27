@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import IconClose from "../ui/icons/IconClose";
 import IconTriangle from "../ui/icons/IconTriangle";
 import IconCircle from "../ui/icons/IconCircle";
+import { memo } from "react";
 
 const statusType = {
   error: {
@@ -35,7 +36,7 @@ type StatusMessageProps = {
   type: keyof typeof statusType;
 } & React.HTMLAttributes<HTMLDivElement>;
 
-function StatusMessage({
+export const StatusMessage = memo(function StatusMessage({
   type,
   className,
   children,
@@ -53,9 +54,9 @@ function StatusMessage({
       <span className="ml-auto">{children}</span>
     </div>
   );
-}
+});
 
-function Status({
+export function Status({
   className,
   children,
   ...props
@@ -73,7 +74,7 @@ function Status({
   );
 }
 
-function StatusMessageSkeleton() {
+export const StatusMessageSkeleton = memo(function StatusMessageSkeleton() {
   return (
     <div className="inline-flex gap-x-[0.833rem]">
       <div className="ml-[0.667rem] size-[1.667rem] rounded-full bg-gray-200" />
@@ -81,6 +82,4 @@ function StatusMessageSkeleton() {
       <div className="ml-auto size-[1.667rem] rounded-lg bg-gray-200" />
     </div>
   );
-}
-
-export { Status, StatusMessage, StatusMessageSkeleton };
+});
