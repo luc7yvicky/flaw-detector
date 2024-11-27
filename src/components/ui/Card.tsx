@@ -231,8 +231,8 @@ const CardLinkButton = forwardRef<
       {...props}
     >
       <IconArrow
-        direction="right"
-        className="fill-black stroke-black stroke-[0.1rem]"
+        direction={90}
+        className="size-8 fill-black stroke-black stroke-[0.1rem]"
       />
     </a>
   );
