@@ -1,9 +1,13 @@
 import { BASE_URL, OCTOKIT_TOKEN } from "@/lib/const";
 import { Mode } from "@/stores/useDetectedModeStore";
 import { FileResultProps, FileStatus } from "@/types/file";
-import { detectedStatus, RepoListData } from "@/types/repo";
+import {
+  detectedStatus,
+  RepoListData,
+  RepoTree,
+  RepoTreeItem,
+} from "@/types/repo";
 import { Octokit } from "@octokit/rest";
-import { isIgnoredFile } from "../utils";
 
 type RepoListRawData = {
   id: number;
@@ -94,24 +98,6 @@ type GitHubTreeItem = {
   sha: string;
   size: number;
   url: string;
-};
-
-export type RepoTreeItem = {
-  name: string;
-  path: string;
-  type: "file" | "dir";
-  size?: number;
-  sha?: string;
-};
-
-export type RepoTree = {
-  tree: RepoTreeItem[];
-};
-
-export type InspectionList = {
-  tree: RepoTreeItem[];
-  ignoredFiles: RepoTreeItem[];
-  ignoredCount: number;
 };
 
 // 타입 가드 함수

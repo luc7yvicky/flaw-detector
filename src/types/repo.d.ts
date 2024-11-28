@@ -1,3 +1,4 @@
+/* 마이 라이브러리 페이지 */
 export type detectedStatus = "done" | "onProgress" | "notChecked";
 
 export type RepoListData = {
@@ -11,6 +12,7 @@ export type RepoListData = {
   owner?: string;
 };
 
+/* 취약점 검사 페이지 */
 export type RepoContentItem = {
   name: string;
   path: string;
@@ -30,3 +32,21 @@ export type RepoContentItem = {
 );
 
 export type FolderItem = Extract<RepoContentItem, { type: "dir" }>;
+
+export type RepoTreeItem = {
+  name: string;
+  path: string;
+  type: "file" | "dir";
+  size?: number;
+  sha?: string;
+};
+
+export type RepoTree = {
+  tree: RepoTreeItem[];
+};
+
+export type InspectionList = {
+  tree: RepoTreeItem[];
+  ignoredFiles: RepoTreeItem[];
+  ignoredCount: number;
+};
