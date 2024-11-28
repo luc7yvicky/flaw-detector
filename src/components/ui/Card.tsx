@@ -1,10 +1,16 @@
 "use client";
 
-import Image from "next/image";
-import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import IconArrow from "./icons/IconArrow";
+import {
+  CardContentProps,
+  CardHeaderProps,
+  CardProps,
+  CardTitleProps,
+} from "@/types/card";
+import { cva } from "class-variance-authority";
+import Image from "next/image";
 import { forwardRef } from "react";
+import IconArrow from "./icons/IconArrow";
 
 const cardVariants = cva("relative flex flex-col w-full", {
   variants: {
@@ -50,25 +56,6 @@ const cardContentVariants = cva("", {
     bgColor: "default",
   },
 });
-
-export type CardProps = React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof cardVariants> & {
-    children?: React.ReactNode;
-  };
-
-export type CardHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
-  hasMenu?: boolean;
-};
-
-export type CardTitleProps = React.HTMLAttributes<HTMLDivElement> & {
-  size?: "big" | "small" | "xsmall" | "default";
-  weight?: "bold" | "default" | "normal";
-  color?: string;
-  isSingleLine?: boolean;
-};
-
-export type CardContentProps = React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof cardContentVariants>;
 
 function Card({ variant, size, className, ...props }: CardProps) {
   return (
@@ -253,12 +240,12 @@ function CardFooter({
 
 export {
   Card,
-  CardCoverImage,
-  CardHeader,
-  CardTitleWrapper,
-  CardTitle,
-  CardSubTitle,
   CardContent,
-  CardLinkButton,
+  CardCoverImage,
   CardFooter,
+  CardHeader,
+  CardLinkButton,
+  CardSubTitle,
+  CardTitle,
+  CardTitleWrapper,
 };
