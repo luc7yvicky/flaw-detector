@@ -24,14 +24,16 @@ export async function fetchVulDBPosts({
 }: {
   userId: number;
   filter: string;
-  searchTerm: string;
+  searchTerm: string[];
   currentPage: number;
 }) {
   const params = new URLSearchParams();
   params.append("userId", userId.toString());
   params.append("filter", filter);
-  params.append("searchTerm", searchTerm);
   params.append("page", currentPage.toString());
+  if (searchTerm.length > 0) {
+    params.append("searchTerm", searchTerm.join(","));
+  }
 
   try {
     const response = await fetch(`${BASE_URL}/api/posts?${params.toString()}`);

@@ -34,7 +34,7 @@ async function getUserPinnedPosts(userId: string) {
 
 async function getPaginatedPosts(
   userId: string,
-  searchTerm: string,
+  searchTerm: string[],
   filter: string,
   page: number,
 ) {
@@ -52,9 +52,9 @@ async function getPaginatedPosts(
   // 3. 기본 쿼리 설정
   let baseQuery = query(postCollection, orderBy("created_at", "desc"));
 
-  // 4. 검색어 필터 추가
-  if (searchTerm) {
-    console.log("Adding search term to query:", searchTerm); // 디버깅
+  // 4. 검색어 조건 추가
+  if (searchTerm.length > 0) {
+    console.log("Adding search terms to query:", searchTerm);
     baseQuery = query(
       postCollection,
       where("keywords", "array-contains-any", searchTerm),
@@ -63,14 +63,14 @@ async function getPaginatedPosts(
 
   // 5. 필터 조건 추가
   if (filter === "hot") {
-    baseQuery = query(postCollection, orderBy("views", "desc"), limit(10)); // hot 필터
+    baseQuery = query(postCollection, orderBy("views", "desc"), limit(10));
   } else if (filter === "new") {
     const now = Timestamp.now();
     const twoDaysAgo = new Timestamp(
       now.seconds - 48 * 60 * 60,
       now.nanoseconds,
     );
-    baseQuery = query(baseQuery, where("created_at", ">", twoDaysAgo)); // new 필터
+    baseQuery = query(baseQuery, where("created_at", ">", twoDaysAgo));
   }
 
   // 6. 페이지네이션 처리
@@ -120,14 +120,18 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const userId = searchParams.get("userId") || ""; // 사용자 ID
-    const searchTerm = searchParams.get("searchTerm") || ""; // 검색어
     const filter = searchParams.get("filter") || "all"; // 필터 상태
     const page = parseInt(searchParams.get("page") || "1", 10); // 페이지 번호
+    const searchTerm = searchParams.get("searchTerm") || ""; // 검색어
+    const parsedSearchTerm = searchTerm
+      .split(",")
+      .map((term) => term.trim())
+      .filter((term) => term.length > 0);
 
     // 페이지네이션 및 데이터 가져오기
     const { posts, totalPage } = await getPaginatedPosts(
       userId,
-      searchTerm,
+      parsedSearchTerm,
       filter,
       page,
     );
