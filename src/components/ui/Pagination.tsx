@@ -9,7 +9,6 @@ export type PaginationProps = {
   startPage?: number;
   endPage?: number;
   setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
-  prefetchPage?: (page: number) => void;
 };
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -17,7 +16,6 @@ const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalPages,
   setCurrentPage,
-  prefetchPage,
 }) => {
   const maxPagesToShow = 10;
 
@@ -45,7 +43,6 @@ const Pagination: React.FC<PaginationProps> = ({
             setCurrentPage(currentPage - 1);
             window.scrollTo(0, 0);
           }}
-          onMouseEnter={() => prefetchPage?.(currentPage - 1)}
           className="flex-center-center h-9 w-9 text-gray-dark"
           aria-label="Previous Page"
         >
@@ -62,7 +59,6 @@ const Pagination: React.FC<PaginationProps> = ({
             setCurrentPage(page);
             window.scrollTo(0, 0);
           }}
-          onMouseEnter={() => prefetchPage?.(page)}
           className={`${
             page === currentPage
               ? "rounded-full bg-bggray-light font-semibold text-gray-dark"
@@ -80,7 +76,6 @@ const Pagination: React.FC<PaginationProps> = ({
             setCurrentPage(currentPage + 1);
             window.scrollTo(0, 0);
           }}
-          onMouseEnter={() => prefetchPage?.(currentPage + 1)}
           className="flex-center-center h-9 w-9 text-gray-dark"
           aria-label="Next Page"
         >

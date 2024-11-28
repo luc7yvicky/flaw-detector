@@ -107,7 +107,7 @@ async function getPaginatedPosts(
 
     return {
       id: doc.id,
-      ...data,
+      ...data, // => 필요한 데이터만 추출 예정
       chip, // "hot", "new", or ""
       isScrapped: userPinnedPosts.includes(doc.id),
     };
