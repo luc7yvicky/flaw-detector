@@ -1,15 +1,13 @@
 "use client";
 
 import CodeResultsListItem from "@/components/analyze/CodeResultsListItem";
-import FileTreeItemDemo, {
-  FileTreeItemDemoProps,
-} from "@/components/analyze/FileTree/FileTreeItemDemo";
+import FileTreeItemDemo from "@/components/analyze/FileTree/FileTreeItemDemo";
 import { Status, StatusMessage } from "@/components/analyze/Status";
 import Button from "@/components/ui/Button";
 import IconList from "@/components/ui/icons/IconList";
 import IconMultiSelect from "@/components/ui/icons/IconMultiSelect";
 import TitleBar from "@/components/ui/TitleBar";
-import { FileResultProps } from "@/types/file";
+import { DEMO_CODE_RESULTS, DEMO_FILE_TREE_ITEMS } from "@/lib/dummy";
 import Image from "next/image";
 import FadeInUpAnimation from "./FadeInUpAnimation";
 
@@ -44,24 +42,6 @@ export default function LandingDemoSection() {
 }
 
 function DemoFileList() {
-  const demoFileTreeItems: Array<FileTreeItemDemoProps> = [
-    { type: 0, name: "public", depth: 0 },
-    { type: 0, name: "src", depth: 0, isOpenDir: true },
-    { type: 0, name: "app", depth: 1, isOpenDir: true },
-    { type: 0, name: "(blog)", depth: 2, isOpenDir: true },
-    {
-      type: 1,
-      name: "layout.tsx",
-      depth: 3,
-      isChecked: true,
-    },
-    { type: 1, name: "page.tsx", depth: 3, isBookmarked: true },
-    { type: 0, name: "api", depth: 2 },
-    { type: 1, name: "globals.css", depth: 3, isHovered: true },
-    { type: 1, name: "layout.tsx", depth: 3, isSuccessful: true },
-    { type: 1, name: "loading.tsx", depth: 3 },
-  ];
-
   return (
     <div className="w-full overflow-hidden rounded-lg border border-line-light">
       <div className="flex items-center rounded-t-[0.513rem] border-b border-line-light bg-purple-light px-[0.855rem] py-5 text-xl text-black">
@@ -74,7 +54,7 @@ function DemoFileList() {
         </div>
       </div>
       <ul className="max-h-[40rem] overflow-x-hidden overflow-y-scroll text-gray-dark scrollbar-hide">
-        {demoFileTreeItems.map((item, index) => (
+        {DEMO_FILE_TREE_ITEMS.map((item, index) => (
           <FileTreeItemDemo key={index} {...item}>
             {item.name}
           </FileTreeItemDemo>
@@ -85,24 +65,6 @@ function DemoFileList() {
 }
 
 function DemoCodeContainer() {
-  const demoCodeResults: FileResultProps = {
-    id: 1,
-    name: "XSS (Cross-Site Scripting) Vulnerability",
-    vulnerability:
-      "사용자 입력을 HTML에 직접 삽입하면서 HTML을 안전하게 처리하지 않음.",
-    severity: "High",
-    descriptions: [
-      "사용자 입력을 HTML에 삽입하기 전에 반드시 적절한 인코딩을 수행하거나, DOM API를 사용해 안전하게 요소를 삽입해야함.",
-      "‘innerHTML’은 입력된 HTML 코드를 그대로 렌더링하기 때문에 악성 스크립트를 실행할 수 있음. ‘textContent’는 HTML을 해석하지 않고 텍스트로만 처리하기 때문에 안전함.",
-    ],
-    lines: "12-13",
-    modified_codes: [
-      "function displayUserInput(input) {",
-      "  document.getElementById('userInput').textContent = input;",
-      "}",
-    ],
-  };
-
   return (
     <div className="relative w-full overflow-hidden">
       <div className="relative h-full max-h-[23.725rem] w-full overflow-hidden">
@@ -111,7 +73,8 @@ function DemoCodeContainer() {
           alt="example code"
           fill
           sizes="(min-width: 1024px) 100vw, 50vw"
-          priority
+          loading="lazy"
+          quality={75}
         />
         <Button
           variant="demo"
@@ -119,7 +82,7 @@ function DemoCodeContainer() {
           className="top-[35%] translate-x-[25%]"
           aria-label="detected vulnerability"
         >
-          🚨 {demoCodeResults["name"]}
+          🚨 {DEMO_CODE_RESULTS["name"]}
         </Button>
         <Button
           variant="demo"
@@ -131,7 +94,7 @@ function DemoCodeContainer() {
         </Button>
       </div>
       <div className="mt-[1.71rem] flex flex-col gap-y-6">
-        <CodeResultsListItem {...demoCodeResults} />
+        <CodeResultsListItem {...DEMO_CODE_RESULTS} />
       </div>
     </div>
   );

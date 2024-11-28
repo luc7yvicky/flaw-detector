@@ -1,3 +1,6 @@
+import { FileTreeItemDemoProps } from "@/components/analyze/FileTree/FileTreeItemDemo";
+import { FileResultProps } from "@/types/file";
+
 export const koreanLoremIpsum = `대통령은 필요하다고 인정할 때에는 외교·국방·통일 기타 국가안위에 관한 중요정책을 국민투표에 붙일 수 있다. 국가는 사회보장·사회복지의 증진에 노력할 의무를 진다.
 국민의 모든 자유와 권리는 국가안전보장·질서유지 또는 공공복리를 위하여 필요한 경우에 한하여 법률로써 제한할 수 있으며, 제한하는 경우에도 자유와 권리의 본질적인 내용을 침해할 수 없다.
 대통령의 국법상 행위는 문서로써 하며, 이 문서에는 국무총리와 관계 국무위원이 부서한다. 군사에 관한 것도 또한 같다. 타인의 범죄행위로 인하여 생명·신체에 대한 피해를 받은 국민은 법률이 정하는 바에 의하여 국가로부터 구조를 받을 수 있다.
@@ -9,3 +12,40 @@ export const koreanLoremIpsum = `대통령은 필요하다고 인정할 때에�
 대통령의 임기가 만료되는 때에는 임기만료 70일 내지 40일전에 후임자를 선거한다. 사면·감형 및 복권에 관한 사항은 법률로 정한다. 대통령의 임기는 5년으로 하며, 중임할 수 없다.
 선거와 국민투표의 공정한 관리 및 정당에 관한 사무를 처리하기 위하여 선거관리위원회를 둔다. 국회는 법률에 저촉되지 아니하는 범위안에서 의사와 내부규율에 관한 규칙을 제정할 수 있다.
 헌법개정은 국회재적의원 과반수 또는 대통령의 발의로 제안된다. 국가는 노인과 청소년의 복지향상을 위한 정책을 실시할 의무를 진다. 모든 국민은 법률이 정하는 바에 의하여 국가기관에 문서로 청원할 권리를 가진다.`;
+
+/* 랜딩 데모 섹션 */
+export const DEMO_FILE_TREE_ITEMS: Array<FileTreeItemDemoProps> = [
+  { type: 0, name: "public", depth: 0 },
+  { type: 0, name: "src", depth: 0, isOpenDir: true },
+  { type: 0, name: "app", depth: 1, isOpenDir: true },
+  { type: 0, name: "(blog)", depth: 2, isOpenDir: true },
+  {
+    type: 1,
+    name: "layout.tsx",
+    depth: 3,
+    isChecked: true,
+  },
+  { type: 1, name: "page.tsx", depth: 3, isBookmarked: true },
+  { type: 0, name: "api", depth: 2 },
+  { type: 1, name: "globals.css", depth: 3, isHovered: true },
+  { type: 1, name: "layout.tsx", depth: 3, isSuccessful: true },
+  { type: 1, name: "loading.tsx", depth: 3 },
+];
+
+export const DEMO_CODE_RESULTS: FileResultProps = {
+  id: 1,
+  name: "XSS (Cross-Site Scripting) Vulnerability",
+  vulnerability:
+    "사용자 입력을 HTML에 직접 삽입하면서 HTML을 안전하게 처리하지 않음.",
+  severity: "High",
+  descriptions: [
+    "사용자 입력을 HTML에 삽입하기 전에 반드시 적절한 인코딩을 수행하거나, DOM API를 사용해 안전하게 요소를 삽입해야함.",
+    "‘innerHTML’은 입력된 HTML 코드를 그대로 렌더링하기 때문에 악성 스크립트를 실행할 수 있음. ‘textContent’는 HTML을 해석하지 않고 텍스트로만 처리하기 때문에 안전함.",
+  ],
+  lines: "12-13",
+  modified_codes: [
+    "function displayUserInput(input) {",
+    "  document.getElementById('userInput').textContent = input;",
+    "}",
+  ],
+};
