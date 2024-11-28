@@ -14,11 +14,39 @@ import {
 } from "firebase/firestore";
 import db from "../../../firebaseConfig";
 import { getUserPinnedPosts } from "./users";
+import { BASE_URL } from "../const";
 
-/**
- * 조회수가 높은 상위 게시물 ID를 가져옵니다.
- * @returns Promise<string[]>
- */
+export async function fetchVulDBPosts({
+  userId,
+  filter,
+  searchTerm,
+  currentPage = 1,
+}: {
+  userId: number;
+  filter: string;
+  searchTerm: string;
+  currentPage: number;
+}) {
+  const params = new URLSearchParams();
+  params.append("userId", userId.toString());
+  params.append("filter", filter);
+  params.append("searchTerm", searchTerm);
+  params.append("page", currentPage.toString());
+
+  try {
+    const response = await fetch(`${BASE_URL}/api/posts?${params.toString()}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    throw new Error("Failed to fetch posts.");
+  }
+}
+
+// /**
+//  * 조회수가 높은 상위 게시물 ID를 가져옵니다.
+//  * @returns Promise<string[]>
+//  */
 export async function getTopHotPostIds(): Promise<string[]> {
   const postsCollection = collection(db, "posts");
   const hotPostsQuery = query(
