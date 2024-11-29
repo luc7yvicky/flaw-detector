@@ -45,6 +45,26 @@ export async function fetchVulDBPosts({
   }
 }
 
+/**
+ * Firestore에서 post의 views를 업데이트합니다.
+ */
+export async function increasePostViews(postId: string): Promise<void> {
+  try {
+    await fetch(`${BASE_URL}/api/posts/${postId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        postId,
+      }),
+    });
+  } catch (error) {
+    console.error("Error updating post views:", error);
+    throw new Error("Failed to update post views.");
+  }
+}
+
 // /**
 //  * 조회수가 높은 상위 게시물 ID를 가져옵니다.
 //  * @returns Promise<string[]>
@@ -140,22 +160,6 @@ export async function getPaginatedPosts(
   } catch (error) {
     console.error("Error fetching paginated posts:", error);
     throw new Error("Failed to get paginated posts.");
-  }
-}
-
-/**
- * Firestore에서 post의 views를 업데이트합니다.
- */
-export async function increasePostViews(postId: string): Promise<void> {
-  if (!postId) {
-    return;
-  }
-  try {
-    const docRef = doc(db, "posts", postId);
-    await updateDoc(docRef, { views: increment(1) });
-  } catch (error) {
-    console.error("Error updating post views:", error);
-    throw new Error("Failed to update post views.");
   }
 }
 
