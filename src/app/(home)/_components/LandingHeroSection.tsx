@@ -35,7 +35,7 @@ export default function LandingHeroSection({
         해결하세요.
       </p>
       {isLoggedIn ? (
-        <Link href="/repos">
+        <Link href="/repos" className="inline-flex">
           <Button shape="pill" variant="filled-sm">
             파일 분석하러 가기
           </Button>
