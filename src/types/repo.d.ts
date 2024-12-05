@@ -1,4 +1,9 @@
 /* 마이 라이브러리 페이지 */
+
+type Owner = string;
+type RepoName = string;
+type Favorite = boolean;
+
 export type detectedStatus = "done" | "onProgress" | "notChecked";
 
 export type RepoListRawData = {
@@ -11,10 +16,6 @@ export type RepoListRawData = {
   //   avatar_url: string;
   // };
 };
-
-type Owner = string;
-type RepoName = string;
-type Favorite = boolean;
 
 export type RepoBookmarkProps = {
   repo: RepoName;
