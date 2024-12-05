@@ -97,10 +97,10 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const { username, repoName, favorite, clickedAt, detectedStatus } =
+  const { owner, repo, isBookmarked, clickedAt, detectedStatus } =
     await req.json();
 
-  if (!username || !repoName) {
+  if (!owner || !repo) {
     return NextResponse.json(
       { error: "Missing username or repoName" },
       { status: 400 },
@@ -108,7 +108,7 @@ export async function PATCH(req: NextRequest) {
   }
 
   try {
-    const docId = `${username}_${repoName}`;
+    const docId = `${owner}_${repo}`;
     const repoDocRef = doc(db, "repos", docId);
     const repoDoc = await getDoc(repoDocRef);
 
@@ -126,8 +126,8 @@ export async function PATCH(req: NextRequest) {
     const updates: Partial<RepoListData & { clickedAt: string }> = {};
 
     // 북마크 여부 저장
-    if (favorite !== undefined) {
-      updates.favorite = favorite;
+    if (isBookmarked !== undefined) {
+      updates.favorite = isBookmarked;
     }
 
     // 클릭한 시간 저장

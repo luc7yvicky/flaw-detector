@@ -1,15 +1,37 @@
 /* 마이 라이브러리 페이지 */
 export type detectedStatus = "done" | "onProgress" | "notChecked";
 
+export type RepoListRawData = {
+  id: number;
+  name: string;
+  created_at?: string | null;
+  // owner: {
+  //   login: string;
+  //   id: number;
+  //   avatar_url: string;
+  // };
+};
+
+type Owner = string;
+type RepoName = string;
+type Favorite = boolean;
+
+export type RepoBookmarkProps = {
+  repo: RepoName;
+  isBookmarked: Favorite;
+};
+
+export type RepoBookmarkParams = { owner: Owner } & RepoBookmarkProps;
+
 export type RepoListData = {
   id: number;
-  repositoryName: string;
+  repositoryName: RepoName;
   detectedStatus: detectedStatus;
-  favorite: boolean;
+  favorite: Favorite;
   createdAt: string;
   detectedAt?: string;
   filename?: string;
-  owner?: string;
+  owner?: Owner;
 };
 
 /* 취약점 검사 페이지 */
