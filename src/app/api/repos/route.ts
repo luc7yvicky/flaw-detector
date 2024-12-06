@@ -97,8 +97,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function PATCH(req: NextRequest) {
-  const { owner, repo, isBookmarked, clickedAt, detectedStatus } =
-    await req.json();
+  const { owner, repo, favorite, clickedAt, detectedStatus } = await req.json();
 
   if (!owner || !repo) {
     return NextResponse.json(
@@ -126,8 +125,8 @@ export async function PATCH(req: NextRequest) {
     const updates: Partial<RepoListData & { clickedAt: string }> = {};
 
     // 북마크 여부 저장
-    if (isBookmarked !== undefined) {
-      updates.favorite = isBookmarked;
+    if (favorite !== undefined) {
+      updates.favorite = favorite;
     }
 
     // 클릭한 시간 저장

@@ -19,7 +19,7 @@ export type RepoListRawData = {
 
 export type RepoBookmarkProps = {
   repo: RepoName;
-  isBookmarked: Favorite;
+  favorite: Favorite;
 };
 
 export type RepoBookmarkParams = { owner: Owner } & RepoBookmarkProps;

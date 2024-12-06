@@ -1,5 +1,6 @@
 import { cn, formatDatetimeToYYMMDD } from "@/lib/utils";
 import { RepoListData } from "@/types/repo";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { memo } from "react";
 import Button from "../ui/Button";
@@ -10,10 +11,11 @@ import {
   CardSubTitle,
   CardTitle,
 } from "../ui/Card";
-import IconBug from "../ui/icons/IconBug";
 import IconCaretLeft from "../ui/icons/IconCaretLeft";
 import { Label, LabelProps } from "../ui/Label";
 import RepoBookmark from "./RepoBookmark";
+
+const IconBug = dynamic(() => import("../ui/icons/IconBug"));
 
 function Repo({
   id,
@@ -66,7 +68,7 @@ function Repo({
                   {detectedStatus === "done" ? "검사완료" : "검사중"}
                 </Label>
               )}
-              <RepoBookmark repo={repositoryName} isBookmarked={favorite} />
+              <RepoBookmark repo={repositoryName} favorite={favorite} />
             </div>
             <CardTitle size="big" className="leading-[2.45rem]">
               {repositoryName}
@@ -77,7 +79,7 @@ function Repo({
             <CardTitle size="big" className="leading-[2.45rem]">
               {repositoryName}
             </CardTitle>
-            <RepoBookmark repo={repositoryName} isBookmarked={favorite} />
+            <RepoBookmark repo={repositoryName} favorite={favorite} />
           </div>
         )}
       </CardHeader>
