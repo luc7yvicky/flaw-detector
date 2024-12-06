@@ -23,7 +23,7 @@ const updateFavoriteRepo = async ({
   return res.json();
 };
 
-export const useRepoBookmark = () => {
+export const useRepoBookmarkMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({

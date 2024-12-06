@@ -1,7 +1,7 @@
 "use client";
 
 import { useSessionStore } from "@/context/SessionProvider";
-import { useRepoBookmark } from "@/lib/queries/useRepoBookmark";
+import { useRepoBookmarkMutation } from "@/lib/queries/useRepoBookmarkMutation";
 import { cn } from "@/lib/utils";
 import { RepoBookmarkProps } from "@/types/repo";
 import { Session } from "next-auth";
@@ -17,7 +17,7 @@ const RepoBookmark = ({ repo, favorite }: RepoBookmarkProps) => {
     throw new Error("잘못된 접근입니다.");
   }
 
-  const { mutate } = useRepoBookmark();
+  const { mutate } = useRepoBookmarkMutation();
 
   const onToggleFavorite = useCallback(async () => {
     mutate({

@@ -1,7 +1,7 @@
 "use client";
 
 import Repo from "@/components/me/Repo";
-import { useRepoListQuery } from "@/lib/queries/useRepoList";
+import { useRepoListQuery } from "@/lib/queries/useRepoListQuery";
 import { useRepoListStore } from "@/stores/useRepoListStore";
 import { RepoListData } from "@/types/repo";
 import { useEffect, useMemo, useState } from "react";
