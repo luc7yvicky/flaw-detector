@@ -180,7 +180,7 @@ function CardCoverImage({
       src={src}
       alt={alt}
       fill
-      priority
+      loading="lazy"
       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
       style={{ objectFit: "cover", objectPosition: "center" }}
       className={cn("-z-10 rounded-[1.25rem]", className)}
