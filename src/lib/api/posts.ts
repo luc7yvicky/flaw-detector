@@ -22,13 +22,13 @@ export async function fetchVulDBPosts({
   searchTerm,
   currentPage = 1,
 }: {
-  userId: number;
+  userId?: number;
   filter: string;
   searchTerm: string[];
   currentPage: number;
 }) {
   const params = new URLSearchParams();
-  params.append("userId", userId.toString());
+  if (userId) params.append("userId", userId.toString());
   params.append("filter", filter);
   params.append("page", currentPage.toString());
   if (searchTerm.length > 0) {

@@ -33,7 +33,7 @@ async function getUserPinnedPosts(userId: string) {
 }
 
 async function getPaginatedPosts(
-  userId: string,
+  userId: string | undefined,
   searchTerm: string[],
   filter: string,
   page: number,
@@ -47,7 +47,7 @@ async function getPaginatedPosts(
   const hotPostIds = hotPostsSnapshot.docs.map((doc) => doc.id); // 조회수 상위 10개 게시글 ID
 
   // 2. 사용자 스크랩 정보 가져오기
-  const userPinnedPosts = await getUserPinnedPosts(userId);
+  const userPinnedPosts = userId ? await getUserPinnedPosts(userId) : [];
 
   // 3. 기본 쿼리 설정
   let baseQuery = query(postCollection, orderBy("created_at", "desc"));
