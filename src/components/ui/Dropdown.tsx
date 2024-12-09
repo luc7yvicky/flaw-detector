@@ -1,10 +1,12 @@
 "use client";
 
-import { cn } from "@/lib/utils";
-import { forwardRef, useRef, useState } from "react";
-import IconCheck from "./icons/IconCheck";
-import IconCaretDown from "./icons/IconCaretDown";
 import useOutsideClick from "@/hooks/useOutsideClick";
+import { cn } from "@/lib/utils";
+import dynamic from "next/dynamic";
+import { forwardRef, useRef, useState } from "react";
+import IconCaretDown from "./icons/IconCaretDown";
+
+const IconCheck = dynamic(() => import("./icons/IconCheck"));
 
 export type DropdownProps = React.HTMLAttributes<HTMLDivElement> & {
   type: "type" | "sort" | "label";

@@ -1,8 +1,10 @@
 import { cn } from "@/lib/utils";
-import IconClose from "../ui/icons/IconClose";
-import IconTriangle from "../ui/icons/IconTriangle";
-import IconCircle from "../ui/icons/IconCircle";
+import dynamic from "next/dynamic";
 import { memo } from "react";
+import IconCircle from "../ui/icons/IconCircle";
+import IconTriangle from "../ui/icons/IconTriangle";
+
+const IconClose = dynamic(() => import("../ui/icons/IconClose"));
 
 const statusType = {
   error: {
@@ -36,6 +38,24 @@ type StatusMessageProps = {
   type: keyof typeof statusType;
 } & React.HTMLAttributes<HTMLDivElement>;
 
+export function Status({
+  className,
+  children,
+  ...props
+}: React.HTMLAttributes<HTMLDivElement>) {
+  return (
+    <div
+      className={cn(
+        "flex w-full flex-col gap-4 px-2 text-[1.268rem] font-medium -tracking-[0.01rem]",
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
 export const StatusMessage = memo(function StatusMessage({
   type,
   className,
@@ -55,24 +75,6 @@ export const StatusMessage = memo(function StatusMessage({
     </div>
   );
 });
-
-export function Status({
-  className,
-  children,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn(
-        "flex w-full flex-col gap-4 px-2 text-[1.268rem] font-medium -tracking-[0.01rem]",
-        className,
-      )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
 
 export const StatusMessageSkeleton = memo(function StatusMessageSkeleton() {
   return (

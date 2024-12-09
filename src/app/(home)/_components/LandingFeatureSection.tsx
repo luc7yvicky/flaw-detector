@@ -1,9 +1,9 @@
 "use client";
 
-import IconBug from "@/components/ui/icons/IconBug";
 import dynamic from "next/dynamic";
 import FadeInUpAnimation from "./FadeInUpAnimation";
 
+const IconBug = dynamic(() => import("@/components/ui/icons/IconBug"));
 const SquareBackground = dynamic(() => import("./SquareBackground"));
 
 export default function LandingFeatureSection() {
