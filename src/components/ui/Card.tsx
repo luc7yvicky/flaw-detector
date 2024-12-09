@@ -80,21 +80,6 @@ function CardHeader({ className, children, ...props }: CardHeaderProps) {
   );
 }
 
-function CardTitleWrapper({
-  className,
-  children,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn("flex flex-col justify-end gap-y-[0.625rem]", className)}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
 function CardTitle({
   size = "default",
   weight = "default",
@@ -247,5 +232,4 @@ export {
   CardLinkButton,
   CardSubTitle,
   CardTitle,
-  CardTitleWrapper,
 };
