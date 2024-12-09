@@ -4,21 +4,12 @@ import { FileResultProps, FileStatus } from "@/types/file";
 import {
   detectedStatus,
   RepoListData,
+  RepoListRawData,
   RepoTree,
   RepoTreeItem,
 } from "@/types/repo";
+import { isValidTreeItem } from "@/types/typeGuards";
 import { Octokit } from "@octokit/rest";
-
-type RepoListRawData = {
-  id: number;
-  name: string;
-  created_at?: string | null;
-  // owner: {
-  //   login: string;
-  //   id: number;
-  //   avatar_url: string;
-  // };
-};
 
 const octokit = new Octokit({
   auth: OCTOKIT_TOKEN,
@@ -57,6 +48,7 @@ export async function fetchCodes(
   }
 }
 
+// 사용자의 레포지토리 리스트 가져옴 (From GitHub)
 export async function getRepoLists(username: string) {
   if (!username) {
     throw new Error("GitHub username이 존재하지 않습니다");
@@ -88,28 +80,6 @@ export async function getRepoLists(username: string) {
     console.error("레포지토리 목록을 읽어오는 데 실패했습니다:", error);
     throw error;
   }
-}
-
-// GitHub API 응답에 맞춘 타입 정의
-type GitHubTreeItem = {
-  path: string;
-  mode: string;
-  type: string;
-  sha: string;
-  size: number;
-  url: string;
-};
-
-// 타입 가드 함수
-function isValidTreeItem(item: any): item is GitHubTreeItem {
-  return (
-    typeof item.path === "string" &&
-    typeof item.mode === "string" &&
-    typeof item.type === "string" &&
-    typeof item.sha === "string" &&
-    typeof item.url === "string" &&
-    (item.size === undefined || typeof item.size === "number")
-  );
 }
 
 // 기본 브랜치 가져오기
@@ -257,7 +227,7 @@ export const getDetectedResultsByRepo = async (
   }
 };
 
-// 2. 현재 사용자의 레파지토리 리스트 추가
+// 2. 현재 사용자의 레파지토리 리스트 추가 (To DB)
 export const addRepoList = async (username: string, repos: RepoListData[]) => {
   try {
     await fetch(`${BASE_URL}/api/repos`, {
@@ -275,7 +245,7 @@ export const addRepoList = async (username: string, repos: RepoListData[]) => {
   }
 };
 
-// 3. 현재 사용자의 레파지토리 리스트 목록 조회
+// 3. 현재 사용자의 레파지토리 리스트 목록 조회 (From DB)
 export const getRepoListFromDB = async (params: URLSearchParams) => {
   try {
     const res = await fetch(`${BASE_URL}/api/repos?${params.toString()}`);
