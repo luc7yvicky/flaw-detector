@@ -1,22 +1,20 @@
-import { VulDBPost, VulDBPostWithChip } from "@/types/post";
+import { VulDBPinnedInfo, VulDBPost, VulDBPostWithChip } from "@/types/post";
 import {
   collection,
   doc,
   getDocs,
-  increment,
   limit,
   orderBy,
   query,
   runTransaction,
   startAfter,
-  updateDoc,
   where,
 } from "firebase/firestore";
 import db from "../../../firebaseConfig";
-import { getUserPinnedPosts } from "./users";
 import { BASE_URL } from "../const";
+import { getUserPinnedPosts } from "./users";
 
-export async function fetchVulDBPosts({
+export async function fetchPosts({
   userId,
   filter,
   searchTerm,
@@ -42,6 +40,39 @@ export async function fetchVulDBPosts({
   } catch (error) {
     console.error("Error fetching posts:", error);
     throw new Error("Failed to fetch posts.");
+  }
+}
+
+export async function fetchPost({
+  postId,
+  userId,
+}: {
+  postId: string;
+  userId: number;
+}) {
+  const response = await fetch(
+    `${BASE_URL}/api/posts/${postId}?userId=${userId}`,
+  );
+  if (!response.ok) {
+    throw new Error("Failed to fetch post data");
+  }
+  return response.json();
+}
+
+export async function updatePinnedPost(
+  pinnedInfo: VulDBPinnedInfo,
+  action: "add" | "remove",
+) {
+  const response = await fetch(`${BASE_URL}/api/scraps`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ ...pinnedInfo, action }),
+  });
+
+  if (!response.ok) {
+    throw new Error("스크랩 상태를 변경하는 데 실패했습니다.");
   }
 }
 
