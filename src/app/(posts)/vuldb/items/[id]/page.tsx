@@ -1,7 +1,8 @@
 import { auth } from "@/auth";
 import { Floating } from "@/components/ui/Floating";
 import ArticleDetail from "@/components/vulnerability-db/ArticleDetail";
-import { increasePostViews } from "@/lib/api/posts";
+import SimilarInfoPosts from "@/components/vulnerability-db/SimilarInfoPosts";
+import { fetchLatestPosts, increasePostViews } from "@/lib/api/posts";
 
 import { redirectIfNotLoggedIn } from "@/lib/redirect";
 import dynamic from "next/dynamic";
@@ -32,10 +33,13 @@ export default async function VulnerabilityDBDetailPage({
   const postId = params?.id;
   await increasePostViews(postId);
 
+  const response = await fetchLatestPosts(postId, userId);
+  const latestPosts = response.results || [];
+
   return (
     <div className="relative mx-auto mb-[8.596rem] mt-[2.063rem] flex w-full max-w-[120rem] flex-col items-center gap-[3.75rem] overflow-hidden px-[1rem]">
       <ArticleDetail postId={postId} userId={userId} />
-      {/* <SimilarInfoPosts postId={postId} userId={userId} /> */}
+      <SimilarInfoPosts userId={userId} posts={latestPosts} />
       <ToastContainer />
       <div className="width-[4.75rem] absolute right-[8.75rem] top-[46.313rem]">
         <Floating variant="chat" className="fixed top-[46.313rem]" />

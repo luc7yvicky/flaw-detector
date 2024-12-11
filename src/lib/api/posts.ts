@@ -96,6 +96,15 @@ export async function increasePostViews(postId: string): Promise<void> {
   }
 }
 
+export async function fetchLatestPosts(postId: string, userId: number) {
+  const param = new URLSearchParams();
+  param.append("userId", userId.toString());
+  const res = await fetch(
+    `${BASE_URL}/api/posts/latest/${postId}?${param.toString()}`,
+  );
+  return res.json();
+}
+
 // /**
 //  * 조회수가 높은 상위 게시물 ID를 가져옵니다.
 //  * @returns Promise<string[]>
