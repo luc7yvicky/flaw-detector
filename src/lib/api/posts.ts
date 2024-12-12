@@ -1,14 +1,4 @@
 import { VulDBPinnedInfo } from "@/types/post";
-import {
-  collection,
-  doc,
-  getDocs,
-  limit,
-  orderBy,
-  query,
-  runTransaction,
-} from "firebase/firestore";
-import db from "../../../firebaseConfig";
 import { BASE_URL } from "../const";
 
 export async function fetchPosts({
@@ -102,26 +92,23 @@ export async function fetchLatestPosts(postId: string, userId: number) {
   return res.json();
 }
 
-/**
- * 검색어 기반으로 실시간 토픽을 업데이트합니다.
- * @param searchTerm
- */
 export async function updateRealTimeTopic(searchTerm: string) {
-  const searchKeywordRef = doc(db, "searchKeywords", searchTerm);
-
   try {
-    await runTransaction(db, async (transaction) => {
-      const searchKeywordDoc = await transaction.get(searchKeywordRef);
-
-      if (searchKeywordDoc.exists()) {
-        const newCount = searchKeywordDoc.data().searchCounts + 1;
-        transaction.update(searchKeywordRef, { searchCounts: newCount });
-      } else {
-        transaction.set(searchKeywordRef, { searchCounts: 1 });
-      }
+    const response = await fetch(`${BASE_URL}/api/ranking`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        searchTerm,
+      }),
     });
+
+    if (!response.ok) {
+      throw new Error("실시간 topic 업데이트에 실패했습니다.");
+    }
   } catch (error) {
-    console.error("Error updating RealTime Topic: ", error);
-    throw new Error("Failed to update RealTime Topic.");
+    console.error(error);
+    throw new Error("실시간 topic 업데이트에 실패했습니다.");
   }
 }
