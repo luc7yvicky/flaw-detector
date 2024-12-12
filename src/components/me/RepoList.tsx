@@ -1,10 +1,9 @@
 "use client";
 
 import Repo from "@/components/me/Repo";
-import { getRepoListFromDB } from "@/lib/api/repositories";
+import { useRepoListQuery } from "@/lib/queries/useRepoListQuery";
 import { useRepoListStore } from "@/stores/useRepoListStore";
 import { RepoListData } from "@/types/repo";
-import { useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import Dropdown from "../ui/Dropdown";
@@ -45,39 +44,14 @@ export default function RepoList({
     isError,
     error,
     refetch,
-  } = useQuery({
-    queryKey: [
-      "repos",
-      username,
-      currPage,
-      filterType,
-      filterByBookmarked,
-      filterByRecentClicked,
-    ],
-    queryFn: async () => {
-      const params = new URLSearchParams({ username });
-
-      if (currPage) {
-        params.append("page", currPage.toString());
-      }
-
-      if (filterType !== undefined) {
-        params.append("filterType", filterType);
-      }
-
-      if (filterByBookmarked) {
-        params.append("favorite", "true");
-      }
-
-      if (filterByRecentClicked) {
-        params.append("clickedAt", "true");
-      }
-
-      const res = await getRepoListFromDB(params);
-      return res;
-    },
-    enabled: false,
-    initialData: { repos: initialRepos, totalPage },
+  } = useRepoListQuery({
+    username,
+    currPage,
+    filterType,
+    filterByBookmarked,
+    filterByRecentClicked,
+    initialRepos,
+    totalPage,
   });
 
   useEffect(() => {

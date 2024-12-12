@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/ui/Button";
+import { processRepoTree } from "@/lib/api/processRepoTree";
 import { getRepoTree } from "@/lib/api/repositories";
 import { useFileProcessStore } from "@/stores/useFileProcessStore";
 import {
@@ -11,9 +12,8 @@ import {
 import { useFileViewerStore } from "@/stores/useFileViewerStore";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { List, Modal, ModalTitle } from "../ui/Modal";
-import { processRepoTree } from "@/lib/utils";
 import { useShallow } from "zustand/react/shallow";
+import { List, Modal, ModalTitle } from "../ui/Modal";
 
 export default function RunInspectButton({
   repo,

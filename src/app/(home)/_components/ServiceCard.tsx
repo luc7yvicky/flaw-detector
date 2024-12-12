@@ -77,9 +77,9 @@ export default function ServiceCard({
         <Image
           src={image}
           alt="service emoji"
-          width={120}
+          width={122}
           height={180}
-          style={{ width: 120, height: 180 }}
+          style={{ width: 122, height: 180 }}
         />
       </CardContent>
       <div className="flex-col-center-center gap-y-1">
