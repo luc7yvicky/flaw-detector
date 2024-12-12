@@ -23,7 +23,7 @@ export default function Profile() {
             alt={`${user.username}의 아바타`}
             width={108}
             height={108}
-            priority
+            loading="lazy"
             className="h-[6.688rem] w-[6.688rem] rounded-[50%]"
           />
           <p className="flex-col-start-center text-[2.5rem] font-medium leading-tight -tracking-[0.01em] text-gray-dark">

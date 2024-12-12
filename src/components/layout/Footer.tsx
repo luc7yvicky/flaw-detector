@@ -23,6 +23,7 @@ export default function Footer() {
           alt="Footer 배경 이미지"
           fill={true}
           className="object-cover"
+          loading="lazy"
         />
       </div>
 

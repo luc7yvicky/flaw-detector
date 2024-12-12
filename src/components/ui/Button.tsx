@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode;
@@ -14,7 +15,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   onClick?: () => void;
 }
 
-export default function Button({
+function Button({
   children,
   variant = "filled",
   shape = "rounded",
@@ -61,3 +62,5 @@ export default function Button({
     </button>
   );
 }
+
+export default memo(Button);

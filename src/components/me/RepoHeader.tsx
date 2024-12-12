@@ -9,7 +9,7 @@ export const RepoHeader = () => {
         alt="my repos bg"
         width={1920}
         height={1272}
-        priority
+        loading="lazy"
         className="absolute left-0 -z-10"
       />
       <div className="flex-col-center-center mt-[3.5rem] gap-y-5">

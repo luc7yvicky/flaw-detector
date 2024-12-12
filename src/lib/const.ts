@@ -32,6 +32,11 @@ export const ITEMS_PER_DB_PAGE = 5;
 export const ITEMS_PER_MY_PAGE = 12;
 export const PAGES_PER_GROUP = 10;
 
+export const PADDING = {
+  BASE: 8,
+  INCREMENT: 16,
+} as const;
+
 export const WEB_CRAWLING_SEARCH_KEYWORD = "vulnerability";
 
 export const WEB_CRAWLING_CERT_CC_API_URL = `${BASE_URL}/api/web-crawling/cert-cc`;

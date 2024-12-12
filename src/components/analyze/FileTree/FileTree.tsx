@@ -1,6 +1,6 @@
-import { RepoTree } from "@/lib/api/repositories";
 import { useFileBookmarkStore } from "@/stores/useFileBookmarkStore";
-import React, { useMemo } from "react";
+import { RepoTree } from "@/types/repo";
+import { useMemo } from "react";
 import FileTreeItem from "./FileTreeItem";
 
 type FileTreeProps = {

@@ -1,10 +1,16 @@
 "use client";
 
-import Image from "next/image";
-import { cva, VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
-import IconArrow from "./icons/IconArrow";
+import {
+  CardContentProps,
+  CardHeaderProps,
+  CardProps,
+  CardTitleProps,
+} from "@/types/card";
+import { cva } from "class-variance-authority";
+import Image from "next/image";
 import { forwardRef } from "react";
+import IconArrow from "./icons/IconArrow";
 
 const cardVariants = cva("relative flex flex-col w-full", {
   variants: {
@@ -51,25 +57,6 @@ const cardContentVariants = cva("", {
   },
 });
 
-export type CardProps = React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof cardVariants> & {
-    children?: React.ReactNode;
-  };
-
-export type CardHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
-  hasMenu?: boolean;
-};
-
-export type CardTitleProps = React.HTMLAttributes<HTMLDivElement> & {
-  size?: "big" | "small" | "xsmall" | "default";
-  weight?: "bold" | "default" | "normal";
-  color?: string;
-  isSingleLine?: boolean;
-};
-
-export type CardContentProps = React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof cardContentVariants>;
-
 function Card({ variant, size, className, ...props }: CardProps) {
   return (
     <div
@@ -86,21 +73,6 @@ function CardHeader({ className, children, ...props }: CardHeaderProps) {
         "flex-col-center-start relative h-fit flex-wrap items-center gap-2",
         className,
       )}
-      {...props}
-    >
-      {children}
-    </div>
-  );
-}
-
-function CardTitleWrapper({
-  className,
-  children,
-  ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
-  return (
-    <div
-      className={cn("flex flex-col justify-end gap-y-[0.625rem]", className)}
       {...props}
     >
       {children}
@@ -208,7 +180,7 @@ function CardCoverImage({
       src={src}
       alt={alt}
       fill
-      priority
+      loading="lazy"
       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
       style={{ objectFit: "cover", objectPosition: "center" }}
       className={cn("-z-10 rounded-[1.25rem]", className)}
@@ -231,8 +203,8 @@ const CardLinkButton = forwardRef<
       {...props}
     >
       <IconArrow
-        direction="right"
-        className="fill-black stroke-black stroke-[0.1rem]"
+        direction={90}
+        className="size-8 fill-black stroke-black stroke-[0.1rem]"
       />
     </a>
   );
@@ -253,12 +225,11 @@ function CardFooter({
 
 export {
   Card,
-  CardCoverImage,
-  CardHeader,
-  CardTitleWrapper,
-  CardTitle,
-  CardSubTitle,
   CardContent,
-  CardLinkButton,
+  CardCoverImage,
   CardFooter,
+  CardHeader,
+  CardLinkButton,
+  CardSubTitle,
+  CardTitle,
 };

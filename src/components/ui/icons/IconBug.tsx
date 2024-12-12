@@ -1,6 +1,7 @@
 import { cn } from "@/lib/utils";
+import { memo } from "react";
 
-export default function IconBug({
+export default memo(function IconBug({
   className,
   width = "191",
   height = "196",
@@ -59,4 +60,4 @@ export default function IconBug({
       />
     </svg>
   );
-}
+});
