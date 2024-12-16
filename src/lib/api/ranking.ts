@@ -1,11 +1,6 @@
 import { BASE_URL } from "../const";
 
-type SearchKeyword = {
-  keyword: string;
-  searchCounts: number;
-};
-
-export async function getSearchKeywords(): Promise<SearchKeyword[]> {
+export async function getSearchKeywords() {
   const res = await fetch(`${BASE_URL}/api/ranking`);
 
   if (!res.ok) {
@@ -14,4 +9,25 @@ export async function getSearchKeywords(): Promise<SearchKeyword[]> {
 
   const data = await res.json();
   return data.results || [];
+}
+
+export async function updateRealTimeTopic(searchTerm: string) {
+  try {
+    const response = await fetch(`${BASE_URL}/api/ranking`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        searchTerm,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("실시간 topic 업데이트에 실패했습니다.");
+    }
+  } catch (error) {
+    console.error(error);
+    throw new Error("실시간 topic 업데이트에 실패했습니다.");
+  }
 }

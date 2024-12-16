@@ -91,24 +91,3 @@ export async function fetchLatestPosts(postId: string, userId: number) {
   );
   return res.json();
 }
-
-export async function updateRealTimeTopic(searchTerm: string) {
-  try {
-    const response = await fetch(`${BASE_URL}/api/ranking`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        searchTerm,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("실시간 topic 업데이트에 실패했습니다.");
-    }
-  } catch (error) {
-    console.error(error);
-    throw new Error("실시간 topic 업데이트에 실패했습니다.");
-  }
-}

@@ -5,7 +5,7 @@ type SearchKeyword = {
   searchCounts: number;
 };
 
-export type RankingProps = React.HTMLAttributes<HTMLUListElement> & {
+type RankingProps = React.HTMLAttributes<HTMLUListElement> & {
   topSearchKeywords: SearchKeyword[];
 };
 
