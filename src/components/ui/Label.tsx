@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
-import * as React from "react";
 
 const labelVariants = cva(
   "inline-flex items-center justify-center whitespace-nowrap rounded-full tracking-[-0.01em] text-base",
