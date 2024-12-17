@@ -29,10 +29,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
-      <body
-        className={`${pretendard.variable} font-pretendard ${inter.className} w-dvw md:min-w-[64rem]`}
-      >
+    <html lang="ko" className={`${inter.className} ${pretendard.className}`}>
+      <body className={`w-dvw md:min-w-[64rem]`}>
         <div className="relative h-dvh snap-y snap-mandatory overflow-y-auto overflow-x-hidden">
           <Header />
           <SessionStoreProvider>

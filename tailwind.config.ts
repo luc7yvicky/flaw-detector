@@ -2,7 +2,6 @@ import type { Config } from "tailwindcss";
 
 const config: Config = {
   content: [
-    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
@@ -16,9 +15,6 @@ const config: Config = {
         "clamp-2xl": "clamp(2rem, 5vw, 3.75rem)",
         "clamp-3xl": "clamp(3.65rem, 5vw, 5rem)",
         "clamp-4xl": "clamp(4rem, 5vw, 6.5rem)",
-      },
-      fontFamily: {
-        pretendard: ["var(--font-pretendard)"],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
