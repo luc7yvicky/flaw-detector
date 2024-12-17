@@ -1,4 +1,5 @@
 import Footer from "@/components/layout/Footer";
+import { FooterContent } from "@/components/layout/FooterContent";
 import Header from "@/components/layout/Header";
 import { SessionStoreProvider } from "@/context/SessionProvider";
 import ReactQueryProviders from "@/lib/queries/useReactQuery";
@@ -37,7 +38,9 @@ export default function RootLayout({
           <SessionStoreProvider>
             <ReactQueryProviders>{children}</ReactQueryProviders>
           </SessionStoreProvider>
-          <Footer />
+          <Footer>
+            <FooterContent />
+          </Footer>
         </div>
       </body>
     </html>
