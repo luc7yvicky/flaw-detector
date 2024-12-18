@@ -30,7 +30,7 @@ export async function fetchPosts({
   }
 }
 
-export async function fetchPost({
+export async function fetchPostAndSimilarPosts({
   postId,
   userId,
 }: {
@@ -63,9 +63,6 @@ export async function updatePinnedPost(
   }
 }
 
-/**
- * Firestore에서 post의 views를 업데이트합니다.
- */
 export async function increasePostViews(postId: string): Promise<void> {
   try {
     await fetch(`${BASE_URL}/api/posts/${postId}`, {
@@ -81,13 +78,4 @@ export async function increasePostViews(postId: string): Promise<void> {
     console.error("Error updating post views:", error);
     throw new Error("Failed to update post views.");
   }
-}
-
-export async function fetchLatestPosts(postId: string, userId: number) {
-  const param = new URLSearchParams();
-  param.append("userId", userId.toString());
-  const res = await fetch(
-    `${BASE_URL}/api/posts/latest/${postId}?${param.toString()}`,
-  );
-  return res.json();
 }
