@@ -1,14 +1,7 @@
 import { auth } from "@/auth";
 import { Floating } from "@/components/ui/Floating";
 import ArticleContainer from "@/components/vulnerability-db/ArticleContainer";
-import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
-
-const ToastContainer = dynamic(() =>
-  import("@/components/vulnerability-db/Toast").then(
-    (mod) => mod.ToastContainer,
-  ),
-);
 
 export default async function VulnerabilityDBDetailPage({
   params,
@@ -29,7 +22,6 @@ export default async function VulnerabilityDBDetailPage({
   return (
     <div className="relative mx-auto mb-[8.596rem] mt-[2.063rem] flex w-full max-w-[120rem] flex-col items-center gap-[3.75rem] overflow-hidden px-[1rem]">
       <ArticleContainer postId={postId} userId={userId} />
-      <ToastContainer />
       <div className="width-[4.75rem] absolute right-[8.75rem] top-[46.313rem]">
         <Floating variant="chat" className="fixed top-[46.313rem]" />
       </div>
