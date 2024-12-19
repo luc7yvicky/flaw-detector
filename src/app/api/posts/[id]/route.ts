@@ -1,5 +1,3 @@
-export const revalidate = 3600;
-
 import db from "@/../firebaseConfig";
 import {
   collection,
@@ -104,7 +102,14 @@ export async function GET(
       isScrapped: userPinnedPosts.includes(postId),
     };
 
-    return NextResponse.json({ post, latestPosts });
+    const response = NextResponse.json({ post, latestPosts });
+
+    response.headers.set(
+      "Cache-Control",
+      "public, max-age=3600, s-maxage=3600, must-revalidate",
+    );
+
+    return response;
   } catch (error) {
     console.error("Failed to fetch posts:", error);
     return NextResponse.json(
