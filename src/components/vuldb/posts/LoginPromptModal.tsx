@@ -1,12 +1,11 @@
 "use client";
 
-import { loginWithGithub } from "@/lib/actions";
 import { useTransition } from "react";
 
-import Button from "../ui/Button";
-import { Modal, ModalTitle, ModalTitleWrapper } from "../ui/Modal";
+import Button from "@/components/ui/Button";
+import { Modal, ModalTitle, ModalTitleWrapper } from "@/components/ui/Modal";
 
-export default function VulDBLoginModal() {
+export default function LoginPromptModal() {
   const [_, startTransition] = useTransition();
 
   return (
@@ -20,7 +19,12 @@ export default function VulDBLoginModal() {
         variant="outlined"
         shape="pill"
         className="h-[4.625rem] p-[1.25rem_2rem] text-[1.75rem] font-light leading-[2.118rem] tracking-[-0.01em]"
-        onClick={() => startTransition(async () => await loginWithGithub())}
+        onClick={() =>
+          startTransition(async () => {
+            const { loginWithGithub } = await import("@/lib/actions");
+            await loginWithGithub();
+          })
+        }
       >
         Login
       </Button>

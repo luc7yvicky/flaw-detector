@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import Dropdown from "../ui/Dropdown";
 import Pagination from "../ui/Pagination";
-import ExceptionHandlingMessage from "../vulnerability-db/ExceptionHandlingMessage";
+import InfoMessage from "../ui/InfoMessage";
 import ScrappedArticleListItem from "./ScrappedArticleListItem";
 
 export default function ScrappedArticleList({
@@ -91,7 +91,7 @@ export default function ScrappedArticleList({
       </div>
 
       {filteredArticles.length === 0 ? (
-        <ExceptionHandlingMessage
+        <InfoMessage
           situation="조건에 맞는 게시물이 없습니다."
           solution="다른 조건을 선택해주세요."
         />

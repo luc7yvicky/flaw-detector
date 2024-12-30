@@ -5,10 +5,10 @@ import { VulDBPinnedInfo } from "@/types/post";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
-import IconFilledPin from "../ui/icons/IconFilledPin";
-import IconPin from "../ui/icons/IconPin";
+import IconFilledPin from "@/components/ui/icons/IconFilledPin";
+import IconPin from "@/components/ui/icons/IconPin";
 
-export default function VulDBPin({
+export default function ScrapButton({
   pinnedInfo,
   isScrapped,
 }: {
@@ -100,7 +100,7 @@ export default function VulDBPin({
     },
   });
 
-  const onClickVulDBPin = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const onClickScrapButton = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     event.preventDefault();
 
@@ -114,7 +114,11 @@ export default function VulDBPin({
   };
 
   return (
-    <button onClick={onClickVulDBPin} aria-label="스크랩 버튼" className="p-1">
+    <button
+      onClick={onClickScrapButton}
+      aria-label="스크랩 버튼"
+      className="p-1"
+    >
       {isClicked ? <IconFilledPin /> : <IconPin />}
     </button>
   );

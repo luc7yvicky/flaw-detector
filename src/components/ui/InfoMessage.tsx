@@ -1,4 +1,4 @@
-export default function ExceptionHandlingMessage({
+export default function InfoMessage({
   situation,
   solution,
 }: {

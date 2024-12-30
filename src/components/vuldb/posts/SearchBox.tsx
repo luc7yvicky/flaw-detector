@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import IconMagnifierWithPlus from "../ui/icons/IconMagnifierWithPlus";
+import IconMagnifierWithPlus from "../../ui/icons/IconMagnifierWithPlus";
 
-export default function Search({
+export default function SearchBox({
   setCurrentPage,
   setSearchTerm,
 }: {

@@ -3,18 +3,18 @@
 import useIncreaseViewCount from "@/hooks/useIncreaseViewCount";
 import { formatTimestampAsDateTime } from "@/lib/utils";
 import { VulDBPinnedInfo, VulDBPostWithChip } from "@/types/post";
-import { Label } from "../ui/Label";
-import VulDBPin from "./VulDBPin";
-import VulDBShare from "./VulDBShare";
+import { Label } from "../../ui/Label";
+import ScrapButton from "@/components/vuldb/common/ScrapButton";
+import ShareButton from "@/components/vuldb/common/ShareButton";
 
-export function ArticleDetailHeader({
+export default function DetailHeader({
   post,
   userId,
 }: {
   post: VulDBPostWithChip;
   userId: number;
 }) {
-  useIncreaseViewCount(post?.id);
+  useIncreaseViewCount(post?.id || "");
   const isScrapped = post?.isScrapped || false;
   const pinnedInfo: VulDBPinnedInfo = { userId, postId: post?.id || "" };
   const chip = post?.chip || "";
@@ -46,8 +46,8 @@ export function ArticleDetailHeader({
           </p>
         </div>
         <div className="relative flex gap-5">
-          <VulDBPin pinnedInfo={pinnedInfo} isScrapped={isScrapped} />
-          <VulDBShare postId={post?.id || ""} />
+          <ScrapButton pinnedInfo={pinnedInfo} isScrapped={isScrapped} />
+          <ShareButton postId={post?.id || ""} />
         </div>
       </div>
     </section>

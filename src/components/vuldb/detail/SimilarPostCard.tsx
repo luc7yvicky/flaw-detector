@@ -6,14 +6,13 @@ import {
   CardTitle,
 } from "@/components/ui/Card";
 import { Label } from "@/components/ui/Label";
+import ScrapButton from "@/components/vuldb/common/ScrapButton";
+import ShareButton from "@/components/vuldb/common/ShareButton";
 import { formatTimestampAsDaysAgo } from "@/lib/utils";
 import { VulDBPinnedInfo, VulDBPostWithChip } from "@/types/post";
 import { isCertCCContentType, isCnnvdContentType } from "@/types/typeGuards";
-import Link from "next/link";
-import VulDBPin from "./VulDBPin";
-import VulDBShare from "./VulDBShare";
 
-function SimilarInfoPostCard({
+export default function SimilarPostCard({
   post,
   userId,
 }: {
@@ -74,8 +73,8 @@ function SimilarInfoPostCard({
       </CardSubTitle>
       <CardFooter>
         <div className="inline-flex gap-[0.625rem]">
-          <VulDBPin pinnedInfo={pinnedInfo} isScrapped={post.isScrapped} />
-          <VulDBShare postId={post.id} />
+          <ScrapButton pinnedInfo={pinnedInfo} isScrapped={post.isScrapped} />
+          <ShareButton postId={post.id} />
         </div>
         <CardSubTitle className="font-medium">
           {post.created_at
@@ -84,30 +83,5 @@ function SimilarInfoPostCard({
         </CardSubTitle>
       </CardFooter>
     </Card>
-  );
-}
-
-export default function SimilarInfoPosts({
-  userId,
-  posts,
-}: {
-  userId: number;
-  posts: VulDBPostWithChip[];
-}) {
-  return (
-    <section className="w-full max-w-[82.125rem]">
-      <h2 className="mb-4 text-2xl font-semibold leading-[1.816rem] tracking-[-0.01em]">
-        비슷한 정보글
-      </h2>
-      <ul className="grid grid-cols-3 gap-9">
-        {posts.map((post) => (
-          <li key={post.id}>
-            <Link href={`/vuldb/items/${post.id}`}>
-              <SimilarInfoPostCard post={post} userId={userId as number} />
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }

@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Ranking } from "../ui/Ranking";
-import { getSearchKeywords } from "../../lib/api/ranking";
+import { Ranking } from "../../ui/Ranking";
+import { getSearchKeywords } from "../../../lib/api/ranking";
 import { useQuery } from "@tanstack/react-query";
 
 type SearchKeyword = {

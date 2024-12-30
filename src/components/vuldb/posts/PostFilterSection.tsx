@@ -1,8 +1,8 @@
 import { cn } from "@/lib/utils";
-import { Label } from "../ui/Label";
+import { Label } from "../../ui/Label";
 import React from "react";
 
-type VulDBDashboardProps = {
+type PostFilterSectionProps = {
   isLoggedIn?: boolean;
   filter: "hot" | "new" | "all";
   onChangeFilter: (chip: "hot" | "new" | "all") => void;
@@ -11,12 +11,12 @@ type VulDBDashboardProps = {
 
 const FILTER_LABELS = ["all", "hot", "new"];
 
-export default function VulDBDashboard({
+export default function PostFilterSection({
   isLoggedIn,
   filter,
   onChangeFilter,
   children,
-}: VulDBDashboardProps) {
+}: PostFilterSectionProps) {
   return (
     <section className="relative w-full min-w-[54.063rem]">
       <div className="flex-between-center mb-8 max-w-[54.063rem]">

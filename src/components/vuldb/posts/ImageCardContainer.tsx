@@ -2,11 +2,11 @@
 
 import { CardProps, CardTitleProps, ImageCardStyles } from "@/types/card";
 import { Timestamp } from "firebase/firestore";
-import { useState } from "react";
-import FirstThumbNailImage from "../../../public/images/cardThumbnail1.png";
-import SecondThumbNailImage from "../../../public/images/cardThumbnail2.png";
-import ThirdThumbNailImage from "../../../public/images/cardThumbnail3.png";
-import VulDBImageCard from "./VulDBImageCard";
+import React, { useState } from "react";
+import FirstThumbNailImage from "../../../../public/images/cardThumbnail1.png";
+import SecondThumbNailImage from "../../../../public/images/cardThumbnail2.png";
+import ThirdThumbNailImage from "../../../../public/images/cardThumbnail3.png";
+import ImageCard from "./ImageCard";
 
 type VulDBLatestPost = {
   id: string;
@@ -14,18 +14,14 @@ type VulDBLatestPost = {
   created_at: Timestamp;
 };
 
-type VulDBImageCardProps = VulDBLatestPost & ImageCardStyles;
+type ImageCardProps = VulDBLatestPost & ImageCardStyles;
 
-export default function VulDBImageCardContainer({
-  posts,
-}: {
-  posts: VulDBLatestPost[];
-}) {
+const ImageCardContainer = ({ posts }: { posts: VulDBLatestPost[] }) => {
   if (posts.length === 0) {
     throw new Error("Posts are empty");
   }
 
-  const cardDatas: VulDBImageCardProps[] = posts.map(
+  const cardDatas: ImageCardProps[] = posts.map(
     (item: VulDBLatestPost, index: number) => {
       const cardStyles: ImageCardStyles[] = [
         {
@@ -101,7 +97,7 @@ export default function VulDBImageCardContainer({
   return (
     <div className="flex gap-7">
       {cardDatas.map((cardData, index) => (
-        <VulDBImageCard
+        <ImageCard
           key={cardData.id}
           cardData={cardData}
           onMouseOverCard={() => onMouseOverCard(index)}
@@ -114,4 +110,6 @@ export default function VulDBImageCardContainer({
       ))}
     </div>
   );
-}
+};
+
+export default React.memo(ImageCardContainer);

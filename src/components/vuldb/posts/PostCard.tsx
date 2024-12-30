@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/Card";
 import { Label } from "@/components/ui/Label";
-import { cn, formatTimestampAsDaysAgo } from "@/lib/utils";
+import { formatTimestampAsDaysAgo } from "@/lib/utils";
 import {
   CertCCContent,
   CnnvdContent,
@@ -15,15 +15,10 @@ import {
   VulDBPostWithChip,
 } from "@/types/post";
 import { isCertCCContentType, isCnnvdContentType } from "@/types/typeGuards";
-import Link from "next/link";
-import VulDBPin from "./VulDBPin";
-import VulDBShare from "./VulDBShare";
-import ExceptionHandlingMessage from "./ExceptionHandlingMessage";
-import dynamic from "next/dynamic";
+import ScrapButton from "../common/ScrapButton";
+import ShareButton from "../common/ShareButton";
 
-const VulDBLoginModal = dynamic(() => import("./VulDBLoginModal"));
-
-function VulDBListCard({
+export default function PostCard({
   post,
   userId,
 }: {
@@ -97,83 +92,13 @@ function VulDBListCard({
       </CardContent>
       <CardFooter>
         <div className="flex gap-[0.625rem]">
-          <VulDBPin pinnedInfo={pinnedInfo} isScrapped={post.isScrapped} />
-          <VulDBShare postId={post.id} />
+          <ScrapButton pinnedInfo={pinnedInfo} isScrapped={post.isScrapped} />
+          <ShareButton postId={post.id} />
         </div>
         <CardSubTitle color="#767676" className="font-medium">
           {daysAgo || "날짜를 알 수 없음"}
         </CardSubTitle>
       </CardFooter>
     </Card>
-  );
-}
-
-export default function VulDBList({
-  posts,
-  userId,
-  selectedChip,
-  hasSearchTerm,
-}: {
-  posts: VulDBPostWithChip[];
-  userId?: number;
-  selectedChip?: "hot" | "new" | "all";
-  hasSearchTerm?: boolean;
-}) {
-  if (!posts || posts.length === 0) {
-    if (selectedChip === "new") {
-      return (
-        <ExceptionHandlingMessage
-          situation="최근 48시간 이내에 올라온 게시글이 없어요."
-          solution="NEW 필터를 해제하거나 HOT 필터로 다시 시도해 보세요."
-        />
-      );
-    }
-
-    if (selectedChip === "hot") {
-      return (
-        <ExceptionHandlingMessage
-          situation="HOT 게시글이 없어요."
-          solution="HOT 필터를 해제하거나 NEW 필터로 다시 시도해 보세요."
-        />
-      );
-    }
-
-    if (hasSearchTerm) {
-      return (
-        <ExceptionHandlingMessage
-          situation="검색 결과가 없어요."
-          solution="다른 주제로 다시 검색해 보세요."
-        />
-      );
-    }
-
-    return (
-      <ExceptionHandlingMessage
-        situation="게시글 데이터가 없어요."
-        solution="고객센터로 문의해주세요."
-      />
-    );
-  }
-
-  return (
-    <>
-      {!userId && <VulDBLoginModal />}
-      <ul
-        className={cn(
-          "flex w-fit flex-col gap-4",
-          !userId && "block size-full whitespace-pre-wrap blur-[0.5rem]",
-        )}
-      >
-        {posts.map((post: VulDBPostWithChip) => {
-          return (
-            <li key={post.id}>
-              <Link href={`/vuldb/items/${post.id}`}>
-                <VulDBListCard post={post} userId={userId as number} />
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </>
   );
 }

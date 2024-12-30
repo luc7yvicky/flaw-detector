@@ -9,7 +9,7 @@ import {
   CardLinkButton,
   CardSubTitle,
   CardTitle,
-} from "../ui/Card";
+} from "@/components/ui/Card";
 import { CardProps, CardTitleProps } from "@/types/card";
 
 type VulDBLatestPost = {
@@ -26,9 +26,9 @@ type cardStyles = {
   titleWrapperWidth: "w-[27.5rem]" | "w-[8.5rem]";
 };
 
-type VulDBImageCardProps = VulDBLatestPost & cardStyles;
+type ImageCardProps = VulDBLatestPost & cardStyles;
 
-export default function VulDBImageCard({
+export default function ImageCard({
   cardData,
   onMouseOverCard,
   onMouseOutCard,
@@ -37,7 +37,7 @@ export default function VulDBImageCard({
   cardSubtitleSize,
   cardTitleWrapperWidth,
 }: {
-  cardData: VulDBImageCardProps;
+  cardData: ImageCardProps;
   onMouseOverCard: () => void;
   onMouseOutCard: () => void;
   cardSize: CardProps["size"];

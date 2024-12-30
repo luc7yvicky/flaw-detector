@@ -1,6 +1,6 @@
 "use client";
 
-import Search from "@/components/vulnerability-db/Search";
+import SearchBox from "@/components/vuldb/posts/SearchBox";
 
 import { fetchPosts } from "@/lib/api/posts";
 import { cn } from "@/lib/utils";
@@ -8,17 +8,13 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import dynamic from "next/dynamic";
 import { useState } from "react";
 import RealTimeTopic from "./RealTimeTopic";
-import VulDBDashboard from "./VulDBDashboard";
-import VulDBList from "./VulDBList";
+import PostFilterSection from "./PostFilterSection";
+import PostList from "./PostList";
+import VulDBMainSkeleton from "./VulDBMainSkeleton";
 
 const Pagination = dynamic(() => import("@/components/ui/Pagination"), {
   ssr: false,
 });
-const VulDBDashboardSkeleton = dynamic(() =>
-  import("@/components/vulnerability-db/VulDBSkeleton").then(
-    (mod) => mod.VulDBDashboardSkeleton,
-  ),
-);
 
 export default function VulDBMainContent({ userId }: { userId: number }) {
   const [filter, setFilter] = useState<"all" | "hot" | "new">("all");
@@ -46,24 +42,27 @@ export default function VulDBMainContent({ userId }: { userId: number }) {
 
   return (
     <>
-      <Search setCurrentPage={setCurrentPage} setSearchTerm={setSearchTerm} />
+      <SearchBox
+        setCurrentPage={setCurrentPage}
+        setSearchTerm={setSearchTerm}
+      />
       <div className="grid grid-cols-[1fr_22rem] gap-5">
         <>
-          {isLoading && <VulDBDashboardSkeleton />}
-          {data && (
+          {isLoading && !data && <VulDBMainSkeleton />}
+          {!isLoading && data && (
             <>
-              <VulDBDashboard
+              <PostFilterSection
                 filter={filter}
                 onChangeFilter={onChangeFilter}
                 isLoggedIn={userId !== null}
               >
-                <VulDBList
+                <PostList
                   posts={data?.posts || []}
                   selectedChip={filter}
                   userId={userId}
                   hasSearchTerm={searchTerm.length > 0}
                 />
-              </VulDBDashboard>
+              </PostFilterSection>
 
               <Pagination
                 className={cn(

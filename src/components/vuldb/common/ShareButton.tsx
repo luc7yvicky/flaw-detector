@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import IconFilledShare from "../ui/icons/IconFilledShare";
-import IconShare from "../ui/icons/IconShare";
+import IconFilledShare from "@/components/ui/icons/IconFilledShare";
+import IconShare from "@/components/ui/icons/IconShare";
 
-export default function VulDBShare({ postId }: { postId: string }) {
+export default function ShareButton({ postId }: { postId: string }) {
   const [isCopied, setIsCopied] = useState(false);
 
   const getPostUrl = () => {
@@ -14,7 +14,7 @@ export default function VulDBShare({ postId }: { postId: string }) {
     return "";
   };
 
-  const handleShareClick = async (event: React.MouseEvent) => {
+  const onClickShareButton = async (event: React.MouseEvent) => {
     event.stopPropagation();
     event.preventDefault();
     const { toast } = await import("sonner");
@@ -40,7 +40,7 @@ export default function VulDBShare({ postId }: { postId: string }) {
 
   return (
     <button
-      onClick={handleShareClick}
+      onClick={onClickShareButton}
       aria-label="링크 복사 버튼"
       className="p-1"
     >

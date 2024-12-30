@@ -120,8 +120,13 @@ export async function GET(
 }
 
 export async function POST(req: NextRequest) {
-  const { postId } = await req.json();
   try {
+    const body = await req.json();
+    if (!body || !body.postId) {
+      throw new Error("유효하지 않은 요청입니다.");
+    }
+
+    const { postId } = body;
     const docRef = doc(db, "posts", postId);
     await runTransaction(db, async (transaction) => {
       const postSnapshot = await transaction.get(docRef);

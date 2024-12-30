@@ -1,7 +1,7 @@
 import { auth } from "@/auth";
 import ScrappedArticleListSkeleton from "@/components/me/ScrappedArticleListSkeleton";
 import TitleBar from "@/components/ui/TitleBar";
-import ExceptionHandlingMessage from "@/components/vulnerability-db/ExceptionHandlingMessage";
+import InfoMessage from "@/components/ui/InfoMessage";
 import { fetchArticleList } from "@/lib/api/users";
 import dynamic from "next/dynamic";
 import { redirect } from "next/navigation";
@@ -37,7 +37,7 @@ export default async function ScrapsPage() {
         />
       ) : (
         <div className="flex-col-center-center w-full gap-y-[0.625rem] 1150:h-[30.75rem]">
-          <ExceptionHandlingMessage
+          <InfoMessage
             situation={
               result.situation || result.error || "게시물을 찾을 수 없습니다."
             }

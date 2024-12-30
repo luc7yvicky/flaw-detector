@@ -5,7 +5,6 @@ import {
 } from "@/types/post";
 import { isCertCCContentType, isCnnvdContentType } from "@/types/typeGuards";
 import Link from "next/link";
-import { ArticleDetailHeader } from "./ArticleDetailHeader";
 
 type SectionProps = {
   title: string;
@@ -133,16 +132,9 @@ function CNNVDContent({ post }: { post: VulDBPost }) {
   );
 }
 
-export default function ArticleDetail({
-  userId,
-  post,
-}: {
-  userId: number;
-  post: VulDBPostWithChip;
-}) {
+export default function DetailContent({ post }: { post: VulDBPostWithChip }) {
   return (
     <>
-      <ArticleDetailHeader post={post} userId={userId} />
       {post.source === "CERT/CC" && <CertCCContent post={post} />}
       {post.source === "CNNVD" && <CNNVDContent post={post} />}
     </>

@@ -37,13 +37,19 @@ export async function fetchPostAndSimilarPosts({
   postId: string;
   userId: number;
 }) {
-  const response = await fetch(
-    `${BASE_URL}/api/posts/${postId}?userId=${userId}`,
-  );
-  if (!response.ok) {
-    throw new Error("Failed to fetch post data");
+  const params = new URLSearchParams();
+  if (userId) params.append("userId", userId.toString());
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/api/posts/${postId}?${params.toString()}`,
+    );
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching post and similar posts:", error);
+    throw new Error("Failed to fetch post and similar posts.");
   }
-  return response.json();
 }
 
 export async function updatePinnedPost(
@@ -64,6 +70,11 @@ export async function updatePinnedPost(
 }
 
 export async function increasePostViews(postId: string): Promise<void> {
+  if (!postId) {
+    console.error("postId is required to increase views.");
+    return;
+  }
+
   try {
     await fetch(`${BASE_URL}/api/posts/${postId}`, {
       method: "POST",
