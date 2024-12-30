@@ -2,6 +2,9 @@ import bundleAnalyzer from "@next/bundle-analyzer";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+
   logging: {
     fetches: {
       fullUrl: true,
@@ -24,10 +27,9 @@ const nextConfig = {
       ...config.optimization,
       sideEffects: true,
     };
-
     if (!isServer) {
       config.optimization.splitChunks = {
-        chunks: "all",
+        chunks: "async",
         maxInitialRequests: 10,
         minSize: 40000,
         cacheGroups: {
