@@ -126,7 +126,7 @@ export default function ContactForm() {
       className="flex size-full max-w-[61.563rem] flex-col gap-8 rounded-[2.5rem] border border-primary-500 bg-white px-[3.75rem] py-12"
     >
       <div>
-        <h3 className="mb-4 text-2xl font-bold leading-9">문의하기</h3>
+        <p className="mb-4 text-2xl font-bold leading-9">문의하기</p>
         <p className="text-base font-medium tracking-[-0.011em] text-gray-default">
           문의하고싶은 내용을 구체적으로 작성해주셔야 피드백이 정상적으로
           반영됩니다.
