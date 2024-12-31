@@ -1,4 +1,5 @@
 import { VariantProps } from "class-variance-authority";
+import { StaticImageData } from "next/image";
 
 export type CardProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof cardVariants> & {
@@ -21,8 +22,8 @@ export type CardContentProps = React.HTMLAttributes<HTMLDivElement> &
 
 export type ImageCardStyles = {
   cardSize: "main" | "sub";
-  imageSrc: string;
+  imageSrc: StaticImageData;
   titleSize: "big" | "xsmall";
-  subtitleSize: "big" | "base";
+  subtitleSize: "big" | "default";
   titleWrapperWidth: "w-[27.5rem]" | "w-[8.5rem]";
 };

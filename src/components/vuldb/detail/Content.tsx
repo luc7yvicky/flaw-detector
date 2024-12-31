@@ -1,6 +1,3 @@
-"use client";
-
-import { useVulDBPosts } from "@/lib/queries/useVulDBPosts";
 import {
   CertCCLocalizedTextBlock,
   VulDBPost,
@@ -8,11 +5,6 @@ import {
 } from "@/types/post";
 import { isCertCCContentType, isCnnvdContentType } from "@/types/typeGuards";
 import Link from "next/link";
-import { ArticleDetailHeader } from "./ArticleDetailHeader";
-import {
-  ArticleDetailContentSkeleton,
-  ArticleDetailHeaderSkeleton,
-} from "./VulDBSkeleton";
 
 type SectionProps = {
   title: string;
@@ -84,7 +76,7 @@ function CertCCContent({ post }: { post: VulDBPost }) {
             {cveIDs.map((item) => (
               <li
                 key={item}
-                className="leading-10 text-red-500 underline-offset-2 hover:underline"
+                className="leading-10 text-accent-red underline-offset-2 hover:underline"
               >
                 <Link
                   href={`https://www.cve.org/CVERecord?id=${item}`}
@@ -140,32 +132,9 @@ function CNNVDContent({ post }: { post: VulDBPost }) {
   );
 }
 
-export default function ArticleDetail({
-  userId,
-  postId,
-}: {
-  userId: number;
-  postId: string;
-}) {
-  const { posts, postsLoading } = useVulDBPosts(userId, 1, 100, "");
-
-  const post = posts?.find((post: VulDBPostWithChip) => post.id === postId);
-
-  if (postsLoading) {
-    return (
-      <>
-        <ArticleDetailHeaderSkeleton />
-        <ArticleDetailContentSkeleton />
-      </>
-    );
-  }
-  if (!post) {
-    return <p className="text-center text-black">게시물을 찾을 수 없습니다.</p>;
-  }
-
+export default function DetailContent({ post }: { post: VulDBPostWithChip }) {
   return (
     <>
-      <ArticleDetailHeader post={post} userId={userId} />
       {post.source === "CERT/CC" && <CertCCContent post={post} />}
       {post.source === "CNNVD" && <CNNVDContent post={post} />}
     </>

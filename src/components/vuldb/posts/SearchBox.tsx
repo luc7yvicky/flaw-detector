@@ -1,12 +1,9 @@
 "use client";
 
-import { updateRealTimeTopic } from "@/lib/api/posts";
 import React, { useEffect, useState } from "react";
-import IconMagnifierWithPlus from "../ui/icons/IconMagnifierWithPlus";
-import { showToast } from "./Toast";
-import { processSearchInput } from "@/lib/utils";
+import IconMagnifierWithPlus from "../../ui/icons/IconMagnifierWithPlus";
 
-export default function Search({
+export default function SearchBox({
   setCurrentPage,
   setSearchTerm,
 }: {
@@ -22,15 +19,19 @@ export default function Search({
     }
   }, [searchInput]);
 
-  const onSubmitForm = (e: React.FormEvent) => {
+  const onSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!searchInput) return showToast("❗ 검색어를 입력해주세요");
+    const { toast } = await import("sonner");
+    if (!searchInput) return toast("❗ 검색어를 입력해주세요");
 
+    const { processSearchInput } = await import("@/lib/utils");
     const searchKeywords = processSearchInput(searchInput);
 
     setSearchTerm(searchKeywords);
-    updateRealTimeTopic(searchInput);
+
+    const { updateRealTimeTopic } = await import("@/lib/api/ranking");
+    await updateRealTimeTopic(searchInput);
     setCurrentPage(1);
   };
 
@@ -47,7 +48,8 @@ export default function Search({
         <button
           type="submit"
           id="search-button"
-          className="absolute right-6 top-1/2 -translate-y-1/2 transform"
+          aria-label="검색 버튼"
+          className="absolute right-6 top-1/2 -translate-y-1/2 transform p-1"
         >
           <IconMagnifierWithPlus className="w-[1.625rem]" />
         </button>

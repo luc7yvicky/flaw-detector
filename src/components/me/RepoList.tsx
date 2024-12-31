@@ -8,7 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/react/shallow";
 import Dropdown from "../ui/Dropdown";
 import Pagination from "../ui/Pagination";
-import ExceptionHandlingMessage from "../vulnerability-db/ExceptionHandlingMessage";
+import InfoMessage from "../ui/InfoMessage";
 import RepoFilterButton from "./RepoFilterButton";
 // import { RepoSkeleton } from "./RepoListSkeleton";
 
@@ -105,10 +105,7 @@ export default function RepoList({
 
   if (isError && error) {
     return (
-      <ExceptionHandlingMessage
-        situation={error.toString()}
-        solution="다시 시도해주세요."
-      />
+      <InfoMessage situation={error.toString()} solution="다시 시도해주세요." />
     );
   }
 
@@ -131,12 +128,12 @@ export default function RepoList({
         </div>
 
         {initialRepos.length === 0 ? (
-          <ExceptionHandlingMessage
+          <InfoMessage
             situation="Github에 레포지토리가 존재하지 않습니다."
             solution="새로운 프로젝트를 시작해보세요."
           />
         ) : sortedRepos.length == 0 ? (
-          <ExceptionHandlingMessage
+          <InfoMessage
             situation="조건에 맞는 레포지토리가 없습니다."
             solution="다른 조건을 선택해주세요."
           />

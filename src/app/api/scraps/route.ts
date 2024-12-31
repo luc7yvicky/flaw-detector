@@ -1,6 +1,8 @@
 import { ITEMS_PER_MY_PAGE } from "@/lib/const";
 import { ArticleListItem } from "@/types/post";
 import {
+  arrayRemove,
+  arrayUnion,
   collection,
   doc,
   getDoc,
@@ -9,6 +11,7 @@ import {
   query,
   startAfter,
   Timestamp,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { NextRequest, NextResponse } from "next/server";
@@ -143,6 +146,64 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
         situation: "게시물을 불러오는 중에 오류가 발생했습니다.",
         solution: "잠시 후 다시 시도해주세요.",
       },
+      { status: 500 },
+    );
+  }
+}
+
+async function getUserDoc(userId: number) {
+  const usersCollection = collection(db, "users");
+  const userQuery = query(usersCollection, where("userId", "==", userId));
+  const querySnapshot = await getDocs(userQuery);
+
+  if (!querySnapshot.empty) {
+    return querySnapshot.docs[0].ref;
+  }
+  return null;
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const { postId, userId, action } = await req.json();
+
+    if (!postId || !userId || !action) {
+      return NextResponse.json({
+        error: "스크랩 요청에 필요한 값이 누락되었습니다.",
+        status: 400,
+      });
+    }
+
+    const userDoc = await getUserDoc(userId);
+
+    if (!userDoc) {
+      return NextResponse.json({
+        error: "사용자를 찾을 수 없습니다.",
+        status: 404,
+      });
+    }
+
+    if (action === "add") {
+      await updateDoc(userDoc, { pinnedPosts: arrayUnion(postId) });
+      return NextResponse.json({
+        success: true,
+        message: "스크랩이 성공적으로 추가되었습니다.",
+      });
+    } else if (action === "remove") {
+      await updateDoc(userDoc, { pinnedPosts: arrayRemove(postId) });
+      return NextResponse.json({
+        success: true,
+        message: "스크랩이 성공적으로 취소되었습니다.",
+      });
+    } else {
+      return NextResponse.json({
+        success: false,
+        message: "유효하지 않은 요청입니다.",
+      });
+    }
+  } catch (err) {
+    console.error("스크랩 처리 실패:", err);
+    return NextResponse.json(
+      { error: "스크랩 처리 중 오류가 발생했습니다." },
       { status: 500 },
     );
   }

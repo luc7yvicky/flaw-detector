@@ -50,7 +50,7 @@ export type VulDBPost = {
 };
 
 export type VulDBPostWithChip = VulDBPost & {
-  chip: "hot" | "new" | "";
+  chip: "hot" | "new" | "all";
   isScrapped: boolean;
 };
 

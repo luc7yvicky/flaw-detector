@@ -1,24 +1,28 @@
 "use client";
 
+import useIncreaseViewCount from "@/hooks/useIncreaseViewCount";
 import { formatTimestampAsDateTime } from "@/lib/utils";
 import { VulDBPinnedInfo, VulDBPostWithChip } from "@/types/post";
-import { Label } from "../ui/Label";
-import VulDBPin from "./VulDBPin";
-import VulDBShare from "./VulDBShare";
+import { Label } from "../../ui/Label";
+import ScrapButton from "@/components/vuldb/common/ScrapButton";
+import ShareButton from "@/components/vuldb/common/ShareButton";
 
-export function ArticleDetailHeader({
+export default function DetailHeader({
   post,
   userId,
 }: {
   post: VulDBPostWithChip;
   userId: number;
 }) {
+  useIncreaseViewCount(post?.id || "");
   const isScrapped = post?.isScrapped || false;
   const pinnedInfo: VulDBPinnedInfo = { userId, postId: post?.id || "" };
+  const chip = post?.chip || "";
+
   return (
     <section className="w-full max-w-[82.125rem] border-b border-b-line-default p-[1.75rem_0_3.75rem_0] px-[1rem]">
-      {post?.chip === "new" && <Label variant="new">NEW</Label>}
-      {post?.chip === "hot" && <Label>HOT</Label>}
+      {chip === "new" && <Label variant="new">NEW</Label>}
+      {chip === "hot" && <Label>HOT</Label>}
 
       <h1 className="mb-8 mt-[1.261rem] text-4xl font-medium leading-[2.723rem] tracking-[-0.01em]">
         {post?.title?.translated ||
@@ -41,9 +45,9 @@ export function ArticleDetailHeader({
               : "알 수 없음"}
           </p>
         </div>
-        <div className="relative flex gap-7">
-          <VulDBPin pinnedInfo={pinnedInfo} isScrapped={isScrapped} />
-          <VulDBShare postId={post?.id || ""} />
+        <div className="relative flex gap-5">
+          <ScrapButton pinnedInfo={pinnedInfo} isScrapped={isScrapped} />
+          <ShareButton postId={post?.id || ""} />
         </div>
       </div>
     </section>

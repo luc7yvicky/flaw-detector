@@ -1,0 +1,115 @@
+"use client";
+
+import { CardProps, CardTitleProps, ImageCardStyles } from "@/types/card";
+import { Timestamp } from "firebase/firestore";
+import React, { useState } from "react";
+import FirstThumbNailImage from "../../../../public/images/cardThumbnail1.png";
+import SecondThumbNailImage from "../../../../public/images/cardThumbnail2.png";
+import ThirdThumbNailImage from "../../../../public/images/cardThumbnail3.png";
+import ImageCard from "./ImageCard";
+
+type VulDBLatestPost = {
+  id: string;
+  title: { original: string; translated: string };
+  created_at: Timestamp;
+};
+
+type ImageCardProps = VulDBLatestPost & ImageCardStyles;
+
+const ImageCardContainer = ({ posts }: { posts: VulDBLatestPost[] }) => {
+  if (posts.length === 0) {
+    throw new Error("Posts are empty");
+  }
+
+  const cardDatas: ImageCardProps[] = posts.map(
+    (item: VulDBLatestPost, index: number) => {
+      const cardStyles: ImageCardStyles[] = [
+        {
+          cardSize: "main",
+          imageSrc: FirstThumbNailImage,
+          titleSize: "big",
+          subtitleSize: "big",
+          titleWrapperWidth: "w-[27.5rem]",
+        },
+        {
+          cardSize: "sub",
+          imageSrc: SecondThumbNailImage,
+          titleSize: "xsmall",
+          subtitleSize: "default",
+          titleWrapperWidth: "w-[8.5rem]",
+        },
+        {
+          cardSize: "sub",
+          imageSrc: ThirdThumbNailImage,
+          titleSize: "xsmall",
+          subtitleSize: "default",
+          titleWrapperWidth: "w-[8.5rem]",
+        },
+      ];
+
+      return { ...item, ...cardStyles[index] };
+    },
+  );
+
+  const [cardSizes, setCardSizes] = useState(
+    cardDatas.map((data) => data.cardSize),
+  );
+  const [cardTitleSizes, setCardTitleSizes] = useState(
+    cardDatas.map((data) => data.titleSize),
+  );
+  const [cardSubtitleSizes, setCardSubtitleSizes] = useState(
+    cardDatas.map((data) => data.subtitleSize),
+  );
+  const [cardTitleWrapperWidth, setCardTitleWrapperWidth] = useState(
+    cardDatas.map((data) => data.titleWrapperWidth),
+  );
+
+  const onMouseOverCard = (index: number) => {
+    setCardSizes((prevSizes) =>
+      prevSizes.map((size, i) =>
+        i === index ? "main" : size === "main" ? "sub" : size,
+      ),
+    );
+    setCardTitleSizes((prevSizes) =>
+      prevSizes.map((size, i) =>
+        i === index ? "big" : size === "big" ? "xsmall" : size,
+      ),
+    );
+    setCardSubtitleSizes((prevSizes) =>
+      prevSizes.map((size, i) =>
+        i === index ? "big" : size === "big" ? "default" : size,
+      ),
+    );
+    setCardTitleWrapperWidth((prevWidths) =>
+      prevWidths.map((width, i) =>
+        i === index ? "w-[27.5rem]" : "w-[8.5rem]",
+      ),
+    );
+  };
+
+  const onMouseOutCard = () => {
+    setCardSizes(cardDatas.map((data) => data.cardSize));
+    setCardTitleSizes(cardDatas.map((data) => data.titleSize));
+    setCardSubtitleSizes(cardDatas.map((data) => data.subtitleSize));
+    setCardTitleWrapperWidth(cardDatas.map((data) => data.titleWrapperWidth));
+  };
+
+  return (
+    <div className="flex gap-7">
+      {cardDatas.map((cardData, index) => (
+        <ImageCard
+          key={cardData.id}
+          cardData={cardData}
+          onMouseOverCard={() => onMouseOverCard(index)}
+          onMouseOutCard={onMouseOutCard}
+          cardSize={cardSizes[index] as CardProps["size"]}
+          cardTitleSize={cardTitleSizes[index] as CardTitleProps["size"]}
+          cardSubtitleSize={cardSubtitleSizes[index] as CardTitleProps["size"]}
+          cardTitleWrapperWidth={cardTitleWrapperWidth[index]}
+        />
+      ))}
+    </div>
+  );
+};
+
+export default React.memo(ImageCardContainer);

@@ -1,7 +1,11 @@
-import { SearchKeyword } from "@/lib/api/searchKeywords";
 import { cn } from "@/lib/utils";
 
-export type RankingProps = React.HTMLAttributes<HTMLUListElement> & {
+type SearchKeyword = {
+  keyword: string;
+  searchCounts: number;
+};
+
+type RankingProps = React.HTMLAttributes<HTMLUListElement> & {
   topSearchKeywords: SearchKeyword[];
 };
 
@@ -22,10 +26,6 @@ const renderTopics = (
   topics: string[] | SearchKeyword[],
   haveSearchKeywords: boolean,
 ) => {
-  if (!topics || topics.length === 0) {
-    return <li>데이터를 불러오는 데 실패했습니다.</li>;
-  }
-
   return topics.map((topic, index) => {
     const topicName = typeof topic === "string" ? topic : topic.keyword;
 
@@ -54,7 +54,7 @@ export const Ranking: React.FC<RankingProps> = ({
   return (
     <ul
       className={cn(
-        "relative h-[36.25rem] w-full rounded-[1.25rem] border border-[#CFCFCF] px-9 py-5",
+        "relative mt-[1.625rem] h-[36.25rem] w-full rounded-[1.25rem] border border-[#CFCFCF] px-9 py-5",
         className,
       )}
       {...props}

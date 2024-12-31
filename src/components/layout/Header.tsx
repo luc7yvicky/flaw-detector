@@ -11,7 +11,11 @@ const aldrich = Aldrich({ subsets: ["latin"], weight: "400" });
 
 function HeaderLogo({ isDocsPage }: { isDocsPage: boolean }) {
   return (
-    <Link href={"/"} className="flex-center-center mr-[6.25rem]">
+    <Link
+      href={"/"}
+      className="flex-center-center mr-[6.25rem]"
+      aria-label="FLAWDETECTOR 홈으로 이동"
+    >
       <IconBug
         color={isDocsPage ? "text-white" : "text-primary-500"}
         className={cn("mr-3 h-[35px] w-[34px]", isDocsPage && "text-white")}
@@ -30,7 +34,7 @@ function NavMenu({ isDocsPage }: { isDocsPage: boolean }) {
     <nav className="w-full">
       <ul
         className={cn(
-          "flex-end-center h-[8.5rem] w-full space-x-8 md:space-x-20 text-xl font-medium",
+          "flex-end-center h-[8.5rem] w-full space-x-8 text-xl font-medium md:space-x-20",
           isDocsPage ? "text-white" : "text-gray-dark",
         )}
       >
